@@ -17,6 +17,7 @@ fun MainNavHost(navController: NavHostController) {
             SplashScreen(
                 onTimeout = {
                     navController.navigate("dashboard") {
+                        launchSingleTop = true
                         popUpTo("splash") { inclusive = true }
                     }
                 }

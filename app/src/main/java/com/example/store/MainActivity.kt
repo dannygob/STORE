@@ -22,12 +22,12 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun StoreApp() {
-    val navController = rememberNavController()
+    val navController = rememberNavController() // Inicializa NavController correctamente
 
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        MainNavHost(navController = navController)
+        MainNavHost(navController = navController) // Pasa NavController a MainNavHost
     }
 }
