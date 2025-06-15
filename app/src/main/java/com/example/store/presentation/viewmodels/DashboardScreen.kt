@@ -1,5 +1,4 @@
 import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,6 +31,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -50,37 +50,58 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-data class DashboardData(val title: String, val details: List<String>)
+// Data classes
+data class DashboardData(
+    val title: String,
+    val details: List<String>,
+)
+
+data class MenuItem(
+    val icon: ImageVector,
+    val label: String,
+    val action: () -> Unit = {},
+)
+
+data class DropdownSection(
+    val icon: ImageVector,
+    val label: String,
+    val options: List<String>,
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen() {
     val context = LocalContext.current
-    val dashboardItems = listOf(
-        DashboardData("Order Alerts", listOf("Order #101", "Order #102")),
-        DashboardData("Low Stock & Expiration", listOf("Product A low", "Product B expires soon")),
-        DashboardData("Sales Statistics", listOf("Today: \$150", "Week: \$1000")),
-        DashboardData("Admin Balance", listOf("Income: \$5000", "Expenses: \$2000")),
-        DashboardData(
-            "Expenses & Services",
-            listOf("Water: \$200", "Electricity: \$150", "Internet: \$50")
-        ),
-        DashboardData("Other Expenses", listOf("Maintenance: \$300", "Stationery: \$50"))
-    )
+
+    // Extraer datos a funciones separadas para mejor organización
+    val dashboardItems = getDashboardItems()
+    val menuItems = getMenuItems(context)
+    val dropdownSections = getDropdownSections()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Store Dashboard") },
-                colors = TopAppBarDefaults.mediumTopAppBarColors()
+                title = {
+                    Text(
+                        "Store Dashboard",
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
             )
         },
         bottomBar = {
-            BottomAppBar {
+            BottomAppBar(
+                containerColor = MaterialTheme.colorScheme.surfaceContainer
+            ) {
                 Text(
                     text = "Version 1.0",
                     modifier = Modifier.padding(16.dp),
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -88,129 +109,54 @@ fun DashboardScreen() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding) // Aplicar padding del Scaffold aquí
+                .padding(padding)
         ) {
-            // 🔷 Horizontal Menu with elevation - ahora dentro del área con padding
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 50.dp, bottom = 8.dp), // Mucho más espacio superior
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .background(MaterialTheme.colorScheme.primaryContainer)
-                        .padding(vertical = 8.dp) // Reducir altura del menú
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    listOf(
-                        Icons.Filled.Inventory to "Inventory",
-                        Icons.Filled.ShoppingCart to "Purchases",
-                        Icons.Filled.Sell to "Sales",
-                        Icons.Filled.LocalShipping to "Orders",
-                        Icons.Filled.QrCodeScanner to "Scanner",
-                        Icons.Filled.Payment to "Expenses"
-                    ).forEach { (icon, label) ->
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier
-                                .clickable {
-                                    Toast.makeText(context, label, Toast.LENGTH_SHORT).show()
-                                }
-                                .padding(horizontal = 2.dp, vertical = 4.dp) // Reducir padding
-                        ) {
-                            Icon(
-                                icon,
-                                contentDescription = label,
-                                modifier = Modifier.size(24.dp), // Íconos más pequeños
-                                tint = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                            Spacer(modifier = Modifier.height(2.dp)) // Menos espacio entre ícono y texto
-                            Text(
-                                label,
-                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp), // Texto más pequeño
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                        }
-                    }
-                }
-            }
+            // Menú horizontal mejorado
+            HorizontalMenuBar(
+                items = menuItems,
+                modifier = Modifier.padding(top = 50.dp) // Tu valor optimizado
+            )
 
-            // 🔷 Cards Section
-            LazyColumn(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(16.dp)
-            ) {
-                items(dashboardItems.chunked(2)) { rowItems ->
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        rowItems.forEach { item ->
-                            Card(
-                                modifier = Modifier
-                                    .padding(8.dp)
-                                    .weight(1f),
-                                shape = RoundedCornerShape(12.dp),
-                                elevation = CardDefaults.cardElevation(4.dp)
-                            ) {
-                                Column(modifier = Modifier.padding(16.dp)) {
-                                    Text(
-                                        text = item.title,
-                                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                        modifier = Modifier.fillMaxWidth(),
-                                        textAlign = TextAlign.Center
-                                    )
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    item.details.forEach { detail ->
-                                        Text(
-                                            text = "- $detail",
-                                            style = MaterialTheme.typography.bodySmall
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                        if (rowItems.size < 2) {
-                            Spacer(modifier = Modifier.weight(1f))
-                        }
-                    }
-                }
-            }
+            // Sección de tarjetas mejorada
+            DashboardCardsSection(
+                items = dashboardItems,
+                modifier = Modifier.weight(1f)
+            )
 
-            // 🔷 Bottom Dropdown Menus
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                DropdownMenuSection(
-                    icon = Icons.Filled.LocalShipping,
-                    label = "Orders",
-                    options = listOf(
-                        "Create Order",
-                        "Order Status",
-                        "Order Cancellation",
-                        "Shipping Notification"
-                    )
-                )
-                DropdownMenuSection(
-                    icon = Icons.Filled.Add,
-                    label = "Products",
-                    options = listOf(
-                        "Add Product",
-                        "Product Return"
-                    )
-                )
-                DropdownMenuSection(
-                    icon = Icons.Filled.Person,
-                    label = "People",
-                    options = listOf(
-                        "Add Customer",
-                        "Add Supplier",
-                        "Add Service Provider"
-                    )
+            // Sección de dropdowns mejorada
+            DropdownMenusSection(
+                sections = dropdownSections,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun HorizontalMenuBar(
+    items: List<MenuItem>,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        shape = RoundedCornerShape(12.dp),
+        shadowElevation = 4.dp,
+        color = MaterialTheme.colorScheme.primaryContainer
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(vertical = 8.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            items.forEach { item ->
+                MenuItemComponent(
+                    icon = item.icon,
+                    label = item.label,
+                    onClick = item.action,
+                    modifier = Modifier.weight(1f)
                 )
             }
         }
@@ -218,7 +164,122 @@ fun DashboardScreen() {
 }
 
 @Composable
-fun DropdownMenuSection(
+private fun MenuItemComponent(
+    icon: ImageVector,
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+            .clickable { onClick() }
+            .padding(horizontal = 4.dp, vertical = 8.dp)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = label,
+            modifier = Modifier.size(24.dp),
+            tint = MaterialTheme.colorScheme.onPrimaryContainer
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            textAlign = TextAlign.Center,
+            maxLines = 1
+        )
+    }
+}
+
+@Composable
+private fun DashboardCardsSection(
+    items: List<DashboardData>,
+    modifier: Modifier = Modifier,
+) {
+    LazyColumn(
+        modifier = modifier.padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(items.chunked(2)) { rowItems ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                rowItems.forEach { item ->
+                    DashboardCard(
+                        data = item,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                // Espaciador para filas incompletas
+                if (rowItems.size < 2) {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DashboardCard(
+    data: DashboardData,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = data.title,
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Bold
+                ),
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            data.details.forEach { detail ->
+                Text(
+                    text = "• $detail", // Usar bullet point más elegante
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DropdownMenusSection(
+    sections: List<DropdownSection>,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        sections.forEach { section ->
+            DropdownMenuComponent(
+                icon = section.icon,
+                label = section.label,
+                options = section.options
+            )
+        }
+    }
+}
+
+@Composable
+private fun DropdownMenuComponent(
     icon: ImageVector,
     label: String,
     options: List<String>,
@@ -226,22 +287,50 @@ fun DropdownMenuSection(
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Row(
-            modifier = Modifier.clickable { expanded = !expanded },
-            verticalAlignment = Alignment.CenterVertically
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Surface(
+            onClick = { expanded = !expanded },
+            shape = RoundedCornerShape(8.dp),
+            color = MaterialTheme.colorScheme.secondaryContainer,
+            modifier = Modifier.padding(4.dp)
         ) {
-            Icon(icon, contentDescription = label)
-            Text(label, modifier = Modifier.padding(start = 4.dp))
-            Icon(Icons.Filled.ArrowDropDown, contentDescription = "Expand $label")
+            Row(
+                modifier = Modifier.padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = label,
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+                Text(
+                    text = label,
+                    modifier = Modifier.padding(start = 4.dp),
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    style = MaterialTheme.typography.labelMedium
+                )
+                Icon(
+                    imageVector = Icons.Filled.ArrowDropDown,
+                    contentDescription = "Expand $label",
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+            }
         }
+
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
             options.forEach { option ->
                 DropdownMenuItem(
-                    text = { Text(option) },
+                    text = {
+                        Text(
+                            option,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    },
                     onClick = {
                         Toast.makeText(context, option, Toast.LENGTH_SHORT).show()
                         expanded = false
@@ -251,6 +340,58 @@ fun DropdownMenuSection(
         }
     }
 }
+
+// Funciones de datos separadas para mejor organización
+private fun getDashboardItems() = listOf(
+    DashboardData("Order Alerts", listOf("Order #101", "Order #102")),
+    DashboardData("Low Stock & Expiration", listOf("Product A low", "Product B expires soon")),
+    DashboardData("Sales Statistics", listOf("Today: \$150", "Week: \$1000")),
+    DashboardData("Admin Balance", listOf("Income: \$5000", "Expenses: \$2000")),
+    DashboardData(
+        "Expenses & Services",
+        listOf("Water: \$200", "Electricity: \$150", "Internet: \$50")
+    ),
+    DashboardData("Other Expenses", listOf("Maintenance: \$300", "Stationery: \$50"))
+)
+
+private fun getMenuItems(context: android.content.Context) = listOf(
+    MenuItem(Icons.Filled.Inventory, "Inventory") {
+        Toast.makeText(context, "Inventory", Toast.LENGTH_SHORT).show()
+    },
+    MenuItem(Icons.Filled.ShoppingCart, "Purchases") {
+        Toast.makeText(context, "Purchases", Toast.LENGTH_SHORT).show()
+    },
+    MenuItem(Icons.Filled.Sell, "Sales") {
+        Toast.makeText(context, "Sales", Toast.LENGTH_SHORT).show()
+    },
+    MenuItem(Icons.Filled.LocalShipping, "Orders") {
+        Toast.makeText(context, "Orders", Toast.LENGTH_SHORT).show()
+    },
+    MenuItem(Icons.Filled.QrCodeScanner, "Scanner") {
+        Toast.makeText(context, "Scanner", Toast.LENGTH_SHORT).show()
+    },
+    MenuItem(Icons.Filled.Payment, "Expenses") {
+        Toast.makeText(context, "Expenses", Toast.LENGTH_SHORT).show()
+    }
+)
+
+private fun getDropdownSections() = listOf(
+    DropdownSection(
+        Icons.Filled.LocalShipping,
+        "Orders",
+        listOf("Create Order", "Order Status", "Order Cancellation", "Shipping Notification")
+    ),
+    DropdownSection(
+        Icons.Filled.Add,
+        "Products",
+        listOf("Add Product", "Product Return")
+    ),
+    DropdownSection(
+        Icons.Filled.Person,
+        "People",
+        listOf("Add Customer", "Add Supplier", "Add Service Provider")
+    )
+)
 
 @Preview(showSystemUi = true)
 @Composable
