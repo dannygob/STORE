@@ -48,6 +48,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 data class DashboardData(val title: String, val details: List<String>)
 
@@ -87,17 +88,20 @@ fun DashboardScreen() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
+                .padding(padding) // Aplicar padding del Scaffold aquí
         ) {
-            // 🔷 Horizontal Menu with elevation
+            // 🔷 Horizontal Menu with elevation - ahora dentro del área con padding
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 50.dp, bottom = 8.dp), // Mucho más espacio superior
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
                 Row(
                     modifier = Modifier
                         .background(MaterialTheme.colorScheme.primaryContainer)
-                        .padding(vertical = 8.dp)
+                        .padding(vertical = 8.dp) // Reducir altura del menú
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
@@ -115,10 +119,20 @@ fun DashboardScreen() {
                                 .clickable {
                                     Toast.makeText(context, label, Toast.LENGTH_SHORT).show()
                                 }
-                                .padding(horizontal = 8.dp)
+                                .padding(horizontal = 2.dp, vertical = 4.dp) // Reducir padding
                         ) {
-                            Icon(icon, contentDescription = label, modifier = Modifier.size(32.dp))
-                            Text(label, style = MaterialTheme.typography.labelSmall)
+                            Icon(
+                                icon,
+                                contentDescription = label,
+                                modifier = Modifier.size(24.dp), // Íconos más pequeños
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                            Spacer(modifier = Modifier.height(2.dp)) // Menos espacio entre ícono y texto
+                            Text(
+                                label,
+                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp), // Texto más pequeño
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
                         }
                     }
                 }
