@@ -1,11 +1,12 @@
 package com.example.store.presentation.navigation
 
-import DashboardScreen
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.store.presentation.viewmodels.SplashScreen
+import com.example.store.presentation.ui.viewmodel.DashboardScreen
+import com.example.store.presentation.ui.viewmodel.SplashScreen
+
 
 @Composable
 fun MainNavHost(navController: NavHostController) {

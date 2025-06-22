@@ -1,4 +1,4 @@
-package com.example.store.presentation.viewmodels
+package com.example.store.presentation.ui.viewmodel
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
