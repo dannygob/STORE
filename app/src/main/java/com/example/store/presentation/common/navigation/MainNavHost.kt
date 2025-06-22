@@ -1,11 +1,12 @@
-package com.example.store.presentation.navigation
+package com.example.store.presentation.common.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.store.presentation.ui.viewmodel.DashboardScreen
-import com.example.store.presentation.ui.viewmodel.SplashScreen
+import com.example.store.presentation.dashboard.ui.DashboardScreen
+import com.example.store.presentation.splash.ui.SplashScreen
+
 
 
 @Composable

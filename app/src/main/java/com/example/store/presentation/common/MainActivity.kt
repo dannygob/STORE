@@ -1,4 +1,4 @@
-package com.example.store
+package com.example.store.presentation.common
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,7 +9,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
-import com.example.store.presentation.navigation.MainNavHost
+import com.example.store.presentation.common.navigation.MainNavHost
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

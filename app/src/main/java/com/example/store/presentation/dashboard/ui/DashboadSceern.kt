@@ -1,5 +1,6 @@
-package com.example.store.presentation.ui.viewmodel
+package com.example.store.presentation.dashboard.ui
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -356,7 +357,7 @@ private fun getDashboardItems() = listOf(
     DashboardData("Other Expenses", listOf("Maintenance: \$300", "Stationery: \$50"))
 )
 
-private fun getMenuItems(context: android.content.Context) = listOf(
+private fun getMenuItems(context: Context) = listOf(
     MenuItem(Icons.Filled.Inventory, "Inventory") {
         Toast.makeText(context, "Inventory", Toast.LENGTH_SHORT).show()
     },
