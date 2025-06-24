@@ -130,6 +130,11 @@ fun DashboardScreen(navController: NavController) { // Added NavController
                 modifier = Modifier.weight(1f)
             )
 
+            // Charts Placeholder Section
+            ChartsSectionPlaceholder(
+                modifier = Modifier.padding(horizontal = 16.dp) // Match horizontal padding of other sections
+            )
+
             // Sección de dropdowns mejorada
             DropdownMenusSection(
                 sections = dropdownSections,
@@ -513,6 +518,32 @@ private fun getDropdownSections() = listOf(
         listOf("Add Customer", "Add Supplier", "Add Service Provider")
     )
 )
+
+@Composable
+private fun ChartsSectionPlaceholder(modifier: Modifier = Modifier) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp), // Add some vertical spacing around this section
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(150.dp) // Give it a noticeable height
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "Charts Area - Coming Soon",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
 
 @Preview(showSystemUi = true)
 @Composable
