@@ -49,22 +49,22 @@ fun MainNavHost(navController: NavHostController) {
             DashboardScreen(navController = navController)
         }
         composable(ScreenRoutes.SALES) {
-            SalesScreen()
+            SalesScreen(navController = navController)
         }
         composable(ScreenRoutes.INVENTORY) { // Changed from PRODUCTS
-            InventoryScreen()
+            InventoryScreen(navController = navController)
         }
         composable(ScreenRoutes.PURCHASES) {
-            PurchasesScreen()
+            PurchasesScreen(navController = navController)
         }
         composable(ScreenRoutes.ORDERS) {
-            OrdersScreen()
+            OrdersScreen(navController = navController)
         }
         composable(ScreenRoutes.SCANNER) {
-            ScannerScreen()
+            ScannerScreen(navController = navController)
         }
         composable(ScreenRoutes.EXPENSES) {
-            ExpensesScreen()
+            ExpensesScreen(navController = navController)
         }
         // Removed composables for CATEGORIES, CUSTOMERS, REPORTS
     }

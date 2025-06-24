@@ -24,9 +24,22 @@ import com.example.store.presentation.orders.OrdersViewModel
 import com.example.store.presentation.orders.model.OrderItemUi
 import com.example.store.presentation.orders.model.OrderStatus
 
+import androidx.navigation.NavController
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrdersScreen(
+    navController: NavController, // Added NavController
+    viewModel: OrdersViewModel = viewModel()
+) {
+import androidx.compose.material.icons.Icons // Keep or remove as needed
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.navigation.NavController // Ensure this import is present
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun OrdersScreen(
+    navController: NavController,
     viewModel: OrdersViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -43,6 +56,14 @@ fun OrdersScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Customer Orders") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer

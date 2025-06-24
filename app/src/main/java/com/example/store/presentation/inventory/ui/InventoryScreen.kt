@@ -20,9 +20,22 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.store.presentation.inventory.InventoryViewModel
 import com.example.store.presentation.inventory.model.InventoryItemUi
 
+import androidx.navigation.NavController
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InventoryScreen(
+    navController: NavController, // Added NavController
+    viewModel: InventoryViewModel = viewModel()
+) {
+import androidx.compose.material.icons.Icons // Keep this if other icons are used, or remove if only ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.navigation.NavController
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun InventoryScreen(
+    navController: NavController,
     viewModel: InventoryViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -31,7 +44,7 @@ fun InventoryScreen(
     LaunchedEffect(key1 = uiState.userMessage) {
         uiState.userMessage?.let {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-            viewModel.onUserMessageShown() // Important to consume the message
+            viewModel.onUserMessageShown()
         }
     }
 
@@ -39,6 +52,14 @@ fun InventoryScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Inventory Management") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
