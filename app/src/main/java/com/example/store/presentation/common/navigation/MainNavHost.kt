@@ -5,39 +5,67 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.store.presentation.dashboard.ui.DashboardScreen
+import com.example.store.presentation.dashboard.ui.DashboardScreen // Ensured correct name
+import com.example.store.presentation.expenses.ui.ExpensesScreen
+import com.example.store.presentation.inventory.ui.InventoryScreen
 import com.example.store.presentation.login.ui.LoginScreen
+import com.example.store.presentation.orders.ui.OrdersScreen
+import com.example.store.presentation.purchases.ui.PurchasesScreen
+import com.example.store.presentation.scanner.ui.ScannerScreen
+import com.example.store.presentation.sales.ui.SalesScreen
 import com.example.store.presentation.splash.ui.SplashScreen
 
 @Composable
 fun MainNavHost(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = "splash"
+        startDestination = ScreenRoutes.SPLASH
     ) {
-        composable("splash") {
+        composable(ScreenRoutes.SPLASH) {
             SplashScreen(
                 onTimeout = {
-                    navController.navigate("login") {
+                    navController.navigate(ScreenRoutes.LOGIN) {
                         launchSingleTop = true
-                        popUpTo("splash") { inclusive = true }
+                        popUpTo(ScreenRoutes.SPLASH) { inclusive = true }
                     }
                 }
             )
         }
-        composable("login") {
+        composable(ScreenRoutes.LOGIN) {
             LoginScreen(
                 // viewModel is provided by default from hiltViewModel or viewModel()
                 onLoginSuccess = {
-                    navController.navigate("dashboard") {
+                    navController.navigate(ScreenRoutes.DASHBOARD) {
                         launchSingleTop = true
-                        popUpTo("login") { inclusive = true } // Pop login from back stack
+                        popUpTo(ScreenRoutes.LOGIN) { inclusive = true } // Pop login from back stack
                     }
                 }
             )
         }
-        composable("dashboard") {
-            DashboardScreen()
+        composable(ScreenRoutes.DASHBOARD) {
+            // Ensure you are using the correct name for DashboardScreen,
+            // If it was DashboadSceern.kt, the import and call should match that.
+            // For now, assuming it's DashboardScreen or will be renamed.
+            DashboardScreen(navController = navController)
         }
+        composable(ScreenRoutes.SALES) {
+            SalesScreen()
+        }
+        composable(ScreenRoutes.INVENTORY) { // Changed from PRODUCTS
+            InventoryScreen()
+        }
+        composable(ScreenRoutes.PURCHASES) {
+            PurchasesScreen()
+        }
+        composable(ScreenRoutes.ORDERS) {
+            OrdersScreen()
+        }
+        composable(ScreenRoutes.SCANNER) {
+            ScannerScreen()
+        }
+        composable(ScreenRoutes.EXPENSES) {
+            ExpensesScreen()
+        }
+        // Removed composables for CATEGORIES, CUSTOMERS, REPORTS
     }
 }

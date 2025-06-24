@@ -18,13 +18,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Inventory
-import androidx.compose.material.icons.filled.LocalShipping
-import androidx.compose.material.icons.filled.Payment
+import androidx.compose.material.icons.filled.Inventory // For Inventory
+import androidx.compose.material.icons.filled.LocalShipping // For Orders
+import androidx.compose.material.icons.filled.Payment // For Expenses
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.QrCodeScanner
-import androidx.compose.material.icons.filled.Sell
-import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.QrCodeScanner // For Scanner
+import androidx.compose.material.icons.filled.Sell // For Sales
+import androidx.compose.material.icons.filled.ShoppingCart // For Purchases
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -52,6 +52,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.example.store.presentation.common.navigation.ScreenRoutes
 
 // Data classes
 data class DashboardData(
@@ -73,12 +76,13 @@ data class DropdownSection(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DashboardScreen() {
+fun DashboardScreen(navController: NavController) { // Added NavController
     val context = LocalContext.current
 
     // Extraer datos a funciones separadas para mejor organización
     val dashboardItems = getDashboardItems()
-    val menuItems = getMenuItems(context)
+    // Pass NavController to getMenuItems
+    val menuItems = getMenuItems(context, navController)
     val dropdownSections = getDropdownSections()
 
     Scaffold(
@@ -357,24 +361,25 @@ private fun getDashboardItems() = listOf(
     DashboardData("Other Expenses", listOf("Maintenance: \$300", "Stationery: \$50"))
 )
 
-private fun getMenuItems(context: Context) = listOf(
+// Updated getMenuItems to accept NavController and use ScreenRoutes
+private fun getMenuItems(context: Context, navController: NavController) = listOf(
     MenuItem(Icons.Filled.Inventory, "Inventory") {
-        Toast.makeText(context, "Inventory", Toast.LENGTH_SHORT).show()
+        navController.navigate(ScreenRoutes.INVENTORY)
     },
     MenuItem(Icons.Filled.ShoppingCart, "Purchases") {
-        Toast.makeText(context, "Purchases", Toast.LENGTH_SHORT).show()
+        navController.navigate(ScreenRoutes.PURCHASES)
     },
     MenuItem(Icons.Filled.Sell, "Sales") {
-        Toast.makeText(context, "Sales", Toast.LENGTH_SHORT).show()
+        navController.navigate(ScreenRoutes.SALES)
     },
     MenuItem(Icons.Filled.LocalShipping, "Orders") {
-        Toast.makeText(context, "Orders", Toast.LENGTH_SHORT).show()
+        navController.navigate(ScreenRoutes.ORDERS)
     },
     MenuItem(Icons.Filled.QrCodeScanner, "Scanner") {
-        Toast.makeText(context, "Scanner", Toast.LENGTH_SHORT).show()
+        navController.navigate(ScreenRoutes.SCANNER)
     },
     MenuItem(Icons.Filled.Payment, "Expenses") {
-        Toast.makeText(context, "Expenses", Toast.LENGTH_SHORT).show()
+        navController.navigate(ScreenRoutes.EXPENSES)
     }
 )
 
@@ -400,6 +405,7 @@ private fun getDropdownSections() = listOf(
 @Composable
 fun DashboardPreview() {
     MaterialTheme {
-        DashboardScreen()
+        // Provide a dummy NavController for the preview
+        DashboardScreen(navController = rememberNavController())
     }
 }
