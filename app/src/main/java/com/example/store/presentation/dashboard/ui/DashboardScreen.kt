@@ -230,10 +230,16 @@ private fun DashboardCardsSection(
 }
 
 @Composable
+import androidx.compose.material.icons.filled.MoreVert
+
+@Composable
 private fun DashboardCard(
     data: DashboardData,
     modifier: Modifier = Modifier,
 ) {
+    var showDropdownMenu by remember { mutableStateOf(false) }
+    val context = LocalContext.current // For Toasts
+
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(12.dp),
@@ -243,25 +249,77 @@ private fun DashboardCard(
         )
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 12.dp) // Adjusted padding slightly
         ) {
-            Text(
-                text = data.title,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Bold
-                ),
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            data.details.forEach { detail ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
-                    text = "• $detail", // Usar bullet point más elegante
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    text = data.title,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f) // Allow title to take space
                 )
+                // Box to anchor the DropdownMenu
+                Box {
+                    IconButton(onClick = { showDropdownMenu = true }) {
+                        Icon(
+                            imageVector = Icons.Filled.MoreVert,
+                            contentDescription = "More options for ${data.title}",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = showDropdownMenu,
+                        onDismissRequest = { showDropdownMenu = false }
+                    ) {
+                        // Define placeholder titles
+                        val placeholderTitles = setOf("Upcoming Tasks", "General Reminders", "System Health", "Customer Insights") // Add any other titles that are placeholders
+
+                        if (data.title in placeholderTitles || data.details.isEmpty()) {
+                            // Placeholder actions for specific cards or if details are empty
+                            val placeholderActions = listOf("Placeholder Action 1", "Placeholder Action 2", "Placeholder Action 3")
+                            placeholderActions.forEach { actionText ->
+                                DropdownMenuItem(
+                                    text = { Text(actionText) },
+                                    onClick = {
+                                        Toast.makeText(context, "$actionText selected.", Toast.LENGTH_SHORT).show()
+                                        showDropdownMenu = false
+                                    }
+                                )
+                            }
+                        } else {
+                            // Real details for other cards
+                            data.details.forEach { detail ->
+                                DropdownMenuItem(
+                                    text = { Text(detail) },
+                                    onClick = {
+                                        Toast.makeText(context, "Selected: $detail", Toast.LENGTH_SHORT).show()
+                                        showDropdownMenu = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
             }
+            Spacer(modifier = Modifier.height(8.dp)) // Maintain some spacing
+            Text(
+                text = if (data.details.isNotEmpty() || (data.title in setOf("Upcoming Tasks", "General Reminders", "System Health", "Customer Insights")))
+                           "Click the icon for details/actions."
+                       else
+                           "No details available.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally)
+            )
+
         }
     }
 }
