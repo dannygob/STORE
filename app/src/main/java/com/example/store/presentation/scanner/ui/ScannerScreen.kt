@@ -23,9 +23,22 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.store.presentation.scanner.ScannerViewModel
 import com.example.store.presentation.scanner.model.ScannedDataUi
 
+import androidx.navigation.NavController
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScannerScreen(
+    navController: NavController, // Added NavController
+    viewModel: ScannerViewModel = viewModel()
+) {
+import androidx.compose.material.icons.Icons // Keep or remove as needed
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.navigation.NavController // Ensure this import is present
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ScannerScreen(
+    navController: NavController,
     viewModel: ScannerViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -42,6 +55,14 @@ fun ScannerScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Barcode Scanner") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
