@@ -25,9 +25,19 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.QrCodeScanner // For Scanner
 import androidx.compose.material.icons.filled.Sell // For Sales
 import androidx.compose.material.icons.filled.ShoppingCart // For Purchases
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.outlined.NotificationsNone
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.DoneAll
+import androidx.compose.material.icons.filled.WarningAmber
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.DeleteSweep
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -52,9 +62,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.store.presentation.common.navigation.ScreenRoutes
+import com.example.store.presentation.dashboard.DashboardViewModel
+import com.example.store.presentation.dashboard.model.NotificationItemUi
+import com.example.store.presentation.dashboard.model.NotificationType
 
 // Data classes
 data class DashboardData(
@@ -76,14 +90,26 @@ data class DropdownSection(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DashboardScreen(navController: NavController) { // Added NavController
+fun DashboardScreen(
+    navController: NavController,
+    viewModel: DashboardViewModel = viewModel() // Added DashboardViewModel
+) {
     val context = LocalContext.current
+    val uiState by viewModel.uiState.collectAsState()
+    var showNotificationsPanel by remember { mutableStateOf(false) }
 
     // Extraer datos a funciones separadas para mejor organización
     val dashboardItems = getDashboardItems()
     // Pass NavController to getMenuItems
     val menuItems = getMenuItems(context, navController)
     val dropdownSections = getDropdownSections()
+
+    LaunchedEffect(key1 = uiState.userMessage) {
+        uiState.userMessage?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            viewModel.onUserMessageShown()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -93,6 +119,22 @@ fun DashboardScreen(navController: NavController) { // Added NavController
                         "Store Dashboard",
                         style = MaterialTheme.typography.headlineSmall
                     )
+                },
+                actions = {
+                    BadgedBox(
+                        badge = {
+                            if (uiState.unreadNotificationCount > 0) {
+                                Badge { Text("${uiState.unreadNotificationCount}") }
+                            }
+                        }
+                    ) {
+                        IconButton(onClick = { showNotificationsPanel = !showNotificationsPanel }) {
+                            Icon(
+                                imageVector = if (uiState.unreadNotificationCount > 0) Icons.Filled.Notifications else Icons.Outlined.NotificationsNone,
+                                contentDescription = "Notifications"
+                            )
+                        }
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -140,9 +182,124 @@ fun DashboardScreen(navController: NavController) { // Added NavController
                 sections = dropdownSections,
                 modifier = Modifier.padding(16.dp)
             )
+
+            // Notifications Panel (DropdownMenu as a panel)
+            // This DropdownMenu is part of the Scaffold's content but positioned via Box
+            // Alternatively, a custom dialog or a bottom sheet could be used for more complex panels.
+            if (showNotificationsPanel) {
+                // This Box is a bit of a workaround to use DropdownMenu not directly anchored to an action item
+                // but more like a panel. For a true side panel, different components would be used.
+                // However, for a list popping up from the top, DropdownMenu can be styled.
+                // Consider this an "absolute" positioned dropdown relative to the screen.
+                // A better approach for a full panel might be a Dialog or a custom Composable that overlays.
+                // For simplicity of this step, we use DropdownMenu, knowing its limitations for this use case.
+
+                // Box to align the DropdownMenu to the top-end (where the bell icon is)
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd) {
+                    DropdownMenu(
+                        expanded = true, // Controlled by showNotificationsPanel
+                        onDismissRequest = { showNotificationsPanel = false },
+                        modifier = Modifier
+                            .widthIn(max = 300.dp) // Max width for the panel
+                            .padding(top = 8.dp, end = 8.dp) // Align under TopAppBar actions
+                    ) {
+                        if (uiState.isLoadingNotifications) {
+                            DropdownMenuItem(
+                                text = { Text("Loading notifications...") },
+                                onClick = {} // No action
+                            )
+                        } else if (uiState.notifications.isEmpty()) {
+                            DropdownMenuItem(
+                                text = { Text("No new notifications.") },
+                                onClick = {} // No action
+                            )
+                        } else {
+                            Text(
+                                "Notifications",
+                                style = MaterialTheme.typography.titleSmall,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                            )
+                            uiState.notifications.forEach { notification ->
+                                NotificationDropdownItem(
+                                    notification = notification,
+                                    onDismiss = { viewModel.dismissNotification(notification.id) },
+                                    onClick = {
+                                        viewModel.markAsRead(notification.id)
+                                        // Potentially navigate to a relevant screen or show details
+                                        Toast.makeText(context, "Notification '${notification.title}' clicked.", Toast.LENGTH_SHORT).show()
+                                        showNotificationsPanel = false // Close panel on item click
+                                    }
+                                )
+                                Divider()
+                            }
+                            // Actions for all notifications
+                            if (uiState.notifications.any { !it.isRead }) {
+                                DropdownMenuItem(
+                                    text = { Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(Icons.Filled.DoneAll, contentDescription = "Mark all read", modifier = Modifier.size(18.dp))
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text("Mark all as read")
+                                    }},
+                                    onClick = { viewModel.markAllAsRead() }
+                                )
+                            }
+                            DropdownMenuItem(
+                                text = { Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(Icons.Filled.DeleteSweep, contentDescription = "Dismiss all", modifier = Modifier.size(18.dp))
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text("Dismiss all")
+                                }},
+                                onClick = { viewModel.dismissAllNotifications() }
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
+
+
+@Composable
+private fun NotificationDropdownItem(
+    notification: NotificationItemUi,
+    onDismiss: () -> Unit,
+    onClick: () -> Unit
+) {
+    val iconVector = when (notification.type) {
+        NotificationType.ORDER_NEW, NotificationType.ORDER_DELIVERED -> Icons.Filled.ShoppingCart
+        NotificationType.LOW_STOCK, NotificationType.ITEM_EXPIRED -> Icons.Filled.WarningAmber
+        NotificationType.INFO -> Icons.Filled.Info
+        NotificationType.SYSTEM_ALERT -> Icons.Filled.WarningAmber // Or a more specific system icon
+    }
+    val itemWeight = if (notification.isRead) FontWeight.Normal else FontWeight.Bold
+
+    DropdownMenuItem(
+        text = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = iconVector,
+                    contentDescription = notification.type.name,
+                    modifier = Modifier.size(24.dp).padding(end = 8.dp),
+                    tint = if (notification.type == NotificationType.LOW_STOCK || notification.type == NotificationType.ITEM_EXPIRED || notification.type == NotificationType.SYSTEM_ALERT) MaterialTheme.colorScheme.error else LocalContentColor.current
+                )
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(notification.title, fontWeight = itemWeight, style = MaterialTheme.typography.bodyMedium)
+                    Text(notification.message, style = MaterialTheme.typography.bodySmall, maxLines = 2)
+                    Text(notification.getFormattedTimestamp(), style = MaterialTheme.typography.labelSmall, color = Color.Gray)
+                }
+                IconButton(onClick = onDismiss, modifier = Modifier.size(36.dp)) { // Smaller icon button for dismiss
+                    Icon(Icons.Filled.Close, contentDescription = "Dismiss notification", modifier = Modifier.size(18.dp))
+                }
+            }
+        },
+        onClick = onClick
+    )
+}
+
 
 @Composable
 private fun HorizontalMenuBar(
