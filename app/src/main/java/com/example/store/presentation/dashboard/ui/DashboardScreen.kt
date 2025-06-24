@@ -350,15 +350,70 @@ private fun DropdownMenuComponent(
 
 // Funciones de datos separadas para mejor organización
 private fun getDashboardItems() = listOf(
-    DashboardData("Order Alerts", listOf("Order #101", "Order #102")),
-    DashboardData("Low Stock & Expiration", listOf("Product A low", "Product B expires soon")),
-    DashboardData("Sales Statistics", listOf("Today: \$150", "Week: \$1000")),
-    DashboardData("Admin Balance", listOf("Income: \$5000", "Expenses: \$2000")),
+    DashboardData("Order Alerts", listOf(
+        "Order #101 - Pending Shipment",
+        "Order #102 - Payment Due",
+        "Order #103 - Ready for Pickup",
+        "Order #104 - New Inquiry"
+    )),
+    DashboardData("Low Stock & Expiration", listOf(
+        "Product A - Low Stock (5 remaining)",
+        "Product B - Expires Soon (2 days)",
+        "Product C - Out of Stock",
+        "Product D - Expires Today"
+    )),
+    DashboardData("Sales Statistics", listOf(
+        "Today's Sales: \$150.75 (5 transactions)",
+        "Week to Date: \$1050.20 (32 transactions)",
+        "Month to Date: \$4500.60 (120 transactions)",
+        "Top Product: Product X"
+    )),
+    DashboardData("Admin Balance", listOf(
+        "Account A: \$5000.00",
+        "Account B: \$2345.10 (Overdraft)",
+        "Pending Transfers: \$300.00",
+        "Last Statement: 01 Nov 2023"
+    )),
     DashboardData(
         "Expenses & Services",
-        listOf("Water: \$200", "Electricity: \$150", "Internet: \$50")
+        listOf(
+            "Water Bill: \$200 (Due 15th)",
+            "Electricity: \$150 (Paid)",
+            "Internet: \$50 (Due 10th)",
+            "Cleaning Service: \$120 (Scheduled Fri)"
+        )
     ),
-    DashboardData("Other Expenses", listOf("Maintenance: \$300", "Stationery: \$50"))
+    DashboardData("Other Expenses", listOf(
+        "Maintenance: \$300 (Repair AC)",
+        "Stationery: \$50 (Pens, Paper)",
+        "Software Subscription: \$25 (Monthly)",
+        "Unexpected Repair: \$150 (Freezer)"
+    )),
+    DashboardData("Customer Insights", listOf(
+        "New Customers This Week: 5",
+        "Top Customer: Jane Doe (\$500 spend)",
+        "Recent Feedback: Positive (Order #103)",
+        "Loyalty Program Members: 120"
+    )),
+    DashboardData("System Health", listOf(
+        "Backup Status: Successful (Today 03:00)",
+        "API Latency: 250ms (Normal)",
+        "Disk Space: 75% Used (Server 1)",
+        "Security Alerts: 0"
+    )),
+    // Adding two more to make it 10 items for better scrolling
+    DashboardData("Upcoming Tasks", listOf(
+        "Follow up with Supplier X",
+        "Schedule staff meeting",
+        "Plan holiday promotion",
+        "Renew business license"
+    )),
+    DashboardData("General Reminders", listOf(
+        "Bank holiday next Monday",
+        "Submit tax forms by EOM",
+        "Check email for new regulations",
+        "Water plants"
+    ))
 )
 
 // Updated getMenuItems to accept NavController and use ScreenRoutes
