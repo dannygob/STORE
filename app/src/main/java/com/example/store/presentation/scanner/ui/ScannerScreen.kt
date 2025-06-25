@@ -16,8 +16,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+
+import androidx.compose.material.icons.automirrored.filled.ArrowBack // Correct
 import androidx.compose.material.icons.filled.CameraAlt
+// import androidx.compose.material.icons.filled.History // Not used directly in this version
+
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -43,13 +46,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview // Added
 import androidx.compose.ui.unit.dp
+
+// import androidx.compose.ui.unit.sp // Not used directly
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController // Added
 import com.example.store.presentation.scanner.ScannerViewModel
 import com.example.store.presentation.scanner.model.ScannedDataUi
 
 // --- Remove the duplicate ScannerScreen definition that was here ---
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -185,7 +193,21 @@ fun ScannerScreen(
     }
 }
 
+
+@Preview(showBackground = true)
+@Composable
+fun ScannerScreenPreview() {
+    MaterialTheme {
+        ScannerScreen(
+            navController = rememberNavController(),
+            viewModel = ScannerViewModel() // Real VM for preview
+        )
+    }
+}
+
+
 // MOVED ScannedDataItemView to be a top-level function
+
 @Composable
 fun ScannedDataItemView(item: ScannedDataUi, isCompact: Boolean = false) {
     Card(

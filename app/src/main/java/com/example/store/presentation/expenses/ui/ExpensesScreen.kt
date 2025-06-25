@@ -15,7 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+
+import androidx.compose.material.icons.automirrored.filled.ArrowBack // Correct
+
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -37,7 +39,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview // Added
 import androidx.compose.ui.unit.dp
+
+// import androidx.compose.ui.unit.sp // Not used
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController // Added
+import com.example.store.presentation.expenses.ExpensesViewModel
+import com.example.store.presentation.expenses.model.ExpenseItemUi
+
+
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.store.presentation.expenses.ExpensesViewModel
@@ -68,6 +80,7 @@ fun ExpenseSummaryHeader(totalExpenses: Double) {
         }
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -144,6 +157,45 @@ fun ExpensesScreen(
         }
     }
 }
+
+
+@Preview(showBackground = true)
+@Composable
+fun ExpensesScreenPreview() {
+    MaterialTheme {
+        ExpensesScreen(
+            navController = rememberNavController(),
+            viewModel = ExpensesViewModel() // Real VM for preview
+        )
+    }
+}
+
+@Composable
+fun ExpenseSummaryHeader(totalExpenses: Double) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                "Total Expenses",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSecondaryContainer
+            )
+            Text(
+                String.format("$%.2f", totalExpenses),
+                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.onSecondaryContainer
+            )
+        }
+    }
+}
+
+
 
 
 @Composable

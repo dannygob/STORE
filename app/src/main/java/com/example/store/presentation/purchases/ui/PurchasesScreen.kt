@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+
+import androidx.compose.material.icons.automirrored.filled.ArrowBack // Correct import
+
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -36,9 +38,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview // Added for Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+
+import androidx.navigation.compose.rememberNavController // Added for Preview
+import com.example.store.presentation.purchases.PurchasesViewModel
+import com.example.store.presentation.purchases.model.PurchaseItemUi
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PurchasesScreen(
+    navController: NavController,
+
 import com.example.store.presentation.purchases.PurchasesViewModel
 import com.example.store.presentation.purchases.model.PurchaseItemUi
 
@@ -46,6 +60,7 @@ import com.example.store.presentation.purchases.model.PurchaseItemUi
 @Composable
 fun PurchasesScreen(
     navController: NavController, // Added NavController
+
     viewModel: PurchasesViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -113,7 +128,20 @@ fun PurchasesScreen(
     }
 }
 
+
+@Preview(showBackground = true)
+@Composable
+fun PurchasesScreenPreview() {
+    MaterialTheme {
+        PurchasesScreen(
+            navController = rememberNavController(),
+            viewModel = PurchasesViewModel() // Real VM for preview
+        )
+    }
+}
+
 // Moved PurchaseListItem outside of PurchasesScreen
+
 @Composable
 fun PurchaseListItem(
     purchase: PurchaseItemUi,

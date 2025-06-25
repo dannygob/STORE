@@ -87,3 +87,14 @@ fun LoginScreen(
         }
     }
 }
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@Composable
+fun LoginScreenPreview() {
+    MaterialTheme { // Or your app's specific theme
+        LoginScreen(
+            viewModel = LoginViewModel(), // Provide a default instance for preview
+            onLoginSuccess = {} // Empty lambda for preview
+        )
+    }
+}

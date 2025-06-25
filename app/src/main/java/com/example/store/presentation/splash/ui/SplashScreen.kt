@@ -23,6 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.store.R
 import kotlinx.coroutines.delay
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.store.presentation.common.StoreApp // Assuming your theme is applied in StoreApp or a similar top-level composable
 
 @Composable
 fun SplashScreen(onTimeout: () -> Unit) {
@@ -57,5 +59,15 @@ fun SplashScreen(onTimeout: () -> Unit) {
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SplashScreenPreview() {
+    // It's good practice to wrap previews in your app's theme if they rely on it.
+    // If StoreApp is your theme wrapper, use it. Otherwise, use MaterialTheme directly.
+    MaterialTheme { // Or YourAppTheme { ... }
+        SplashScreen(onTimeout = {})
     }
 }
