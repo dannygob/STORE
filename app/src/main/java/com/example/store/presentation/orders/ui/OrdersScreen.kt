@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack // Correct import
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
@@ -18,23 +19,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview // Added
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController // Added
 import com.example.store.presentation.orders.OrdersViewModel
 import com.example.store.presentation.orders.model.OrderItemUi
 import com.example.store.presentation.orders.model.OrderStatus
 
-import androidx.navigation.NavController
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun OrdersScreen(
-    navController: NavController, // Added NavController
-    viewModel: OrdersViewModel = viewModel()
-) {
-import androidx.compose.material.icons.Icons // Keep or remove as needed
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.navigation.NavController // Ensure this import is present
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -203,6 +196,17 @@ fun StatusIndicator(status: OrderStatus) {
             text = status.getDisplayValue(),
             color = textColor,
             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold)
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun OrdersScreenPreview() {
+    MaterialTheme {
+        OrdersScreen(
+            navController = rememberNavController(),
+            viewModel = OrdersViewModel() // Real VM for preview
         )
     }
 }

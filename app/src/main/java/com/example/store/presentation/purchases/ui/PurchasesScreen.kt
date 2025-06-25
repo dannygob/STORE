@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack // Correct import
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -13,22 +14,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview // Added for Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController // Added for Preview
 import com.example.store.presentation.purchases.PurchasesViewModel
 import com.example.store.presentation.purchases.model.PurchaseItemUi
 
-import androidx.navigation.NavController
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun PurchasesScreen(
-    navController: NavController, // Added NavController
-    viewModel: PurchasesViewModel = viewModel()
-) {
-import androidx.compose.material.icons.Icons // Keep or remove based on other icon usage
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.navigation.NavController // Ensure this import is present
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -97,6 +90,17 @@ fun PurchasesScreen(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PurchasesScreenPreview() {
+    MaterialTheme {
+        PurchasesScreen(
+            navController = rememberNavController(),
+            viewModel = PurchasesViewModel() // Real VM for preview
+        )
     }
 }
 

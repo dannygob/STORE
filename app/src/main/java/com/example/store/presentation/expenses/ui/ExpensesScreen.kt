@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack // Correct
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -13,23 +14,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview // Added
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+// import androidx.compose.ui.unit.sp // Not used
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController // Added
 import com.example.store.presentation.expenses.ExpensesViewModel
 import com.example.store.presentation.expenses.model.ExpenseItemUi
 
-import androidx.navigation.NavController
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ExpensesScreen(
-    navController: NavController, // Added NavController
-    viewModel: ExpensesViewModel = viewModel()
-) {
-import androidx.compose.material.icons.Icons // Keep or remove as needed
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.navigation.NavController // Ensure this import is present
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -104,6 +97,17 @@ fun ExpensesScreen(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ExpensesScreenPreview() {
+    MaterialTheme {
+        ExpensesScreen(
+            navController = rememberNavController(),
+            viewModel = ExpensesViewModel() // Real VM for preview
+        )
     }
 }
 

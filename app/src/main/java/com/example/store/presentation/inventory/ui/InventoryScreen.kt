@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack // Correct import for ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -14,23 +15,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview // Added for Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+// import androidx.compose.ui.unit.sp // Not used directly in this file after cleanup, can be removed if not needed by other composables here
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController // Added for Preview
 import com.example.store.presentation.inventory.InventoryViewModel
 import com.example.store.presentation.inventory.model.InventoryItemUi
 
-import androidx.navigation.NavController
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun InventoryScreen(
-    navController: NavController, // Added NavController
-    viewModel: InventoryViewModel = viewModel()
-) {
-import androidx.compose.material.icons.Icons // Keep this if other icons are used, or remove if only ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,9 +61,6 @@ fun InventoryScreen(
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                // For now, just a toast. Later, this can open a dialog/screen.
-                // Example of how to call add item - parameters would come from a dialog
-                // viewModel.addItem("New Item from FAB", 10, 1.99)
                 Toast.makeText(context, "Add new item clicked (placeholder)", Toast.LENGTH_SHORT).show()
             }) {
                 Icon(Icons.Filled.Add, contentDescription = "Add Item")
@@ -103,6 +93,17 @@ fun InventoryScreen(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun InventoryScreenPreview() {
+    MaterialTheme {
+        InventoryScreen(
+            navController = rememberNavController(),
+            viewModel = InventoryViewModel() // Real VM for preview, shows mock data
+        )
     }
 }
 
