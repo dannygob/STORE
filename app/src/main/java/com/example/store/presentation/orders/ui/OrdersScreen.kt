@@ -3,45 +3,16 @@ package com.example.store.presentation.orders.ui
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-
 import androidx.compose.material.icons.automirrored.filled.ArrowBack // Correct import
-
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,9 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview // Added
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-
 import androidx.navigation.compose.rememberNavController // Added
-
 import com.example.store.presentation.orders.OrdersViewModel
 import com.example.store.presentation.orders.model.OrderItemUi
 import com.example.store.presentation.orders.model.OrderStatus
@@ -106,7 +75,7 @@ fun OrdersScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp) // Adjusted padding
         ) {
             if (uiState.isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -119,15 +88,10 @@ fun OrdersScreen(
             } else {
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(uiState.orders, key = { it.id }) { order ->
-                        OrderListItem( // This will now resolve correctly
+                        OrderListItem(
                             order = order,
                             onItemClick = { viewModel.viewOrderDetailsPlaceholder(order.id) },
-                            onStatusUpdate = { newStatus ->
-                                viewModel.updateOrderStatusPlaceholder(
-                                    order.id,
-                                    newStatus
-                                )
-                            }
+                            onStatusUpdate = { newStatus -> viewModel.updateOrderStatusPlaceholder(order.id, newStatus)}
                         )
                     }
                 }
@@ -136,12 +100,11 @@ fun OrdersScreen(
     }
 }
 
-// Moved OrderListItem outside of OrdersScreen
 @Composable
 fun OrderListItem(
     order: OrderItemUi,
     onItemClick: () -> Unit,
-    onStatusUpdate: (OrderStatus) -> Unit
+    onStatusUpdate: (OrderStatus) -> Unit // Callback to update status
 ) {
     var showStatusMenu by remember { mutableStateOf(false) }
 
@@ -165,19 +128,12 @@ fun OrderListItem(
                     order.orderNumber,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                 )
-                StatusIndicator(status = order.status) // This will now resolve correctly
+                StatusIndicator(status = order.status)
             }
             Spacer(modifier = Modifier.height(4.dp))
             Text("Customer: ${order.customerName}", style = MaterialTheme.typography.bodyMedium)
-            Text(
-                "Date: ${order.getFormattedDate()}",
-                style = MaterialTheme.typography.bodySmall
-            )
-            Text(
-                "Summary: ${order.itemSummary}",
-                style = MaterialTheme.typography.bodySmall,
-                maxLines = 2
-            )
+            Text("Date: ${order.getFormattedDate()}", style = MaterialTheme.typography.bodySmall)
+            Text("Summary: ${order.itemSummary}", style = MaterialTheme.typography.bodySmall, maxLines = 2)
             Spacer(modifier = Modifier.height(8.dp))
 
             Row(
@@ -191,10 +147,7 @@ fun OrderListItem(
                 )
                 Box {
                     IconButton(onClick = { showStatusMenu = true }) {
-                        Icon(
-                            Icons.Filled.MoreVert,
-                            contentDescription = "Update status for ${order.orderNumber}"
-                        )
+                        Icon(Icons.Filled.MoreVert, contentDescription = "Update status for ${order.orderNumber}")
                     }
                     DropdownMenu(
                         expanded = showStatusMenu,
@@ -216,7 +169,6 @@ fun OrderListItem(
     }
 }
 
-// Moved StatusIndicator outside of OrdersScreen
 @Composable
 fun StatusIndicator(status: OrderStatus) {
     val backgroundColor = when (status) {
@@ -246,7 +198,6 @@ fun StatusIndicator(status: OrderStatus) {
             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold)
         )
     }
-
 }
 
 @Preview(showBackground = true)
@@ -259,6 +210,3 @@ fun OrdersScreenPreview() {
         )
     }
 }
-
-}
-
