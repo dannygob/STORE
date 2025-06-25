@@ -233,7 +233,7 @@ fun DashboardScreen(
                                 Divider()
                             }
                             // Actions for all notifications
-                            if (uiState.notifications.any { !it.isRead }) {
+                            if (uiState.notifications.any { notificationItem -> !notificationItem.isRead }) { // Explicit lambda parameter
                                 DropdownMenuItem(
                                     text = { Row(verticalAlignment = Alignment.CenterVertically) {
                                         Icon(Icons.Filled.DoneAll, contentDescription = "Mark all read", modifier = Modifier.size(18.dp))
