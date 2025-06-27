@@ -19,12 +19,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.store.R
 import kotlinx.coroutines.delay
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.store.presentation.common.StoreApp // Assuming your theme is applied in StoreApp or a similar top-level composable
 
 @Composable
 fun SplashScreen(onTimeout: () -> Unit) {
@@ -32,7 +31,7 @@ fun SplashScreen(onTimeout: () -> Unit) {
 
     LaunchedEffect(Unit) {
         visible = true
-        delay(3000)
+        delay(2000)
         onTimeout()
     }
 

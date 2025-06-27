@@ -60,6 +60,8 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.material3)
+    testImplementation ("org.mockito:mockito-core:5.11.0") // For unit tests
+    androidTestImplementation ("org.mockito:mockito-android:5.11.0") // For instrumented tests (like this one)
 
 
 }
