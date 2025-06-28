@@ -578,7 +578,7 @@ private fun DashboardCard(
                                     )
                                 } else {
                                     LazyColumn(modifier = Modifier.heightIn(max = 120.dp)) {
-                                        items(uiState.lowStockItemsList) { item ->
+                                        items(uiState.lowStockItemsList, key = { it.id }) { item -> // Added key here
                                             DropdownMenuItem(
                                                 text = { Text(item.message) },
                                                 onClick = {
@@ -636,10 +636,10 @@ private fun DashboardCard(
                                         onClick = { showExpiringDropdown = false }
                                     )
                                 } else {
-                                    LazyColumn(modifier = Modifier.heightIn(max = 120.dp)) {
-                                        items(uiState.expiringItemsList) { item ->
+                                        LazyColumn(modifier = Modifier.heightIn(max = 120.dp)) {
+                                            items(uiState.expiringItemsList, key = { it.id }) { item -> // Added key here
                                             DropdownMenuItem(
-                                                text = { Text(item.message) },
+                                                    text = { Text(item.message) },
                                                 onClick = {
                                                     Toast.makeText(context, item.message, Toast.LENGTH_SHORT).show()
                                                     showExpiringDropdown = false
