@@ -574,24 +574,13 @@ private fun DashboardCard(
                                 onDismissRequest = { showLowStockDropdown = false },
                                 modifier = Modifier.widthIn(min = 180.dp, max = 240.dp)
                             ) {
-                                if (uiState.lowStockItemsList.isEmpty()) {
-                                    DropdownMenuItem(
-                                        text = { Text("No low availability items.") },
-                                        onClick = { showLowStockDropdown = false }
-                                    )
-                                } else {
-                                    LazyColumn(modifier = Modifier.heightIn(max = 120.dp)) {
-                                        items(uiState.lowStockItemsList, key = { it.id }) { item -> // Added key here
-                                            DropdownMenuItem(
-                                                text = { Text(item.message) },
-                                                onClick = {
-                                                    Toast.makeText(context, item.message, Toast.LENGTH_SHORT).show()
-                                                    showLowStockDropdown = false
-                                                }
-                                            )
-                                        }
+                                DropdownMenuItem(
+                                    text = { Text("Static Low Availability Item") },
+                                    onClick = {
+                                        Toast.makeText(context, "Static Low Availability clicked", Toast.LENGTH_SHORT).show()
+                                        showLowStockDropdown = false
                                     }
-                                }
+                                )
                             }
                         }
                         Spacer(modifier = Modifier.height(4.dp))
@@ -635,24 +624,13 @@ private fun DashboardCard(
                                 onDismissRequest = { showExpiringDropdown = false },
                                 modifier = Modifier.widthIn(min = 180.dp, max = 240.dp)
                             ) {
-                                if (uiState.expiringItemsList.isEmpty()) {
-                                    DropdownMenuItem(
-                                        text = { Text("No expiring items.") },
-                                        onClick = { showExpiringDropdown = false }
-                                    )
-                                } else {
-                                        LazyColumn(modifier = Modifier.heightIn(max = 120.dp)) {
-                                            items(uiState.expiringItemsList, key = { it.id }) { item -> // Added key here
-                                            DropdownMenuItem(
-                                                    text = { Text(item.message) },
-                                                onClick = {
-                                                    Toast.makeText(context, item.message, Toast.LENGTH_SHORT).show()
-                                                    showExpiringDropdown = false
-                                                }
-                                            )
-                                        }
+                                DropdownMenuItem(
+                                    text = { Text("Static Expiring Soon Item") },
+                                    onClick = {
+                                        Toast.makeText(context, "Static Expiring Soon clicked", Toast.LENGTH_SHORT).show()
+                                        showExpiringDropdown = false
                                     }
-                                }
+                                )
                             }
                         }
                         Spacer(modifier = Modifier.height(4.dp))
