@@ -306,7 +306,7 @@ o	Categorías más vendidas (gráfico de pastel)
 o	Botones o chips para: Añadir venta, Añadir compra, Escanear producto
 
 
-- Usa uno de los usuarios registrados en tu AuthRepositoryImpl. Por ejemplo:
+- Usuarios registrados en AuthRepositoryImpl. Por ejemplo:
 - Usuario: admin@store.com
 - Contraseña: admin123
 - o

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -157,21 +156,7 @@ fun DashboardScreen(
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 ),
                 scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(), // Behavior needed for shadow with content scroll
-                // To make shadow visible even without scrolling content under it,
-                // we might need a surface behind it or use a different approach.
-                // For now, let's add standard elevation which works with scroll.
-                // A simpler way if no scroll behavior is intended is to wrap TopAppBar in a Surface with elevation.
-                // However, the standard way is to use scrollBehavior.
-                // Let's assume for now a simple shadow is fine.
-                // A common pattern is to use a Surface wrapper if a persistent shadow is needed without complex scroll behaviors.
-                // For simplicity, directly applying shadowElevation to TopAppBar itself isn't a direct property in M3 TopAppBar.
-                // It's typically handled by the Surface it's placed on or via scroll behavior.
-                // Let's try by wrapping it in a Surface as it's a common pattern for static shadows.
-                // This seems to be what is expected by "add shadow to top bar"
-                // Update: TopAppBar in M3 does not have a direct elevation parameter like M2.
-                // The shadow is typically shown when content scrolls under it using a scrollBehavior.
-                // If a persistent shadow is needed, wrapping in a `Surface` or using a `Modifier.shadow()` is an option.
-                // Let's use Modifier.shadow() for simplicity here as scroll behavior is not fully set up.
+
                 modifier = Modifier.shadow(4.dp) // Added shadow to TopAppBar
             )
         },
@@ -309,7 +294,6 @@ fun DashboardScreen(
     }
 }
 
-
 @Composable
 private fun NotificationDropdownItem(
     notification: NotificationItemUi,
@@ -351,7 +335,6 @@ private fun NotificationDropdownItem(
         onClick = onClick
     )
 }
-
 
 @Composable
 private fun HorizontalMenuBar(
@@ -444,7 +427,6 @@ private fun DashboardCardsSection(
         }
     }
 }
-
 
 @Composable
 private fun DashboardCard(
