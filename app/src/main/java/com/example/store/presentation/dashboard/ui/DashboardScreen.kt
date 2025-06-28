@@ -578,7 +578,7 @@ private fun DashboardCard(
                                     )
                                 } else {
                                     Box(modifier = Modifier.height(120.dp)) {
-                                        LazyColumn { // Removed Modifier.fillMaxHeight() as Box defines height
+                                        LazyColumn(modifier = Modifier.fillMaxWidth()) { // Added fillMaxWidth
                                             items(uiState.lowStockItemsList, key = { it.id }) { item ->
                                                 DropdownMenuItem(
                                                     text = { Text(item.message) },
@@ -639,7 +639,7 @@ private fun DashboardCard(
                                     )
                                 } else {
                                     Box(modifier = Modifier.height(120.dp)) {
-                                        LazyColumn {
+                                        LazyColumn(modifier = Modifier.fillMaxWidth()) { // Added fillMaxWidth
                                             items(uiState.expiringItemsList, key = { it.id }) { item ->
                                                 DropdownMenuItem(
                                                     text = { Text(item.message) },
