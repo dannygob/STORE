@@ -557,7 +557,26 @@ private fun DashboardCard(
                                 onDismissRequest = { showLowStockDropdown = false },
                                 modifier = Modifier.width(220.dp) // Applied fixed width to DropdownMenu
                             ) {
-                                // No content here for diagnosis
+                                if (uiState.lowStockItemsList.isEmpty()) {
+                                    DropdownMenuItem(
+                                        text = { Text("No low availability items.") },
+                                        onClick = { showLowStockDropdown = false }
+                                    )
+                                } else {
+                                    Box(modifier = Modifier.height(120.dp)) {
+                                        LazyColumn { // Removed Modifier.fillMaxHeight() as Box defines height
+                                            items(uiState.lowStockItemsList, key = { it.id }) { item ->
+                                                DropdownMenuItem(
+                                                    text = { Text(item.message) },
+                                                    onClick = {
+                                                        Toast.makeText(context, item.message, Toast.LENGTH_SHORT).show()
+                                                        showLowStockDropdown = false
+                                                    }
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                         Spacer(modifier = Modifier.height(4.dp))
@@ -601,7 +620,26 @@ private fun DashboardCard(
                                 onDismissRequest = { showExpiringDropdown = false },
                                 modifier = Modifier.width(220.dp) // Applied fixed width to DropdownMenu
                             ) {
-                                // No content here for diagnosis
+                                if (uiState.expiringItemsList.isEmpty()) {
+                                    DropdownMenuItem(
+                                        text = { Text("No expiring items.") },
+                                        onClick = { showExpiringDropdown = false }
+                                    )
+                                } else {
+                                    Box(modifier = Modifier.height(120.dp)) {
+                                        LazyColumn {
+                                            items(uiState.expiringItemsList, key = { it.id }) { item ->
+                                                DropdownMenuItem(
+                                                    text = { Text(item.message) },
+                                                    onClick = {
+                                                        Toast.makeText(context, item.message, Toast.LENGTH_SHORT).show()
+                                                        showExpiringDropdown = false
+                                                    }
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                         Spacer(modifier = Modifier.height(4.dp))
