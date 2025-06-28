@@ -762,7 +762,7 @@ private fun DropdownMenuComponent(
                         )
                     },
                     onClick = {
-                        Toast.makeText(context, option, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "$option clicked", Toast.LENGTH_SHORT).show() // Ensured it's just a toast
                         expanded = false
                     }
                 )
@@ -842,22 +842,28 @@ private fun getDashboardItems() = listOf(
 // Updated getMenuItems to accept NavController and use ScreenRoutes
 private fun getMenuItems(context: Context, navController: NavController) = listOf(
     MenuItem(Icons.Filled.Inventory, "Inventory") {
-        navController.navigate(ScreenRoutes.INVENTORY)
+        Toast.makeText(context, "Inventory clicked", Toast.LENGTH_SHORT).show()
+        // navController.navigate(ScreenRoutes.INVENTORY) // Temporarily disabled
     },
     MenuItem(Icons.Filled.ShoppingCart, "Purchases") {
-        navController.navigate(ScreenRoutes.PURCHASES)
+        Toast.makeText(context, "Purchases clicked", Toast.LENGTH_SHORT).show()
+        // navController.navigate(ScreenRoutes.PURCHASES) // Temporarily disabled
     },
     MenuItem(Icons.Filled.Sell, "Sales") {
-        navController.navigate(ScreenRoutes.SALES)
+        Toast.makeText(context, "Sales clicked", Toast.LENGTH_SHORT).show()
+        // navController.navigate(ScreenRoutes.SALES) // Temporarily disabled
     },
     MenuItem(Icons.Filled.LocalShipping, "Orders") {
-        navController.navigate(ScreenRoutes.ORDERS)
+        Toast.makeText(context, "Orders clicked", Toast.LENGTH_SHORT).show()
+        // navController.navigate(ScreenRoutes.ORDERS) // Temporarily disabled
     },
     MenuItem(Icons.Filled.QrCodeScanner, "Scanner") {
-        navController.navigate(ScreenRoutes.SCANNER)
+        Toast.makeText(context, "Scanner clicked", Toast.LENGTH_SHORT).show()
+        // navController.navigate(ScreenRoutes.SCANNER) // Temporarily disabled
     },
     MenuItem(Icons.Filled.Payment, "Expenses") {
-        navController.navigate(ScreenRoutes.EXPENSES)
+        Toast.makeText(context, "Expenses clicked", Toast.LENGTH_SHORT).show()
+        // navController.navigate(ScreenRoutes.EXPENSES) // Temporarily disabled
     }
 )
 
