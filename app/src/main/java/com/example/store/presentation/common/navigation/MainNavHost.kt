@@ -11,6 +11,7 @@ import com.example.store.presentation.inventory.ui.InventoryItemUi
 import com.example.store.presentation.inventory.ui.InventoryScreen
 import com.example.store.presentation.inventory.ui.InventoryUiState
 import com.example.store.presentation.login.ui.LoginScreen
+import com.example.store.presentation.sales.ui.SalesScreen
 import com.example.store.presentation.splash.ui.SplashScreen
 
 sealed class Route(val route: String) {
@@ -18,6 +19,7 @@ sealed class Route(val route: String) {
     object Login : Route("login")
     object Dashboard : Route("dashboard")
     object Inventory : Route("inventory")
+    object Sales : Route("sales")
 }
 
 @Composable
@@ -71,6 +73,10 @@ fun MainNavHost(navController: NavHostController) {
                 onSearchChanged = {},
                 onTabSelected = {}
             )
+        }
+
+        composable(Route.Sales.route) {
+            SalesScreen(navController = navController)
         }
 
 
