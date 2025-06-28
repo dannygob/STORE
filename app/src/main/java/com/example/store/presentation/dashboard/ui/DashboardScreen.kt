@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -21,17 +22,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.DoneAll
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material.icons.filled.LocalShipping
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Payment
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.CheckCircle // Added for 'all okay' icon
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Sell
 import androidx.compose.material.icons.filled.ShoppingCart
@@ -64,6 +64,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -72,11 +73,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.graphics.Color // Import Color
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.store.presentation.common.navigation.ScreenRoutes
 import com.example.store.presentation.dashboard.DashboardViewModel
 import com.example.store.presentation.dashboard.model.NotificationItemUi
 import com.example.store.presentation.dashboard.model.NotificationType
@@ -549,14 +548,18 @@ private fun DashboardCard(
                 var showExpiringDropdown by remember { mutableStateOf(false) }
 
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp), // Added some vertical padding
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp), // Added some vertical padding
                     horizontalArrangement = Arrangement.SpaceAround,
                     verticalAlignment = Alignment.Top // Align items to the top of the row
                 ) {
                     // Section 1: Low Stock
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.weight(1f).padding(horizontal = 4.dp) // Added padding for spacing between columns
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 4.dp) // Added padding for spacing between columns
                     ) {
                         // Info Icon and Dropdown
                         Box { // Box to anchor the Low Stock DropdownMenu
@@ -615,7 +618,9 @@ private fun DashboardCard(
                     // Section 2: Expiring Soon
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.weight(1f).padding(horizontal = 4.dp) // Added padding for spacing between columns
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 4.dp) // Added padding for spacing between columns
                     ) {
                         // Info Icon and Dropdown
                         Box { // Box to anchor the Expiring DropdownMenu
