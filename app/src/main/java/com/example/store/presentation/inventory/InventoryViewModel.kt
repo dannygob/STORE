@@ -13,10 +13,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
-class InventoryViewModel : ViewModel() {
+open class InventoryViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(InventoryUiState())
-    val uiState: StateFlow<InventoryUiState> = _uiState.asStateFlow()
+    open val uiState: StateFlow<InventoryUiState> = _uiState.asStateFlow()
 
     init {
         loadInventory()

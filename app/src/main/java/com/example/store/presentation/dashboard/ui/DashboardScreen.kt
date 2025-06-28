@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -42,10 +41,10 @@ import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
@@ -76,6 +75,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.store.presentation.common.navigation.ScreenRoutes
 import com.example.store.presentation.dashboard.DashboardViewModel
 import com.example.store.presentation.dashboard.model.NotificationItemUi
 import com.example.store.presentation.dashboard.model.NotificationType
@@ -254,7 +254,7 @@ fun DashboardScreen(
                                         showNotificationsPanel = false // Close panel on item click
                                     }
                                 )
-                                Divider()
+                                HorizontalDivider()
                             }
                             // Actions for all notifications
                             if (uiState.notifications.any { notificationItem -> !notificationItem.isRead }) { // Explicit lambda parameter
@@ -797,7 +797,7 @@ private fun getDashboardItems() = listOf(
 private fun getMenuItems(context: Context, navController: NavController) = listOf(
     MenuItem(Icons.Filled.Inventory, "Inventory") {
         Toast.makeText(context, "Inventory clicked", Toast.LENGTH_SHORT).show()
-        // navController.navigate(ScreenRoutes.INVENTORY) // Temporarily disabled
+        navController.navigate(ScreenRoutes.INVENTORY) // Temporarily disabled
     },
     MenuItem(Icons.Filled.ShoppingCart, "Purchases") {
         Toast.makeText(context, "Purchases clicked", Toast.LENGTH_SHORT).show()

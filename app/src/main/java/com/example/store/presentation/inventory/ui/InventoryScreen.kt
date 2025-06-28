@@ -1,6 +1,5 @@
 package com.example.store.presentation.inventory.ui
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,14 +15,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -35,118 +30,134 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.store.R
-import com.example.store.presentation.inventory.InventoryViewModel
-import com.example.store.presentation.inventory.model.InventoryItemUi
-import com.example.store.presentation.inventory.model.InventoryTab
+import androidx.navigation.compose.rememberNavController
+
+
+// MOCK DE DATOS Y FUNCIONALIDAD
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InventoryScreen(
     navController: NavController,
-    viewModel: InventoryViewModel = viewModel()
+    state: InventoryUiState,
+    onSearchChanged: (String) -> Unit,
+    onTabSelected: (InventoryTab) -> Unit,
 ) {
-    val state by viewModel.uiState.collectAsState()
-    val context = LocalContext.current
-
-    LaunchedEffect(state.userMessage) {
-        state.userMessage?.let {
-            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-            viewModel.onUserMessageShown()
-        }
-    }
-
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Gestión de Inventario") },
+                title = { Text("Inventory") },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
                     }
                 }
             )
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = {
-                viewModel.scanBarcode()
-            }) {
-                Icon(Icons.Filled.CameraAlt, contentDescription = "Escanear")
-            }
         }
     ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp)
+        InventoryScreenContent(
+            state = state,
+            modifier = Modifier.padding(padding),
+            onSearchChanged = onSearchChanged,
+            onTabSelected = onTabSelected
+        )
+    }
+}
+
+enum class InventoryTab { ALL, LOW_STOCK }
+
+data class InventoryItemUi(
+    val id: String,
+    val name: String,
+    val quantity: Int,
+    val price: Double,
+    val category: String,
+) {
+    fun isOutOfStock() = quantity == 0
+    fun isLowStock() = quantity in 1..3
+    fun isExpiringSoon() = name.contains("Leche", ignoreCase = true)
+    fun getFormattedPrice(): String = "$${"%.2f".format(price)}"
+}
+
+data class InventoryUiState(
+    val items: List<InventoryItemUi> = emptyList(),
+    val filteredItems: List<InventoryItemUi> = emptyList(),
+    val searchText: String = "",
+    val selectedTab: InventoryTab = InventoryTab.ALL,
+    val isLoading: Boolean = false,
+    val userMessage: String? = null,
+)
+
+@Composable
+fun InventoryScreenContent(
+    state: InventoryUiState,
+    modifier: Modifier = Modifier,
+    onSearchChanged: (String) -> Unit = {},
+    onTabSelected: (InventoryTab) -> Unit = {},
+) {
+    Column(modifier = modifier) {
+        OutlinedTextField(
+            value = state.searchText,
+            onValueChange = onSearchChanged,
+            label = { Text("Buscar producto") },
+            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        TabRow(selectedTabIndex = state.selectedTab.ordinal) {
+            InventoryTab.entries.forEachIndexed { index, tab ->
+                Tab(
+                    selected = index == state.selectedTab.ordinal,
+                    onClick = { onTabSelected(tab) },
+                    text = { Text(tab.name) }
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        SummaryRow(state)
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(state.filteredItems) { item ->
+                InventoryCard(item)
+            }
+        }
+    }
+}
+
+@Composable
+fun SummaryRow(state: InventoryUiState) {
+    val total = state.items.size
+    val stock = state.items.sumOf { it.quantity }
+    val value = state.items.sumOf { it.price * it.quantity }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+    ) {
+        Row(
+            modifier = Modifier.padding(12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-
-            // Barra de búsqueda
-            OutlinedTextField(
-                value = state.searchText,
-                onValueChange = viewModel::onSearchChanged,
-                label = { Text("Buscar") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Tabs
-            TabRow(selectedTabIndex = state.selectedTab.ordinal) {
-                InventoryTab.values().forEachIndexed { index, tab ->
-                    Tab(
-                        text = { Text(tab.name) },
-                        selected = state.selectedTab.ordinal == index,
-                        onClick = { viewModel.onTabSelected(tab) }
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Resumen
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text("Total: ${state.items.size}")
-                Text("Stock: ${state.items.sumOf { it.quantity }}")
-                Text("Valor: $${state.items.sumOf { it.price * it.quantity }.format(2)}")
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Lista
-            if (state.isLoading) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-            } else if (state.filteredItems.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("No hay resultados.")
-                }
-            } else {
-                LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(state.filteredItems, key = { it.id }) { item ->
-                        InventoryCard(item)
-                    }
-                }
-            }
+            Text("Total: $total")
+            Text("Stock: $stock")
+            Text("Valor: $${"%.2f".format(value)}")
         }
     }
 }
@@ -159,12 +170,8 @@ fun InventoryCard(item: InventoryItemUi) {
         else -> MaterialTheme.colorScheme.onSurface
     }
 
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(2.dp)
-    ) {
+    Card(modifier = Modifier.fillMaxWidth()) {
         Row(modifier = Modifier.padding(16.dp)) {
-            // Placeholder para imagen
             Box(
                 modifier = Modifier
                     .size(64.dp)
@@ -172,32 +179,41 @@ fun InventoryCard(item: InventoryItemUi) {
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.placeholder_image_product), // asegúrate de tener uno
+                    painter = painterResource(android.R.drawable.ic_menu_gallery),
                     contentDescription = item.name,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.size(48.dp)
                 )
             }
-
             Spacer(modifier = Modifier.width(16.dp))
-
             Column(modifier = Modifier.weight(1f)) {
-                Text(item.name, fontWeight = FontWeight.Bold)
+                Text(item.name, style = MaterialTheme.typography.titleMedium)
                 Text("Cantidad: ${item.quantity}", color = stockColor)
                 Text("Precio: ${item.getFormattedPrice()}")
                 Text("Categoría: ${item.category}")
                 if (item.isExpiringSoon()) {
-                    Text(
-                        "⚠️ Expira pronto",
-                        color = Color.Red,
-                        style = MaterialTheme.typography.labelMedium
-                    )
+                    Text("⚠️ Expira pronto", color = Color.Red)
                 }
             }
         }
     }
 }
 
-// Extensión para formatear a dos decimales
-private fun Double.format(decimals: Int): String =
-    "%.${decimals}f".format(this)
+@Preview(showBackground = true)
+@Composable
+fun InventoryScreenPreview() {
+    val items = listOf(
+        InventoryItemUi("1", "Leche Entera", 5, 1.25, "Lácteos"),
+        InventoryItemUi("2", "Arroz", 0, 0.85, "Granos"),
+        InventoryItemUi("3", "Huevos", 2, 0.25, "Proteínas")
+    )
+    InventoryScreen(
+        navController = rememberNavController(),
+        state = InventoryUiState(
+            items = items,
+            filteredItems = items
+        ),
+        onSearchChanged = {},
+        onTabSelected = {}
+    )
+}
