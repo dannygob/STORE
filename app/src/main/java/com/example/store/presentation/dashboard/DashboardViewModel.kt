@@ -11,12 +11,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class DashboardUiState(
-    val notifications: List<NotificationItemUi> = emptyList(),
+    val notifications: List<NotificationItemUi> = emptyList(), // All notifications for the panel
     val unreadNotificationCount: Int = 0,
     val isLoadingNotifications: Boolean = false,
     val userMessage: String? = null, // For general messages/errors from VM actions
     val lowStockItemCount: Int = 0,
-    val expiringItemCount: Int = 0
+    val expiringItemCount: Int = 0,
+    val lowStockItemsList: List<NotificationItemUi> = emptyList(), // Specific list for low stock card
+    val expiringItemsList: List<NotificationItemUi> = emptyList() // Specific list for expiring card
 )
 
 class DashboardViewModel : ViewModel() {
@@ -33,13 +35,17 @@ class DashboardViewModel : ViewModel() {
             _uiState.update { it.copy(isLoadingNotifications = true) }
             kotlinx.coroutines.delay(1000) // Simulate network/db delay
             val mockNotifications = createMockNotifications()
+            val lowStockItems = mockNotifications.filter { it.type == NotificationType.LOW_STOCK }
+            val expiringItems = mockNotifications.filter { it.type == NotificationType.ITEM_EXPIRED }
             _uiState.update {
                 it.copy(
                     isLoadingNotifications = false,
-                    notifications = mockNotifications,
+                    notifications = mockNotifications, // This is for the general notification panel
                     unreadNotificationCount = mockNotifications.count { n -> !n.isRead },
-                    lowStockItemCount = mockNotifications.count { n -> n.type == NotificationType.LOW_STOCK },
-                    expiringItemCount = mockNotifications.count { n -> n.type == NotificationType.ITEM_EXPIRED }
+                    lowStockItemsList = lowStockItems,
+                    expiringItemsList = expiringItems,
+                    lowStockItemCount = lowStockItems.size,
+                    expiringItemCount = expiringItems.size
                 )
             }
         }
@@ -124,11 +130,22 @@ class DashboardViewModel : ViewModel() {
     private fun createMockNotifications(): List<NotificationItemUi> {
         val currentTime = System.currentTimeMillis()
         return listOf(
-            NotificationItemUi(title = "New Order Received!", message = "Order #ORD-12345 has been placed for 3 items.", type = NotificationType.ORDER_NEW, timestamp = currentTime - (5 * 60 * 1000)), // 5 mins ago
-            NotificationItemUi(title = "Low Stock Warning", message = "Apples are running low. Only 5 left.", type = NotificationType.LOW_STOCK, timestamp = currentTime - (1 * 60 * 60 * 1000), isRead = true), // 1 hour ago
-            NotificationItemUi(title = "Order Delivered", message = "Order #ORD-12300 has been successfully delivered to John Doe.", type = NotificationType.ORDER_DELIVERED, timestamp = currentTime - (3 * 60 * 60 * 1000)), // 3 hours ago
-            NotificationItemUi(title = "Item Expiring Soon", message = "Milk (Batch #M45) will expire in 2 days.", type = NotificationType.ITEM_EXPIRED, timestamp = currentTime - (24 * 60 * 60 * 1000)), // 1 day ago
-            NotificationItemUi(title = "System Maintenance", message = "Scheduled maintenance tonight at 2 AM.", type = NotificationType.SYSTEM_ALERT, timestamp = currentTime - (2 * 24 * 60 * 60 * 1000), isRead = true) // 2 days ago
+            NotificationItemUi(id="1", title = "New Order Received!", message = "Order #ORD-12345 for 3 items.", type = NotificationType.ORDER_NEW, timestamp = currentTime - (5 * 60 * 1000)),
+
+            // Multiple Low Stock Items
+            NotificationItemUi(id="LS1", title = "Low Stock", message = "Red Apples (5 left)", type = NotificationType.LOW_STOCK, timestamp = currentTime - (1 * 60 * 60 * 1000), isRead = true),
+            NotificationItemUi(id="LS2", title = "Low Stock", message = "Whole Milk (3 left)", type = NotificationType.LOW_STOCK, timestamp = currentTime - (2 * 60 * 60 * 1000)),
+            NotificationItemUi(id="LS3", title = "Low Stock", message = "Brown Bread (2 left)", type = NotificationType.LOW_STOCK, timestamp = currentTime - (3 * 60 * 60 * 1000)),
+
+            NotificationItemUi(id="2", title = "Order Delivered", message = "Order #ORD-12300 to John Doe.", type = NotificationType.ORDER_DELIVERED, timestamp = currentTime - (4 * 60 * 60 * 1000)),
+
+            // Multiple Expiring Items
+            NotificationItemUi(id="EXP1", title = "Expiring Soon", message = "Yogurt (Batch #YG7) - 1 day", type = NotificationType.ITEM_EXPIRED, timestamp = currentTime - (24 * 60 * 60 * 1000)),
+            NotificationItemUi(id="EXP2", title = "Expiring Soon", message = "Cheese Slices (Batch #CS2) - 2 days", type = NotificationType.ITEM_EXPIRED, timestamp = currentTime - (2 * 24 * 60 * 60 * 1000), isRead = true),
+            NotificationItemUi(id="EXP3", title = "Expiring Soon", message = "Orange Juice (Batch #OJ1) - 3 days", type = NotificationType.ITEM_EXPIRED, timestamp = currentTime - (3 * 24 * 60 * 60 * 1000)),
+            NotificationItemUi(id="EXP4", title = "Expired Today", message = "Salad Mix (Batch #SM5)", type = NotificationType.ITEM_EXPIRED, timestamp = currentTime - (4 * 24 * 60 * 60 * 1000)),
+
+            NotificationItemUi(id="3", title = "System Maintenance", message = "Tonight at 2 AM.", type = NotificationType.SYSTEM_ALERT, timestamp = currentTime - (5 * 24 * 60 * 60 * 1000), isRead = true)
         ).sortedByDescending { it.timestamp }
     }
 }
