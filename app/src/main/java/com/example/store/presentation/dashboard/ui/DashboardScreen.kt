@@ -474,130 +474,193 @@ private fun DashboardCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                val titleStyle = if (data.title == "Low Stock & Expiration") {
-                    MaterialTheme.typography.titleSmall.copy( // Using titleSmall for this specific card
+                // Conditionally display the title. If it's "Low Stock & Expiration", title is omitted.
+                if (data.title != "Low Stock & Expiration") {
+                    val titleStyle = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = data.title,
+                        style = titleStyle,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.weight(1f) // Allow title to take space
                     )
                 } else {
-                    MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Bold
-                    )
+                    // If title is omitted, add a Spacer to keep the Info icon to the right if it were the only element.
+                    // However, for "Low Stock & Expiration", the main Info icon for the card itself will also be removed
+                    // in favor of specific icons within its new content structure.
+                    // For now, let's ensure the structure doesn't break.
+                    // The main IconButton for the card will be handled later for this specific card.
+                    Spacer(modifier = Modifier.weight(1f)) // Occupy space if title is not shown
                 }
-                Text(
-                    text = data.title,
-                    style = titleStyle,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.weight(1f) // Allow title to take space
-                )
-                // Box to anchor the DropdownMenu
-                Box {
-                    IconButton(onClick = { showDropdownMenu = true }) {
-                        Icon(
-                            imageVector = Icons.Filled.Info, // Changed icon here
-                            contentDescription = "More options for ${data.title}",
-                            tint = Brown // Changed to custom Brown color
-                        )
-                    }
-                    DropdownMenu(
-                        expanded = showDropdownMenu,
-                        onDismissRequest = { showDropdownMenu = false }
-                    ) {
-                        // Define placeholder titles
-                        val placeholderTitles = setOf("Upcoming Tasks", "General Reminders", "System Health", "Customer Insights") // Add any other titles that are placeholders
 
-                        if (data.title in placeholderTitles || data.details.isEmpty()) {
-                            // Placeholder actions for specific cards or if details are empty
-                            val placeholderActions = listOf("Placeholder Action 1", "Placeholder Action 2", "Placeholder Action 3")
-                            placeholderActions.forEach { actionText ->
-                                DropdownMenuItem(
-                                    text = { Text(actionText) },
-                                    onClick = {
-                                        Toast.makeText(context, "$actionText selected.", Toast.LENGTH_SHORT).show()
-                                        showDropdownMenu = false
-                                    }
-                                )
-                            }
-                        } else {
-                            // Real details for other cards
-                            data.details.forEach { detail ->
-                                DropdownMenuItem(
-                                    text = { Text(detail) },
-                                    onClick = {
-                                        Toast.makeText(context, "Selected: $detail", Toast.LENGTH_SHORT).show()
-                                        showDropdownMenu = false
-                                    }
-                                )
+                // The generic Info icon for the card. This will be conditionally rendered or altered
+                // for the "Low Stock & Expiration" card later.
+                // For now, it remains, but its utility for "Low Stock & Expiration" card changes.
+                Box { // This box is for the top-right action icon of the card
+                    if (data.title != "Low Stock & Expiration") {
+                        IconButton(onClick = { showDropdownMenu = true }) {
+                            Icon(
+                                imageVector = Icons.Filled.Info,
+                                contentDescription = "More options for ${data.title}",
+                                tint = Brown
+                            )
+                        }
+                        // Associated DropdownMenu, also conditional
+                        DropdownMenu(
+                            expanded = showDropdownMenu,
+                            onDismissRequest = { showDropdownMenu = false }
+                        ) {
+                            val placeholderTitles = setOf("Upcoming Tasks", "General Reminders", "System Health", "Customer Insights")
+                            if (data.title in placeholderTitles || data.details.isEmpty()) {
+                                val placeholderActions = listOf("Placeholder Action 1", "Placeholder Action 2", "Placeholder Action 3")
+                                placeholderActions.forEach { actionText ->
+                                    DropdownMenuItem(
+                                        text = { Text(actionText) },
+                                        onClick = {
+                                            Toast.makeText(context, "$actionText selected.", Toast.LENGTH_SHORT).show()
+                                            showDropdownMenu = false
+                                        }
+                                    )
+                                }
+                            } else {
+                                data.details.forEach { detail ->
+                                    DropdownMenuItem(
+                                        text = { Text(detail) },
+                                        onClick = {
+                                            Toast.makeText(context, "Selected: $detail", Toast.LENGTH_SHORT).show()
+                                            showDropdownMenu = false
+                                        }
+                                    )
+                                }
                             }
                         }
                     }
+                    // If title IS "Low Stock & Expiration", no IconButton or DropdownMenu is rendered here.
                 }
             }
-            Spacer(modifier = Modifier.height(8.dp)) // Maintain some spacing
+            // Spacer after the header row. Only add if the header was actually rendered.
+            if (data.title != "Low Stock & Expiration") {
+                Spacer(modifier = Modifier.height(8.dp))
+            }
 
             if (data.title == "Low Stock & Expiration") {
-                val lowStockCount = uiState.lowStockItemCount
-                val expiringCount = uiState.expiringItemCount
+                var showLowStockDropdown by remember { mutableStateOf(false) }
+                var showExpiringDropdown by remember { mutableStateOf(false) }
 
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround, // Distribute space for two columns
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp), // Added some vertical padding
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    verticalAlignment = Alignment.Top // Align items to the top of the row
                 ) {
-                    // Column 1: Low Stock
+                    // Section 1: Low Stock
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text(
-                            text = "Low Stock",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        if (lowStockCount > 0) {
-                            Text(
-                                text = "$lowStockCount",
-                                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                                color = RedNegative
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Filled.CheckCircle,
-                                contentDescription = "Low stock OK",
-                                tint = GreenPositive,
-                                modifier = Modifier.size(36.dp) // Adjust size as needed
-                            )
+                        Text("Low Stock", style = MaterialTheme.typography.labelMedium)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            if (uiState.lowStockItemCount > 0) {
+                                Text(
+                                    text = "${uiState.lowStockItemCount}",
+                                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                                    color = RedNegative
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Filled.CheckCircle,
+                                    contentDescription = "Low stock OK",
+                                    tint = GreenPositive,
+                                    modifier = Modifier.size(36.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Box { // Box to anchor the Low Stock DropdownMenu
+                                IconButton(onClick = { showLowStockDropdown = true }) {
+                                    Icon(Icons.Filled.Info, "Low stock details", tint = Brown)
+                                }
+                                DropdownMenu(
+                                    expanded = showLowStockDropdown,
+                                    onDismissRequest = { showLowStockDropdown = false }
+                                ) {
+                                    if (uiState.lowStockItemsList.isEmpty()) {
+                                        DropdownMenuItem(
+                                            text = { Text("No low stock items.") },
+                                            onClick = { showLowStockDropdown = false }
+                                        )
+                                    } else {
+                                        LazyColumn(modifier = Modifier.heightIn(max = 120.dp)) { // Approx 2 items
+                                            items(uiState.lowStockItemsList) { item ->
+                                                DropdownMenuItem(
+                                                    text = { Text(item.message) }, // Using message as item name
+                                                    onClick = {
+                                                        Toast.makeText(context, item.message, Toast.LENGTH_SHORT).show()
+                                                        showLowStockDropdown = false
+                                                    }
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
 
-                    // Column 2: Expiring Soon
+                    // Section 2: Expiring Soon
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text(
-                            text = "Expiring Soon",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        if (expiringCount > 0) {
-                            Text(
-                                text = "$expiringCount",
-                                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                                color = RedNegative
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Filled.CheckCircle,
-                                contentDescription = "Expiring items OK",
-                                tint = GreenPositive,
-                                modifier = Modifier.size(36.dp) // Adjust size as needed
-                            )
+                        Text("Expiring Soon", style = MaterialTheme.typography.labelMedium)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            if (uiState.expiringItemCount > 0) {
+                                Text(
+                                    text = "${uiState.expiringItemCount}",
+                                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                                    color = RedNegative
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Filled.CheckCircle,
+                                    contentDescription = "Expiring items OK",
+                                    tint = GreenPositive,
+                                    modifier = Modifier.size(36.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Box { // Box to anchor the Expiring DropdownMenu
+                                IconButton(onClick = { showExpiringDropdown = true }) {
+                                    Icon(Icons.Filled.Info, "Expiring items details", tint = Brown)
+                                }
+                                DropdownMenu(
+                                    expanded = showExpiringDropdown,
+                                    onDismissRequest = { showExpiringDropdown = false }
+                                ) {
+                                    if (uiState.expiringItemsList.isEmpty()) {
+                                        DropdownMenuItem(
+                                            text = { Text("No expiring items.") },
+                                            onClick = { showExpiringDropdown = false }
+                                        )
+                                    } else {
+                                        LazyColumn(modifier = Modifier.heightIn(max = 120.dp)) { // Approx 2 items
+                                            items(uiState.expiringItemsList) { item ->
+                                                DropdownMenuItem(
+                                                    text = { Text(item.message) }, // Using message as item name
+                                                    onClick = {
+                                                        Toast.makeText(context, item.message, Toast.LENGTH_SHORT).show()
+                                                        showExpiringDropdown = false
+                                                    }
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
-                Spacer(modifier = Modifier.height(8.dp)) // Add some padding at the bottom if needed
             } else {
                 Text(
                     text = if (data.details.isNotEmpty() || (data.title in setOf("Upcoming Tasks", "General Reminders", "System Health", "Customer Insights")))
