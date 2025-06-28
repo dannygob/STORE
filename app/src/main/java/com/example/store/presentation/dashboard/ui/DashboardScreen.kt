@@ -178,6 +178,7 @@ fun DashboardScreen(
             // Sección de tarjetas mejorada
             DashboardCardsSection(
                 items = dashboardItems,
+                viewModel = viewModel, // Pass viewModel here
                 modifier = Modifier.weight(1f)
             )
 
@@ -392,6 +393,7 @@ private fun MenuItemComponent(
 @Composable
 private fun DashboardCardsSection(
     items: List<DashboardData>,
+    viewModel: DashboardViewModel, // Added viewModel
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -406,6 +408,7 @@ private fun DashboardCardsSection(
                 rowItems.forEach { item ->
                     DashboardCard(
                         data = item,
+                        viewModel = viewModel, // Pass viewModel
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -422,10 +425,12 @@ private fun DashboardCardsSection(
 @Composable
 private fun DashboardCard(
     data: DashboardData,
+    viewModel: DashboardViewModel, // Added viewModel
     modifier: Modifier = Modifier,
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
     val context = LocalContext.current // For Toasts
+    val uiState by viewModel.uiState.collectAsState() // Collect uiState
 
     Card(
         modifier = modifier,
@@ -456,7 +461,7 @@ private fun DashboardCard(
                 Box {
                     IconButton(onClick = { showDropdownMenu = true }) {
                         Icon(
-                            imageVector = Icons.Filled.MoreVert,
+                            imageVector = Icons.Filled.Info, // Changed icon here
                             contentDescription = "More options for ${data.title}",
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -496,19 +501,58 @@ private fun DashboardCard(
                 }
             }
             Spacer(modifier = Modifier.height(8.dp)) // Maintain some spacing
-            Text(
-                text = if (data.details.isNotEmpty() || (data.title in setOf("Upcoming Tasks", "General Reminders", "System Health", "Customer Insights")))
-                           "Click the icon for details/actions."
-                       else
-                           "No details available.",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.CenterHorizontally)
-            )
 
+            if (data.title == "Low Stock & Expiration") {
+                val lowStockCount = uiState.lowStockItemCount
+                val expiringCount = uiState.expiringItemCount
+
+                if (lowStockCount == 0 && expiringCount == 0) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.DoneAll,
+                            contentDescription = "All good",
+                            tint = MaterialTheme.colorScheme.primary // Or a success color
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "All items are well-stocked and not expiring soon.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                } else {
+                    Column(horizontalAlignment = Alignment.Start, modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            text = "Low Stock Items: $lowStockCount",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = if (lowStockCount > 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = "Expiring Soon Items: $expiringCount",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = if (expiringCount > 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            } else {
+                Text(
+                    text = if (data.details.isNotEmpty() || (data.title in setOf("Upcoming Tasks", "General Reminders", "System Health", "Customer Insights")))
+                        "Click the icon for details/actions."
+                    else
+                        "No details available.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally)
+                )
+            }
         }
     }
 }
