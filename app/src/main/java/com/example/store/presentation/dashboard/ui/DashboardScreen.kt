@@ -569,7 +569,7 @@ private fun DashboardCard(
                             DropdownMenu(
                                 expanded = showLowStockDropdown,
                                 onDismissRequest = { showLowStockDropdown = false },
-                                modifier = Modifier.widthIn(min = 180.dp, max = 240.dp)
+                                modifier = Modifier.width(220.dp) // Applied fixed width to DropdownMenu
                             ) {
                                 if (uiState.lowStockItemsList.isEmpty()) {
                                     DropdownMenuItem(
@@ -577,16 +577,17 @@ private fun DashboardCard(
                                         onClick = { showLowStockDropdown = false }
                                     )
                                 } else {
-                                    // Restore LazyColumn with actual data and keys
-                                    LazyColumn(modifier = Modifier.heightIn(max = 120.dp)) {
-                                        items(uiState.lowStockItemsList, key = { it.id }) { item ->
-                                            DropdownMenuItem(
-                                                text = { Text(item.message) },
-                                                onClick = {
-                                                    Toast.makeText(context, item.message, Toast.LENGTH_SHORT).show()
-                                                    showLowStockDropdown = false
-                                                }
-                                            )
+                                    Box(modifier = Modifier.height(120.dp)) { // Fixed height Box for LazyColumn
+                                        LazyColumn { // LazyColumn fills the Box
+                                            items(uiState.lowStockItemsList, key = { it.id }) { item ->
+                                                DropdownMenuItem(
+                                                    text = { Text(item.message) },
+                                                    onClick = {
+                                                        Toast.makeText(context, item.message, Toast.LENGTH_SHORT).show()
+                                                        showLowStockDropdown = false
+                                                    }
+                                                )
+                                            }
                                         }
                                     }
                                 }
@@ -629,7 +630,7 @@ private fun DashboardCard(
                             DropdownMenu(
                                 expanded = showExpiringDropdown,
                                 onDismissRequest = { showExpiringDropdown = false },
-                                modifier = Modifier.widthIn(min = 180.dp, max = 240.dp)
+                                modifier = Modifier.width(220.dp) // Applied fixed width to DropdownMenu
                             ) {
                                 if (uiState.expiringItemsList.isEmpty()) {
                                     DropdownMenuItem(
@@ -637,15 +638,17 @@ private fun DashboardCard(
                                         onClick = { showExpiringDropdown = false }
                                     )
                                 } else {
-                                    LazyColumn(modifier = Modifier.heightIn(max = 120.dp)) {
-                                        items(uiState.expiringItemsList, key = { it.id }) { item ->
-                                            DropdownMenuItem(
-                                                text = { Text(item.message) },
-                                                onClick = {
-                                                    Toast.makeText(context, item.message, Toast.LENGTH_SHORT).show()
-                                                    showExpiringDropdown = false
-                                                }
-                                            )
+                                    Box(modifier = Modifier.height(120.dp)) { // Fixed height Box for LazyColumn
+                                        LazyColumn { // LazyColumn fills the Box
+                                            items(uiState.expiringItemsList, key = { it.id }) { item ->
+                                                DropdownMenuItem(
+                                                    text = { Text(item.message) },
+                                                    onClick = {
+                                                        Toast.makeText(context, item.message, Toast.LENGTH_SHORT).show()
+                                                        showExpiringDropdown = false
+                                                    }
+                                                )
+                                            }
                                         }
                                     }
                                 }
