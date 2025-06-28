@@ -31,6 +31,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Payment
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.CheckCircle // Added for 'all okay' icon
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Sell
 import androidx.compose.material.icons.filled.ShoppingCart
@@ -71,6 +72,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.Color // Import Color
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -78,6 +80,12 @@ import com.example.store.presentation.common.navigation.ScreenRoutes
 import com.example.store.presentation.dashboard.DashboardViewModel
 import com.example.store.presentation.dashboard.model.NotificationItemUi
 import com.example.store.presentation.dashboard.model.NotificationType
+
+// Custom Colors
+val Brown = Color(0xFF8D6E63) // A Material Design like brown
+val GreenPositive = Color(0xFF4CAF50) // Material Green 500
+val RedNegative = Color(0xFFF44336) // Material Red 500
+
 
 // Data classes
 data class DashboardData(
@@ -148,7 +156,24 @@ fun DashboardScreen(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+                ),
+                scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(), // Behavior needed for shadow with content scroll
+                // To make shadow visible even without scrolling content under it,
+                // we might need a surface behind it or use a different approach.
+                // For now, let's add standard elevation which works with scroll.
+                // A simpler way if no scroll behavior is intended is to wrap TopAppBar in a Surface with elevation.
+                // However, the standard way is to use scrollBehavior.
+                // Let's assume for now a simple shadow is fine.
+                // A common pattern is to use a Surface wrapper if a persistent shadow is needed without complex scroll behaviors.
+                // For simplicity, directly applying shadowElevation to TopAppBar itself isn't a direct property in M3 TopAppBar.
+                // It's typically handled by the Surface it's placed on or via scroll behavior.
+                // Let's try by wrapping it in a Surface as it's a common pattern for static shadows.
+                // This seems to be what is expected by "add shadow to top bar"
+                // Update: TopAppBar in M3 does not have a direct elevation parameter like M2.
+                // The shadow is typically shown when content scrolls under it using a scrollBehavior.
+                // If a persistent shadow is needed, wrapping in a `Surface` or using a `Modifier.shadow()` is an option.
+                // Let's use Modifier.shadow() for simplicity here as scroll behavior is not fully set up.
+                modifier = Modifier.shadow(4.dp) // Added shadow to TopAppBar
             )
         },
         bottomBar = {
@@ -435,7 +460,7 @@ private fun DashboardCard(
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp), // Increased elevation
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         )
@@ -449,11 +474,18 @@ private fun DashboardCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                val titleStyle = if (data.title == "Low Stock & Expiration") {
+                    MaterialTheme.typography.titleSmall.copy( // Using titleSmall for this specific card
+                        fontWeight = FontWeight.Bold
+                    )
+                } else {
+                    MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold
+                    )
+                }
                 Text(
                     text = data.title,
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
+                    style = titleStyle,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.weight(1f) // Allow title to take space
                 )
@@ -463,7 +495,7 @@ private fun DashboardCard(
                         Icon(
                             imageVector = Icons.Filled.Info, // Changed icon here
                             contentDescription = "More options for ${data.title}",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            tint = Brown // Changed to custom Brown color
                         )
                     }
                     DropdownMenu(
@@ -506,39 +538,66 @@ private fun DashboardCard(
                 val lowStockCount = uiState.lowStockItemCount
                 val expiringCount = uiState.expiringItemCount
 
-                if (lowStockCount == 0 && expiringCount == 0) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround, // Distribute space for two columns
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Column 1: Low Stock
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.weight(1f)
                     ) {
-                        Icon(
-                            imageVector = Icons.Filled.DoneAll,
-                            contentDescription = "All good",
-                            tint = MaterialTheme.colorScheme.primary // Or a success color
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "All items are well-stocked and not expiring soon.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            textAlign = TextAlign.Center
+                            text = "Low Stock",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        if (lowStockCount > 0) {
+                            Text(
+                                text = "$lowStockCount",
+                                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                                color = RedNegative
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Filled.CheckCircle,
+                                contentDescription = "Low stock OK",
+                                tint = GreenPositive,
+                                modifier = Modifier.size(36.dp) // Adjust size as needed
+                            )
+                        }
                     }
-                } else {
-                    Column(horizontalAlignment = Alignment.Start, modifier = Modifier.fillMaxWidth()) {
+
+                    // Column 2: Expiring Soon
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.weight(1f)
+                    ) {
                         Text(
-                            text = "Low Stock Items: $lowStockCount",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = if (lowStockCount > 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
+                            text = "Expiring Soon",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        Text(
-                            text = "Expiring Soon Items: $expiringCount",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = if (expiringCount > 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        if (expiringCount > 0) {
+                            Text(
+                                text = "$expiringCount",
+                                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                                color = RedNegative
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Filled.CheckCircle,
+                                contentDescription = "Expiring items OK",
+                                tint = GreenPositive,
+                                modifier = Modifier.size(36.dp) // Adjust size as needed
+                            )
+                        }
                     }
                 }
+                Spacer(modifier = Modifier.height(8.dp)) // Add some padding at the bottom if needed
             } else {
                 Text(
                     text = if (data.details.isNotEmpty() || (data.title in setOf("Upcoming Tasks", "General Reminders", "System Health", "Customer Insights")))
