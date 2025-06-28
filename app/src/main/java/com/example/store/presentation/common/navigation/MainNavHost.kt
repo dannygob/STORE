@@ -5,27 +5,45 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.store.presentation.dashboard.ui.DashboardScreen
+import com.example.store.presentation.login.ui.LoginScreen
 import com.example.store.presentation.splash.ui.SplashScreen
 
-
+sealed class Route(val route: String) {
+    object Splash : Route("splash")
+    object Login : Route("login")
+    object Dashboard : Route("dashboard")
+}
 
 @Composable
 fun MainNavHost(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = "splash"
+        startDestination = Route.Splash.route
     ) {
-        composable("splash") {
+        composable(Route.Splash.route) {
             SplashScreen(
                 onTimeout = {
-                    navController.navigate("dashboard") {
+                    navController.navigate(Route.Login.route) {
+                        popUpTo(Route.Splash.route) { inclusive = true }
                         launchSingleTop = true
-                        popUpTo("splash") { inclusive = true }
                     }
                 }
             )
         }
-        composable("dashboard") {
+
+        composable(Route.Login.route) {
+            println("✅ Navegando a LoginScreen")
+            LoginScreen(
+                onLoginSuccess = {
+                    navController.navigate(Route.Dashboard.route) {
+                        popUpTo(Route.Login.route) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+
+        composable(Route.Dashboard.route) {
             DashboardScreen()
         }
     }
