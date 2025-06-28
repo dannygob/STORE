@@ -1,9 +1,7 @@
-package com.example.store.data.repository
+package com.example.store.domain.repository
 
 import com.example.store.domain.model.LoginResult
 import com.example.store.domain.model.UserRole
-import com.example.store.domain.repository.AuthRepository
-import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor() : AuthRepository {
@@ -14,8 +12,6 @@ class AuthRepositoryImpl @Inject constructor() : AuthRepository {
     )
 
     override suspend fun login(email: String, password: String): Result<LoginResult> {
-        delay(1000) // Simula tiempo de red
-
         val stored = users[email]
         return when {
             stored == null -> Result.failure(Exception("Usuario no encontrado"))
@@ -25,10 +21,8 @@ class AuthRepositoryImpl @Inject constructor() : AuthRepository {
     }
 
     override suspend fun register(email: String, password: String, role: UserRole): Result<Unit> {
-        delay(500) // Simula procesamiento
-
         return if (users.containsKey(email)) {
-            Result.failure(Exception("El usuario ya está registrado"))
+            Result.failure(Exception("El usuario ya existe"))
         } else {
             users[email] = Pair(password, role)
             Result.success(Unit)
@@ -36,13 +30,12 @@ class AuthRepositoryImpl @Inject constructor() : AuthRepository {
     }
 
     override suspend fun recoverPassword(email: String): Result<Unit> {
-        delay(500) // Simula procesamiento
-
         return if (users.containsKey(email)) {
-            println("🔐 Enviando enlace de recuperación a $email")
+            // Simulamos envío de correo
+            println("🔐 Enviar link de recuperación a $email")
             Result.success(Unit)
         } else {
-            Result.failure(Exception("Correo electrónico no encontrado"))
+            Result.failure(Exception("Correo no registrado"))
         }
     }
 }

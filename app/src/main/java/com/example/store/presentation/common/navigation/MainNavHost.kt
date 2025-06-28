@@ -1,9 +1,11 @@
 package com.example.store.presentation.common.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.store.presentation.dashboard.DashboardViewModel
 import com.example.store.presentation.dashboard.ui.DashboardScreen
 import com.example.store.presentation.login.ui.LoginScreen
 import com.example.store.presentation.splash.ui.SplashScreen
@@ -32,7 +34,6 @@ fun MainNavHost(navController: NavHostController) {
         }
 
         composable(Route.Login.route) {
-            println("✅ Navegando a LoginScreen")
             LoginScreen(
                 onLoginSuccess = {
                     navController.navigate(Route.Dashboard.route) {
@@ -44,7 +45,11 @@ fun MainNavHost(navController: NavHostController) {
         }
 
         composable(Route.Dashboard.route) {
-            DashboardScreen()
+            val dashboardViewModel: DashboardViewModel = viewModel()
+            DashboardScreen(
+                navController = navController,
+                viewModel = dashboardViewModel
+            )
         }
     }
 }

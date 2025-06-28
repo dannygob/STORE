@@ -1,6 +1,5 @@
 package com.example.store.presentation.login.ui
 
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,9 +15,11 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -35,6 +36,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.store.domain.model.UserRole
 import com.example.store.presentation.login.viewmodel.LoginEvent
 import com.example.store.presentation.login.viewmodel.LoginViewModel
 
@@ -45,11 +47,13 @@ fun LoginScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
+    var passwordVisible by remember { mutableStateOf(false) }
 
     // Navegar al dashboard en caso de login exitoso
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) {
             onLoginSuccess()
+            viewModel.onLoginHandled()
         }
     }
 
@@ -64,8 +68,10 @@ fun LoginScreen(
                     .padding(24.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-
-                Text(text = "Inicia sesión", style = MaterialTheme.typography.headlineMedium)
+                Text(
+                    text = "Inicia sesión",
+                    style = MaterialTheme.typography.headlineMedium
+                )
 
                 // Email
                 OutlinedTextField(
@@ -80,12 +86,13 @@ fun LoginScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
                 if (state.emailError != null) {
-                    Text(text = state.emailError!!, color = MaterialTheme.colorScheme.error)
+                    Text(
+                        text = state.emailError!!,
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
 
                 // Contraseña
-                var passwordVisible by remember { mutableStateOf(false) }
-
                 OutlinedTextField(
                     value = state.password,
                     onValueChange = { viewModel.onEvent(LoginEvent.PasswordChanged(it)) },
@@ -106,10 +113,13 @@ fun LoginScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
                 if (state.passwordError != null) {
-                    Text(text = state.passwordError!!, color = MaterialTheme.colorScheme.error)
+                    Text(
+                        text = state.passwordError!!,
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
 
-                // Botón login
+                // Botón de iniciar sesión
                 Button(
                     onClick = {
                         focusManager.clearFocus()
@@ -119,6 +129,35 @@ fun LoginScreen(
                     enabled = !state.isLoading
                 ) {
                     Text("Iniciar sesión")
+                }
+
+                // Botón de recuperación de contraseña
+                TextButton(
+                    onClick = {
+                        focusManager.clearFocus()
+                        viewModel.onEvent(LoginEvent.RecoverPassword(state.email))
+                    },
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Text("¿Olvidaste tu contraseña?")
+                }
+
+                // Botón de registro rápido
+                OutlinedButton(
+                    onClick = {
+                        focusManager.clearFocus()
+                        viewModel.onEvent(
+                            LoginEvent.Register(
+                                state.email,
+                                state.password,
+                                UserRole.USER
+                            )
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !state.isLoading
+                ) {
+                    Text("Registrarse")
                 }
 
                 // Mensaje de error global
@@ -131,10 +170,18 @@ fun LoginScreen(
                 }
             }
 
-            // Indicador de carga
+            // Cargando
             if (state.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
         }
     }
 }
+
+/*- Usa uno de los usuarios registrados en tu AuthRepositoryImpl. Por ejemplo:
+- Usuario: admin@store.com
+- Contraseña: admin123
+- o
+- Usuario: user@store.com
+- Contraseña: user123
+- Asegúrate de que el rol del usuario sea ADMIN o USER según corresponda.*/

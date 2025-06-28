@@ -235,7 +235,11 @@ fun DashboardScreen(
                                     onClick = {
                                         viewModel.markAsRead(notification.id)
                                         // Potentially navigate to a relevant screen or show details
-                                        Toast.makeText(context, "Notification '${notification.title}' clicked.", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(
+                                            context,
+                                            "Notification '${notification.title}' clicked.",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                         showNotificationsPanel = false // Close panel on item click
                                     }
                                 )
@@ -244,20 +248,32 @@ fun DashboardScreen(
                             // Actions for all notifications
                             if (uiState.notifications.any { notificationItem -> !notificationItem.isRead }) { // Explicit lambda parameter
                                 DropdownMenuItem(
-                                    text = { Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Icon(Icons.Filled.DoneAll, contentDescription = "Mark all read", modifier = Modifier.size(18.dp))
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                        Text("Mark all as read")
-                                    }},
+                                    text = {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Icon(
+                                                Icons.Filled.DoneAll,
+                                                contentDescription = "Mark all read",
+                                                modifier = Modifier.size(18.dp)
+                                            )
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Text("Mark all as read")
+                                        }
+                                    },
                                     onClick = { viewModel.markAllAsRead() }
                                 )
                             }
                             DropdownMenuItem(
-                                text = { Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Filled.DeleteSweep, contentDescription = "Dismiss all", modifier = Modifier.size(18.dp))
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text("Dismiss all")
-                                }},
+                                text = {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(
+                                            Icons.Filled.DeleteSweep,
+                                            contentDescription = "Dismiss all",
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text("Dismiss all")
+                                    }
+                                },
                                 onClick = { viewModel.dismissAllNotifications() }
                             )
                         }
@@ -292,7 +308,9 @@ private fun NotificationDropdownItem(
                 Icon(
                     imageVector = iconVector,
                     contentDescription = notification.type.name,
-                    modifier = Modifier.size(24.dp).padding(end = 8.dp),
+                    modifier = Modifier
+                        .size(24.dp)
+                        .padding(end = 8.dp),
                     tint = if (notification.type == NotificationType.LOW_STOCK || notification.type == NotificationType.ITEM_EXPIRED || notification.type == NotificationType.SYSTEM_ALERT) MaterialTheme.colorScheme.error else LocalContentColor.current
                 )
                 Column(modifier = Modifier.weight(1f)) {
@@ -486,7 +504,9 @@ private fun DashboardCard(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.CenterHorizontally)
             )
 
         }
