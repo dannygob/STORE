@@ -14,7 +14,9 @@ data class DashboardUiState(
     val notifications: List<NotificationItemUi> = emptyList(),
     val unreadNotificationCount: Int = 0,
     val isLoadingNotifications: Boolean = false,
-    val userMessage: String? = null // For general messages/errors from VM actions
+    val userMessage: String? = null, // For general messages/errors from VM actions
+    val lowStockItemCount: Int = 0,
+    val expiringItemCount: Int = 0
 )
 
 class DashboardViewModel : ViewModel() {
@@ -35,7 +37,9 @@ class DashboardViewModel : ViewModel() {
                 it.copy(
                     isLoadingNotifications = false,
                     notifications = mockNotifications,
-                    unreadNotificationCount = mockNotifications.count { n -> !n.isRead }
+                    unreadNotificationCount = mockNotifications.count { n -> !n.isRead },
+                    lowStockItemCount = mockNotifications.count { n -> n.type == NotificationType.LOW_STOCK },
+                    expiringItemCount = mockNotifications.count { n -> n.type == NotificationType.ITEM_EXPIRED }
                 )
             }
         }
