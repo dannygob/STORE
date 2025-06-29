@@ -907,6 +907,10 @@ private fun ChartsSectionPlaceholder(modifier: Modifier = Modifier) {
 fun DashboardPreview() {
     MaterialTheme {
         // Provide a dummy NavController for the preview
-        DashboardScreen(navController = rememberNavController())
+        // Explicitly create a DashboardViewModel for the preview
+        DashboardScreen(
+            navController = rememberNavController(),
+            viewModel = DashboardViewModel() // Explicitly pass a new instance
+        )
     }
 }
