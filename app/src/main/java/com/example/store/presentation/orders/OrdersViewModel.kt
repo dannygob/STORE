@@ -57,7 +57,7 @@ class OrdersViewModel : ViewModel() {
                 if (existingItem != null) {
                     existingItem.quantity++
                 } else {
-                    cart.add(CartItem(product = product))
+                    cart.add(CartItem(product = product, quantity = 1))
                 }
                 product.stock--
                 currentState.copy(cartItems = cart, isDragInProgress = false)
