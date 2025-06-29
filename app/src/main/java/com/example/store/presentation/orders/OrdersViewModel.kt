@@ -2,18 +2,24 @@ package com.example.store.presentation.orders
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.store.presentation.orders.model.OrderItemUi
-import com.example.store.presentation.orders.model.OrderStatus
+import com.example.store.presentation.orders.model.CartItem
+import com.example.store.presentation.orders.model.ProductUi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 data class OrdersUiState(
-    val orders: List<OrderItemUi> = emptyList(),
-    val isLoading: Boolean = false,
-    val userMessage: String? = null
+    val products: List<ProductUi> = emptyList(),
+    val cartItems: List<CartItem> = emptyList(),
+    val selectedCustomer: String? = null,
+    val customerSuggestions: List<String> = emptyList(),
+    val showConfirmation: Boolean = false,
+    val isDragInProgress: Boolean = false,
+    val userMessage: String? = null,
+    val lastOrderId: Int = 0,
 )
 
 class OrdersViewModel : ViewModel() {
@@ -21,108 +27,141 @@ class OrdersViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(OrdersUiState())
     val uiState: StateFlow<OrdersUiState> = _uiState.asStateFlow()
 
+    private val allCustomers =
+        listOf("Alice Wonderland", "Bob The Builder", "Charlie Brown", "Diana Prince")
+
     init {
-        loadOrders()
+        loadProducts()
     }
 
-    private fun loadOrders() {
+    private fun loadProducts() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            kotlinx.coroutines.delay(1000) // Simulate data loading
             _uiState.update {
                 it.copy(
-                    isLoading = false,
-                    orders = createMockOrders()
+                    products = createMockProducts()
                 )
             }
         }
     }
 
-    fun createNewOrderPlaceholder() {
-        _uiState.update {
-            it.copy(userMessage = "Create New Order action triggered (Placeholder).")
+    fun onProductDragged(product: ProductUi) {
+        _uiState.update { it.copy(isDragInProgress = true) }
+    }
+
+    fun addToCart(product: ProductUi) {
+        _uiState.update { currentState ->
+            val cart = currentState.cartItems.toMutableList()
+            val existingItem = cart.find { it.product.id == product.id }
+
+            if (product.stock > 0) {
+                if (existingItem != null) {
+                    existingItem.quantity++
+                } else {
+                    cart.add(CartItem(product = product))
+                }
+                product.stock--
+                currentState.copy(cartItems = cart, isDragInProgress = false)
+            } else {
+                currentState.copy(
+                    userMessage = "No stock for ${product.name}",
+                    isDragInProgress = false
+                )
+            }
         }
     }
 
-    fun viewOrderDetailsPlaceholder(orderId: String) {
-        val order = _uiState.value.orders.find { it.id == orderId }
+    fun incrementCartItem(productId: String) {
+        _uiState.update { currentState ->
+            val cart = currentState.cartItems.toMutableList()
+            val item = cart.find { it.product.id == productId }
+            if (item != null && item.product.stock > 0) {
+                item.quantity++
+                item.product.stock--
+            }
+            currentState.copy(cartItems = cart)
+        }
+    }
+
+    fun decrementCartItem(productId: String) {
+        _uiState.update { currentState ->
+            val cart = currentState.cartItems.toMutableList()
+            val item = cart.find { it.product.id == productId }
+            if (item != null) {
+                item.quantity--
+                item.product.stock++
+                if (item.quantity == 0) {
+                    cart.remove(item)
+                }
+            }
+            currentState.copy(cartItems = cart)
+        }
+    }
+
+    fun onCustomerInputChanged(input: String) {
         _uiState.update {
             it.copy(
-                userMessage = order?.let { o ->
-                    "Viewing details for order ${o.orderNumber} (Placeholder)."
-                } ?: "Order not found."
+                selectedCustomer = input,
+                customerSuggestions = if (input.isNotBlank()) {
+                    allCustomers.filter { name -> name.contains(input, ignoreCase = true) }
+                } else {
+                    emptyList()
+                }
             )
         }
     }
 
-    fun updateOrderStatusPlaceholder(orderId: String, newStatus: OrderStatus) {
-        // In a real app, this would also update the backend.
-        // For now, we'll just update the local list and show a message.
-        val currentOrders = _uiState.value.orders
-        val updatedOrders = currentOrders.map { order ->
-            if (order.id == orderId) {
-                order.copy(status = newStatus)
-            } else {
-                order
+    fun selectCustomer(name: String) {
+        _uiState.update { it.copy(selectedCustomer = name, customerSuggestions = emptyList()) }
+    }
+
+    fun promptOrderConfirmation() {
+        _uiState.update { it.copy(showConfirmation = true) }
+    }
+
+    fun cancelConfirmation() {
+        _uiState.update { it.copy(showConfirmation = false) }
+    }
+
+    fun confirmOrder() {
+        _uiState.update { currentState ->
+            val customerName = currentState.selectedCustomer
+            if (customerName.isNullOrBlank()) {
+                return@update currentState.copy(userMessage = "Please select or register a customer.")
             }
-        }
-        if (currentOrders != updatedOrders) {
-             _uiState.update {
-                it.copy(
-                    orders = updatedOrders,
-                    userMessage = "Order ${updatedOrders.find{it.id == orderId}?.orderNumber} status updated to ${newStatus.getDisplayValue()} (Placeholder)."
-                )
-            }
-        } else {
-             _uiState.update {
-                it.copy(userMessage = "Failed to update status for order ID $orderId (not found).")
-            }
+
+            val newOrderId = currentState.lastOrderId + 1
+            val orderCode = generateOrderCode(customerName, newOrderId)
+
+            // Placeholder for saving the order
+            println("Order Confirmed: $orderCode, Customer: $customerName, Items: ${currentState.cartItems}")
+
+            currentState.copy(
+                cartItems = emptyList(),
+                selectedCustomer = null,
+                showConfirmation = false,
+                userMessage = "Order $orderCode generated successfully!",
+                lastOrderId = newOrderId
+            )
         }
     }
 
+    private fun generateOrderCode(customerName: String, orderId: Int): String {
+        val initials = customerName.take(3).uppercase(Locale.getDefault())
+        return "$initials${String.format("%04d", orderId)}"
+    }
 
     fun onUserMessageShown() {
         _uiState.update { it.copy(userMessage = null) }
     }
 
-    private fun createMockOrders(): List<OrderItemUi> {
-        val currentTime = System.currentTimeMillis()
+    private fun createMockProducts(): List<ProductUi> {
         return listOf(
-            OrderItemUi(
-                customerName = "Alice Wonderland",
-                orderDate = currentTime - (3 * 24 * 60 * 60 * 1000), // 3 days ago
-                status = OrderStatus.DELIVERED,
-                totalAmount = 75.50,
-                itemSummary = "Books (2), Tea Set (1)"
-            ),
-            OrderItemUi(
-                customerName = "Bob The Builder",
-                orderDate = currentTime - (1 * 24 * 60 * 60 * 1000), // 1 day ago
-                status = OrderStatus.SHIPPED,
-                totalAmount = 120.00,
-                itemSummary = "Toolbox (1), Hammer (5), Nails (box)"
-            ),
-            OrderItemUi(
-                customerName = "Charlie Brown",
-                orderDate = currentTime - (2 * 60 * 60 * 1000), // 2 hours ago
-                status = OrderStatus.PROCESSING,
-                totalAmount = 30.25,
-                itemSummary = "Kite (1), Comic Book (3)"
-            ),
-            OrderItemUi(
-                customerName = "Diana Prince",
-                orderDate = currentTime, // Just now
-                status = OrderStatus.PENDING,
-                totalAmount = 250.00,
-                itemSummary = "Invisible Jet Parts (3), Lasso (1)"
-            ),
-             OrderItemUi(
-                customerName = "Edward Scissorhands",
-                orderDate = currentTime - (5 * 24 * 60 * 60 * 1000), // 5 days ago
-                status = OrderStatus.CANCELED,
-                totalAmount = 55.75,
-                itemSummary = "Gloves (10 pairs) - Canceled"
-            )
-        ).sortedByDescending { it.orderDate }
+            ProductUi(name = "Laptop Pro", stock = 10, price = 1200.00),
+            ProductUi(name = "Smartphone X", stock = 25, price = 800.00),
+            ProductUi(name = "Wireless Mouse", stock = 50, price = 25.00),
+            ProductUi(name = "Keyboard", stock = 30, price = 45.00),
+            ProductUi(name = "USB-C Hub", stock = 40, price = 35.00),
+            ProductUi(name = "Monitor 27\"", stock = 15, price = 300.00)
+        )
     }
 }
