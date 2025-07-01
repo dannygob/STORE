@@ -547,10 +547,10 @@ private fun DashboardCard(
                         // Info Icon and Dropdown
                         Box { // Box to anchor the Low Stock DropdownMenu
                             IconButton(onClick = {
-                                Toast.makeText(context, "Low Availability Info icon clicked", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Low Stock Info icon clicked", Toast.LENGTH_SHORT).show()
                                 showLowStockDropdown = true
                             }) {
-                                Icon(Icons.Filled.Info, "Low Availability details", tint = Brown, modifier = Modifier.size(30.dp))
+                                Icon(Icons.Filled.Info, "Low Stock details", tint = Brown, modifier = Modifier.size(30.dp))
                             }
                             DropdownMenu(
                                 expanded = showLowStockDropdown,
@@ -559,7 +559,7 @@ private fun DashboardCard(
                             ) {
                                 if (uiState.lowStockItemsList.isEmpty()) {
                                     DropdownMenuItem(
-                                        text = { Text("No low availability items.") },
+                                        text = { Text("No low Stock items.") },
                                         onClick = { showLowStockDropdown = false }
                                     )
                                 } else {
@@ -581,7 +581,7 @@ private fun DashboardCard(
                         }
                         Spacer(modifier = Modifier.height(4.dp))
                         // Header Text
-                        Text("Low Availability", style = MaterialTheme.typography.labelMedium, textAlign = TextAlign.Center)
+                        Text("Low Stock", style = MaterialTheme.typography.labelMedium, textAlign = TextAlign.Center)
                         Spacer(modifier = Modifier.height(8.dp))
                         // Count or OK Icon
                         if (uiState.lowStockItemCount > 0) {
