@@ -2,14 +2,15 @@ package com.example.store.presentation.orders
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.store.presentation.orders.model.CartItem
-import com.example.store.presentation.orders.model.ProductUi
+import com.example.store.presentation.orders.model.CartItem // Uncommented
+import com.example.store.presentation.orders.model.ProductUi // Uncommented
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Locale
+import java.util.UUID
 
 data class OrdersUiState(
     val products: List<ProductUi> = emptyList(),
