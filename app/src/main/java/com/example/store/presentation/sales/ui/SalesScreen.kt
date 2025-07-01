@@ -71,6 +71,13 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.store.R
 import com.example.store.presentation.sales.CartItem
+import android.Manifest
+import android.app.Activity
+import android.content.Intent
+import android.provider.ContactsContract
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import com.example.store.utils.PermissionUtils
 import com.example.store.presentation.sales.Customer
 import com.example.store.presentation.sales.Product
 import com.example.store.presentation.sales.SalesViewModel
@@ -165,6 +172,12 @@ fun SalesScreen(
                 ) {
                     Text("Generate Order (${String.format(Locale.US, "%.2f", uiState.cartTotal)})")
                 }
+
+                Spacer(modifier = Modifier.height(16.dp))
+                CameraFeaturePlaceholder(modifier = Modifier.fillMaxWidth())
+
+                Spacer(modifier = Modifier.height(16.dp))
+                LocationFeaturePlaceholder(modifier = Modifier.fillMaxWidth())
             }
 
             // Cart Details (Modal Bottom Sheet)
@@ -186,6 +199,68 @@ fun SalesScreen(
                 )
             }
         }
+    }
+}
+
+@Composable
+fun CameraFeaturePlaceholder(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    val cameraPermissionLauncher = PermissionUtils.rememberPermissionLauncher(
+        onPermissionGranted = {
+            Toast.makeText(context, "Camera permission granted. Camera would open here.", Toast.LENGTH_SHORT).show()
+            // Actual camera intent launch would go here
+        },
+        onPermissionDenied = { shouldShowRationale ->
+            Toast.makeText(context, "Camera permission denied. Rationale: $shouldShowRationale", Toast.LENGTH_LONG).show()
+        },
+        onPermanentlyDenied = {
+            Toast.makeText(context, "Camera permission permanently denied. Please enable in settings.", Toast.LENGTH_LONG).show()
+            // Optionally direct to settings
+        }
+    )
+    Button(
+        onClick = {
+            if (PermissionUtils.isPermissionGranted(context, Manifest.permission.CAMERA)) {
+                Toast.makeText(context, "Camera would open here.", Toast.LENGTH_SHORT).show()
+                // Actual camera intent launch
+            } else {
+                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+            }
+        },
+        modifier = modifier
+    ) {
+        Text("Use Camera (Placeholder)")
+    }
+}
+
+@Composable
+fun LocationFeaturePlaceholder(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    val locationPermissionLauncher = PermissionUtils.rememberPermissionLauncher(
+        onPermissionGranted = {
+            Toast.makeText(context, "Location permission granted. Location would be fetched here.", Toast.LENGTH_SHORT).show()
+            // Actual location fetching logic would go here
+        },
+        onPermissionDenied = { shouldShowRationale ->
+            Toast.makeText(context, "Location permission denied. Rationale: $shouldShowRationale", Toast.LENGTH_LONG).show()
+        },
+        onPermanentlyDenied = {
+            Toast.makeText(context, "Location permission permanently denied. Please enable in settings.", Toast.LENGTH_LONG).show()
+            // Optionally direct to settings
+        }
+    )
+    Button(
+        onClick = {
+            if (PermissionUtils.isPermissionGranted(context, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                Toast.makeText(context, "Location would be fetched here.", Toast.LENGTH_SHORT).show()
+                // Actual location fetching
+            } else {
+                locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            }
+        },
+        modifier = modifier
+    ) {
+        Text("Get Location (Placeholder)")
     }
 }
 
@@ -341,6 +416,71 @@ fun CustomerSection(
 ) {
     var expanded by remember { mutableStateOf(false) }
     val filteredCustomers = customers.filter { it.name.contains(searchQuery, ignoreCase = true) }
+    val context = LocalContext.current
+
+    // Launcher for picking a contact
+    val contactPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickContact(),
+        onResult = { contactUri ->
+            contactUri?.let { uri ->
+                val cursor = context.contentResolver.query(uri, null, null, null, null)
+                cursor?.use {
+                    if (it.moveToFirst()) {
+                        val idIndex = it.getColumnIndex(ContactsContract.Contacts._ID)
+                        val nameIndex = it.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)
+                        val contactId = if (idIndex >= 0) it.getString(idIndex) else "N/A"
+                        val name = if (nameIndex >= 0) it.getString(nameIndex) else "N/A"
+
+                        var email = "No Email"
+                        val emailCursor = context.contentResolver.query(
+                            ContactsContract.CommonDataKinds.Email.CONTENT_URI, null,
+                            ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?", arrayOf(contactId), null
+                        )
+                        emailCursor?.use { ec ->
+                            if (ec.moveToFirst()) {
+                                val emailAddressIndex = ec.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS)
+                                if (emailAddressIndex >= 0) email = ec.getString(emailAddressIndex)
+                            }
+                        }
+
+                        var phoneNumber = "No Phone"
+                        val phoneCursor = context.contentResolver.query(
+                            ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", arrayOf(contactId), null
+                        )
+                        phoneCursor?.use { pc ->
+                            if (pc.moveToFirst()) {
+                                val numberIndex = pc.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
+                                if (numberIndex >= 0) phoneNumber = pc.getString(numberIndex)
+                            }
+                        }
+                        Toast.makeText(context, "Selected: $name\nPhone: $phoneNumber\nEmail: $email", Toast.LENGTH_LONG).show()
+                        // Here you would typically update the ViewModel or UI state
+                        // For example: onCustomerSearchChanged(name)
+                        // viewModel.onContactSelected(name, phoneNumber, email) // If such a method exists
+                    }
+                }
+            }
+        }
+    )
+
+    // Launcher for READ_CONTACTS permission
+    val contactsPermissionLauncher = PermissionUtils.rememberPermissionLauncher(
+        onPermissionGranted = {
+            contactPickerLauncher.launch(null) // No specific URI, launches generic contact picker
+        },
+        onPermissionDenied = { shouldShowRationale ->
+            Toast.makeText(context, "Contacts permission denied. Rationale: $shouldShowRationale", Toast.LENGTH_LONG).show()
+        },
+        onPermanentlyDenied = {
+            Toast.makeText(context, "Contacts permission permanently denied. Please enable in settings.", Toast.LENGTH_LONG).show()
+            // Optionally, direct to settings:
+            // val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+            // val uri = Uri.fromParts("package", context.packageName, null)
+            // intent.data = uri
+            // context.startActivity(intent)
+        }
+    )
 
     Column {
         Text("Customer", style = MaterialTheme.typography.titleLarge)
@@ -374,6 +514,41 @@ fun CustomerSection(
                 }
             }
         }
+
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(
+            onClick = {
+                if (PermissionUtils.isPermissionGranted(context, Manifest.permission.READ_CONTACTS)) {
+                    contactPickerLauncher.launch(null)
+                } else {
+                    contactsPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Select Customer from Contacts")
+        }
+
+        // Placeholder for communication buttons - assuming a contact might have been selected
+        // In a real app, these would be enabled/shown based on actual selected contact state
+        // and availability of phone/email.
+        if (searchQuery.isNotEmpty() || selectedCustomer != null) { // Simplified condition for visibility
+            Spacer(modifier = Modifier.height(16.dp))
+            Text("Communication Actions (Placeholder)", style = MaterialTheme.typography.titleMedium)
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                Button(onClick = { Toast.makeText(context, "WhatsApp action triggered (placeholder)", Toast.LENGTH_SHORT).show() }) {
+                    Text("WhatsApp")
+                }
+                Button(onClick = { Toast.makeText(context, "Email action triggered (placeholder)", Toast.LENGTH_SHORT).show() }) {
+                    Text("Email")
+                }
+                Button(onClick = { Toast.makeText(context, "SMS action triggered (placeholder)", Toast.LENGTH_SHORT).show() }) {
+                    Text("SMS")
+                }
+            }
+        }
+
 
         if (selectedCustomer == null && searchQuery.isNotEmpty() && filteredCustomers.isEmpty()) {
             Spacer(modifier = Modifier.height(8.dp))
