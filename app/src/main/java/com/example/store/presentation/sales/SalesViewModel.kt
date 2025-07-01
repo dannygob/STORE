@@ -221,7 +221,7 @@ class SalesViewModel : ViewModel() {
 
     private fun generateOrderId(customerName: String, sequentialId: Int): String {
         val initials = customerName.take(3).uppercase(Locale.ROOT)
-        val number = String.format("%04d", sequentialId)
+        val number = String.format(Locale.US, "%04d", sequentialId)
         return "$initials$number"
     }
 

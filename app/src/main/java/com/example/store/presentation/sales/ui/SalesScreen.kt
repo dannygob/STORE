@@ -37,6 +37,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -47,6 +48,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import java.util.Locale
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -66,6 +68,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.store.R
 import com.example.store.presentation.sales.CartItem
 import com.example.store.presentation.sales.Customer
@@ -160,7 +163,7 @@ fun SalesScreen(
                     modifier = Modifier.fillMaxWidth(),
                     enabled = uiState.cart.isNotEmpty() && uiState.selectedCustomer != null
                 ) {
-                    Text("Generate Order (${String.format("%.2f", uiState.cartTotal)})")
+                    Text("Generate Order (${String.format(Locale.US, "%.2f", uiState.cartTotal)})")
                 }
             }
 
@@ -353,7 +356,7 @@ fun CustomerSection(
                 label = { Text("Search or Select Customer") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .menuAnchor(),
+                    .menuAnchor(MenuAnchorType.PrimaryNotEditable), // Updated menuAnchor
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) }
             )
             ExposedDropdownMenu(
@@ -410,4 +413,15 @@ fun ConfirmOrderDialog(
             }
         }
     )
+}
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@Composable
+fun SalesScreenPreview() {
+    androidx.compose.material3.MaterialTheme {
+        SalesScreen(
+            navController = androidx.navigation.compose.rememberNavController(),
+            viewModel = SalesViewModel() // Using real ViewModel, assumes it has reasonable default/mock state
+        )
+    }
 }
