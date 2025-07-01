@@ -148,7 +148,7 @@ class OrdersViewModel : ViewModel() {
 
     private fun generateOrderCode(customerName: String, orderId: Int): String {
         val initials = customerName.take(3).uppercase(Locale.getDefault())
-        return "$initials${String.format("%04d", orderId)}"
+        return "$initials${String.format(Locale.US, "%04d", orderId)}"
     }
 
     fun onUserMessageShown() {

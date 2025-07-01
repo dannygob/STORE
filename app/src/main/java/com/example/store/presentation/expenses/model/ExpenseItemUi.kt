@@ -23,6 +23,6 @@ data class ExpenseItemUi(
     }
 
     fun getFormattedAmount(): String {
-        return String.format("$%.2f", amount)
+        return String.format(Locale.US, "$%.2f", amount)
     }
 }

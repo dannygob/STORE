@@ -33,6 +33,6 @@ data class OrderItemUi(
     }
 
     fun getFormattedTotalAmount(): String {
-        return String.format("$%.2f", totalAmount)
+        return String.format(Locale.US, "$%.2f", totalAmount)
     }
 }

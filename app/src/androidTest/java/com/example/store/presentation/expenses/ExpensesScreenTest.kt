@@ -1,6 +1,7 @@
 package com.example.store.presentation.expenses
 
 import androidx.compose.ui.test.*
+import java.util.Locale
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.example.store.presentation.expenses.model.ExpenseItemUi
 import com.example.store.presentation.expenses.ui.ExpensesScreen
@@ -43,7 +44,7 @@ class ExpensesScreenTest {
     fun expensesScreen_displaysItemsAndTotalFromViewModel() {
         // Test Total Expenses Header
         composeTestRule.onNodeWithText("Total Expenses").assertIsDisplayed()
-        composeTestRule.onNodeWithText(String.format("$%.2f", sampleTotalExpenses)).assertIsDisplayed()
+        composeTestRule.onNodeWithText(String.format(Locale.US, "$%.2f", sampleTotalExpenses)).assertIsDisplayed()
 
         // Test first expense item
         composeTestRule.onNodeWithText("Office Rent").assertIsDisplayed()
@@ -63,14 +64,14 @@ class ExpensesScreenTest {
         mockUiState.value = ExpensesUiState(isLoading = true, totalExpenses = 0.0) // total is also reset/not yet calc
         composeTestRule.onNodeWithText("Office Rent").assertDoesNotExist()
         // Check that total expenses might show 0 or not be the focus when loading
-        composeTestRule.onNodeWithText(String.format("$%.2f", 0.00)).assertIsDisplayed()
+        composeTestRule.onNodeWithText(String.format(Locale.US, "$%.2f", 0.00)).assertIsDisplayed()
     }
 
     @Test
     fun expensesScreen_showsNoExpensesMessageWhenListIsEmptyAndNotLoading() {
         mockUiState.value = ExpensesUiState(expenses = emptyList(), isLoading = false, totalExpenses = 0.0)
         composeTestRule.onNodeWithText("No expenses recorded yet.").assertIsDisplayed()
-        composeTestRule.onNodeWithText(String.format("$%.2f", 0.00)).assertIsDisplayed() // Total should be 0
+        composeTestRule.onNodeWithText(String.format(Locale.US, "$%.2f", 0.00)).assertIsDisplayed() // Total should be 0
     }
 
     @Test

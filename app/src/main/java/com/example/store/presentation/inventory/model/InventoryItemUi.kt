@@ -1,6 +1,7 @@
 package com.example.store.presentation.inventory.model
 
 import java.time.LocalDate
+import java.util.Locale
 
 data class InventoryItemUi(
     val id: String,
@@ -11,7 +12,7 @@ data class InventoryItemUi(
     val expirationDate: LocalDate? = null,
     val imageUri: String? = null,
 ) {
-    fun getFormattedPrice(): String = "$${String.format("%.2f", price)}"
+    fun getFormattedPrice(): String = "$${String.format(Locale.US, "%.2f", price)}"
 
     fun isLowStock(): Boolean = quantity in 1..5
     fun isOutOfStock(): Boolean = quantity == 0
