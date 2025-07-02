@@ -1,8 +1,11 @@
 package com.example.store.data.repository
 
+import com.example.store.data.local.dao.OrderWithOrderItems // New import
 import com.example.store.data.local.entity.CustomerEntity
 import com.example.store.data.local.entity.ProductEntity
 import com.example.store.data.local.entity.SupplierEntity
+import com.example.store.data.local.entity.OrderEntity // New import
+import com.example.store.data.local.entity.OrderItemEntity // New import
 import kotlinx.coroutines.flow.Flow
 
 interface AppRepository {
@@ -32,4 +35,25 @@ interface AppRepository {
     suspend fun updateSupplier(supplier: SupplierEntity)
     suspend fun deleteSupplier(supplier: SupplierEntity)
     suspend fun deleteAllSuppliers()
+
+    // Order Methods
+    fun getAllOrders(): Flow<List<OrderEntity>>
+    fun getOrderById(orderId: String): Flow<OrderEntity?>
+    fun getOrdersByCustomerId(customerId: String): Flow<List<OrderEntity>>
+    suspend fun insertOrder(order: OrderEntity)
+    suspend fun updateOrder(order: OrderEntity)
+    suspend fun deleteOrder(order: OrderEntity)
+
+    // OrderItem Methods
+    fun getOrderItemsForOrder(orderId: String): Flow<List<OrderItemEntity>>
+    suspend fun insertOrderItem(orderItem: OrderItemEntity)
+    suspend fun insertAllOrderItems(orderItems: List<OrderItemEntity>)
+    suspend fun updateOrderItem(orderItem: OrderItemEntity)
+    suspend fun deleteOrderItem(orderItem: OrderItemEntity)
+    suspend fun deleteAllOrderItemsForOrder(orderId: String)
+
+    // Combined Operations
+    fun getOrderWithOrderItems(orderId: String): Flow<OrderWithOrderItems?>
+    fun getAllOrdersWithOrderItems(): Flow<List<OrderWithOrderItems>>
+    suspend fun insertOrderWithItems(order: OrderEntity, items: List<OrderItemEntity>)
 }
