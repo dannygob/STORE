@@ -54,6 +54,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.Button // Added for Debug button
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -179,10 +180,19 @@ fun DashboardScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
+            Button(
+                onClick = { navController.navigate(com.example.store.presentation.common.navigation.Route.Debug.route) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text("Go to DB Debug Screen (TEMP)")
+            }
+
             // Menú horizontal mejorado
             HorizontalMenuBar(
                 items = menuItems,
-                modifier = Modifier.padding(top = 50.dp) // Tu valor optimizado
+                modifier = Modifier.padding(top = 8.dp) // Adjusted padding
             )
 
             // Sección de tarjetas mejorada
