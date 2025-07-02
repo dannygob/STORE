@@ -10,6 +10,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack // Correct
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import java.util.Locale
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -128,7 +129,7 @@ fun ExpenseSummaryHeader(totalExpenses: Double) {
                 color = MaterialTheme.colorScheme.onSecondaryContainer
             )
             Text(
-                String.format("$%.2f", totalExpenses),
+                String.format(Locale.US, "$%.2f", totalExpenses),
                 style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.onSecondaryContainer
             )

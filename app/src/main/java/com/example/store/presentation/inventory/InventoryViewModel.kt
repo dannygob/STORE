@@ -3,83 +3,82 @@ package com.example.store.presentation.inventory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.store.presentation.inventory.model.InventoryItemUi
+import com.example.store.presentation.inventory.model.InventoryTab
+import com.example.store.presentation.inventory.model.InventoryUiState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
-data class InventoryUiState(
-    val items: List<InventoryItemUi> = emptyList(),
-    val isLoading: Boolean = false,
-    val userMessage: String? = null // For Toasts or Snackbars
-)
-
-class InventoryViewModel : ViewModel() {
+open class InventoryViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(InventoryUiState())
-    val uiState: StateFlow<InventoryUiState> = _uiState.asStateFlow()
+    open val uiState: StateFlow<InventoryUiState> = _uiState.asStateFlow()
 
     init {
-        loadInventoryItems()
+        loadInventory()
     }
 
-    private fun loadInventoryItems() {
+    private fun loadInventory() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            // Simulate network/db delay
-            kotlinx.coroutines.delay(1000)
+            delay(1000) // simulate loading
+            val mockItems = createMockItems()
             _uiState.update {
                 it.copy(
-                    isLoading = false,
-                    items = createMockInventoryItems()
+                    items = mockItems,
+                    filteredItems = mockItems,
+                    isLoading = false
                 )
             }
         }
     }
 
-    fun addItem(name: String, quantity: Int, price: Double) {
-        // In a real app, this would involve a repository call
-        val newItem = InventoryItemUi(name = name, quantity = quantity, price = price)
-        _uiState.update {
-            it.copy(
-                items = it.items + newItem,
-                userMessage = "Item '${newItem.name}' added."
-            )
-        }
+    fun onSearchChanged(query: String) {
+        _uiState.update { it.copy(searchText = query) }
+        filterInventory()
     }
 
-    fun deleteItem(itemId: String) {
-        val itemToDelete = _uiState.value.items.find { it.id == itemId }
-        _uiState.update {
-            it.copy(
-                items = it.items.filterNot { item -> item.id == itemId },
-                userMessage = itemToDelete?.let { "Item '${it.name}' deleted." } ?: "Item not found."
-            )
-        }
+    fun onTabSelected(tab: InventoryTab) {
+        _uiState.update { it.copy(selectedTab = tab) }
+        filterInventory()
     }
 
-    fun editItemPlaceholder(itemId: String) {
-        // This is a placeholder for future edit functionality
-        val itemToEdit = _uiState.value.items.find { it.id == itemId }
-        _uiState.update {
-            it.copy(userMessage = itemToEdit?.let { "Edit action for '${it.name}' triggered." } ?: "Item not found for edit.")
-        }
+    private fun filterInventory() {
+        val current = _uiState.value
+        val filtered = current.items
+            .filter { item ->
+                val matchesText = item.name.contains(current.searchText, ignoreCase = true) ||
+                        item.category.contains(current.searchText, ignoreCase = true)
+                val matchesTab = when (current.selectedTab) {
+                    InventoryTab.ALL -> true
+                    InventoryTab.ENTRIES -> item.quantity >= 0
+                    InventoryTab.EXITS -> item.quantity < 0
+                }
+                matchesText && matchesTab
+            }
+
+        _uiState.update { it.copy(filteredItems = filtered) }
+    }
+
+    // Placeholder for scanning
+    fun scanBarcode() {
+        _uiState.update { it.copy(userMessage = "Escaneo de código de barras (por implementar)") }
     }
 
     fun onUserMessageShown() {
         _uiState.update { it.copy(userMessage = null) }
     }
 
-    private fun createMockInventoryItems(): List<InventoryItemUi> {
-        return listOf(
-            InventoryItemUi(name = "Apples", quantity = 50, price = 0.5, category = "Fruits"),
-            InventoryItemUi(name = "Bananas", quantity = 100, price = 0.3, category = "Fruits"),
-            InventoryItemUi(name = "Milk (1L)", quantity = 20, price = 1.2, category = "Dairy"),
-            InventoryItemUi(name = "Bread Loaf", quantity = 30, price = 2.0, category = "Bakery"),
-            InventoryItemUi(name = "Chicken Breast (kg)", quantity = 15, price = 8.0, category = "Meat"),
-            InventoryItemUi(name = "Cereal Box", quantity = 25, price = 3.5, category = "Pantry"),
-            InventoryItemUi(name = "Eggs (dozen)", quantity = 40, price = 2.5, category = "Dairy")
-        )
-    }
+    // Simulated mock items
+    private fun createMockItems(): List<InventoryItemUi> = listOf(
+        InventoryItemUi("1", "Leche", 0, 1.5, "Lácteos", LocalDate.now().plusDays(2)),
+        InventoryItemUi("2", "Pan", 4, 0.75, "Panadería", LocalDate.now().plusDays(5)),
+        InventoryItemUi("3", "Agua", 10, 0.5, "Bebidas"),
+        InventoryItemUi("4", "Queso", 2, 3.2, "Lácteos", LocalDate.now().plusDays(1)),
+        InventoryItemUi("5", "Cereal", 6, 2.8, "Desayuno")
+    )
 }

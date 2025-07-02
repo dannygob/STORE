@@ -1,6 +1,7 @@
 package com.example.store.presentation.login
 
 import app.cash.turbine.test
+import com.example.store.presentation.login.viewmodel.LoginViewModel
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

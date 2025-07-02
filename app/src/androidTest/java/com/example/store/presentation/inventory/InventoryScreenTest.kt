@@ -2,17 +2,12 @@ package com.example.store.presentation.inventory
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.navigation.compose.rememberNavController
 import com.example.store.presentation.inventory.model.InventoryItemUi
 import com.example.store.presentation.inventory.ui.InventoryScreen
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
 
 // Using createComposeRule() for more direct Composable testing without full Activity context
 // For tests involving NavController that's part of a larger graph, createAndroidComposeRule might be needed.

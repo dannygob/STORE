@@ -5,67 +5,85 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.store.presentation.dashboard.ui.DashboardScreen // Ensured correct name
-import com.example.store.presentation.expenses.ui.ExpensesScreen
+import com.example.store.presentation.dashboard.DashboardViewModel
+import com.example.store.presentation.dashboard.ui.DashboardScreen
+import com.example.store.presentation.inventory.ui.InventoryItemUi
 import com.example.store.presentation.inventory.ui.InventoryScreen
+import com.example.store.presentation.inventory.ui.InventoryUiState
 import com.example.store.presentation.login.ui.LoginScreen
-import com.example.store.presentation.orders.ui.OrdersScreen
-import com.example.store.presentation.purchases.ui.PurchasesScreen
-import com.example.store.presentation.scanner.ui.ScannerScreen
 import com.example.store.presentation.sales.ui.SalesScreen
 import com.example.store.presentation.splash.ui.SplashScreen
+import com.example.store.presentation.debug.ui.DebugScreen // Moved Import
+
+sealed class Route(val route: String) {
+    object Splash : Route("splash")
+    object Login : Route("login")
+    object Dashboard : Route("dashboard")
+    object Inventory : Route("inventory")
+    object Sales : Route("sales")
+    object Debug : Route("debug") // New Route
+}
 
 @Composable
 fun MainNavHost(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = ScreenRoutes.SPLASH
+        startDestination = Route.Splash.route
     ) {
-        composable(ScreenRoutes.SPLASH) {
+        composable(Route.Splash.route) {
             SplashScreen(
                 onTimeout = {
-                    navController.navigate(ScreenRoutes.LOGIN) {
+                    navController.navigate(Route.Login.route) {
+                        popUpTo(Route.Splash.route) { inclusive = true }
                         launchSingleTop = true
-                        popUpTo(ScreenRoutes.SPLASH) { inclusive = true }
                     }
                 }
             )
         }
-        composable(ScreenRoutes.LOGIN) {
+
+        composable(Route.Login.route) {
             LoginScreen(
-                // viewModel is provided by default from hiltViewModel or viewModel()
                 onLoginSuccess = {
-                    navController.navigate(ScreenRoutes.DASHBOARD) {
+                    navController.navigate(Route.Dashboard.route) {
+                        popUpTo(Route.Login.route) { inclusive = true }
                         launchSingleTop = true
-                        popUpTo(ScreenRoutes.LOGIN) { inclusive = true } // Pop login from back stack
                     }
                 }
             )
         }
-        composable(ScreenRoutes.DASHBOARD) {
-            // Ensure you are using the correct name for DashboardScreen,
-            // If it was DashboadSceern.kt, the import and call should match that.
-            // For now, assuming it's DashboardScreen or will be renamed.
-            DashboardScreen(navController = navController)
+
+        composable(Route.Dashboard.route) {
+            val dashboardViewModel: DashboardViewModel = viewModel()
+            DashboardScreen(
+                navController = navController,
+                viewModel = dashboardViewModel
+            )
         }
-        composable(ScreenRoutes.SALES) {
+
+        composable(Route.Inventory.route) {
+            val items = listOf(
+                InventoryItemUi("1", "Leche Entera", 5, 1.25, "Lácteos"),
+                InventoryItemUi("2", "Arroz", 0, 0.85, "Granos"),
+                InventoryItemUi("3", "Huevos", 2, 0.25, "Proteínas")
+            )
+            InventoryScreen(
+                navController = navController,
+                state = InventoryUiState(
+                    items = items,
+                    filteredItems = items
+                ),
+                onSearchChanged = {},
+                onTabSelected = {}
+            )
+        }
+
+        composable(Route.Sales.route) {
             SalesScreen(navController = navController)
         }
-        composable(ScreenRoutes.INVENTORY) { // Changed from PRODUCTS
-            InventoryScreen(navController = navController)
+
+        composable(Route.Debug.route) { // Composable for DebugScreen
+            DebugScreen()
         }
-        composable(ScreenRoutes.PURCHASES) {
-            PurchasesScreen(navController = navController)
-        }
-        composable(ScreenRoutes.ORDERS) {
-            OrdersScreen(navController = navController)
-        }
-        composable(ScreenRoutes.SCANNER) {
-            ScannerScreen(navController = navController)
-        }
-        composable(ScreenRoutes.EXPENSES) {
-            ExpensesScreen(navController = navController)
-        }
-        // Removed composables for CATEGORIES, CUSTOMERS, REPORTS
+
     }
 }

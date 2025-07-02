@@ -1,4 +1,4 @@
-package com.example.store.presentation.common
+package com.example.store
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,8 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.example.store.presentation.common.navigation.MainNavHost
+import dagger.hilt.android.AndroidEntryPoint // 👈 Importación añadida
 
-
+@AndroidEntryPoint // 👈 Anotación obligatoria para habilitar inyección de dependencias con Hilt
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

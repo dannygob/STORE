@@ -22,10 +22,10 @@ data class PurchaseItemUi(
     }
 
     fun getFormattedTotalPrice(): String {
-        return String.format("$%.2f", totalPrice)
+        return String.format(Locale.US, "$%.2f", totalPrice)
     }
 
     fun getFormattedUnitPrice(): String {
-        return String.format("$%.2f", unitPrice)
+        return String.format(Locale.US, "$%.2f", unitPrice)
     }
 }

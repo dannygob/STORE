@@ -8,10 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito.mock
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.times
+
 
 class ScannerScreenTest {
 

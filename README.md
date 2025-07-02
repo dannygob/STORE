@@ -105,8 +105,7 @@ ________________________________________
 ________________________________________
 🧠 5. Intelligence and Statistics
 • Ranking of best-selling products
-• Replenishment recommendations:
-• Based on volume, frequency, and season
+• Replenishment recommendations: Based on volume, frequency, and season
 • Comparisons by period:
 • Timeline, bars
 • Week vs. week, month vs. month, year vs. year
@@ -139,6 +138,8 @@ Allow users to switch between light and dark themes from settings / Allow users 
 Create a splash screen for the app presentation
 Show the store logo and a welcome message
 Set navigation to go to the dashboard after a few seconds
+
+📊 Dashboard Adapted to the Project
 
 📱 Proyecto: Aplicación para Tienda de Abarrotes
 Plataforma: Android Studio
@@ -303,6 +304,16 @@ o	Ventas por día (últimos 7 días)
 o	Categorías más vendidas (gráfico de pastel)
 5.	Accesos rápidos
 o	Botones o chips para: Añadir venta, Añadir compra, Escanear producto
+
+
+- Usuarios registrados en AuthRepositoryImpl. Por ejemplo:
+- Usuario: admin@store.com
+- Contraseña: admin123
+- o
+- Usuario: user@store.com
+- Contraseña: user123
+- 
+
 
 
 
