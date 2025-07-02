@@ -4,7 +4,7 @@ This document tracks the progress of implementing the local Room database and fu
 
 ## Overall Plan
 
-*   **Phase 1: Core Entities Setup (Product, Customer, Supplier) with Room**
+*   [X] **Phase 1: Core Entities Setup (Product, Customer, Supplier) with Room** - *COMPLETED*
     *   [X] Stage 1.1: Add Room Dependencies & Initial Progress File
     *   [X] Stage 1.2: Define `ProductEntity` & `ProductDao` - *Completed*
     *   [X] Stage 1.3: Define `CustomerEntity` & `CustomerDao` - *Completed*
@@ -12,12 +12,12 @@ This document tracks the progress of implementing the local Room database and fu
     *   [X] Stage 1.5: Create `AppDatabase` class - *Completed*
     *   [X] Stage 1.6: Implement basic Repository for Product, Customer, Supplier. - *Completed*
     *   [X] Stage 1.7: Initial integration for creating/reading entities. - *Completed*
-*   **Phase 2: Order Management Entities (Room)**
-    *   [ ] Stage 2.1: Define `OrderEntity` & `OrderDao`
-    *   [ ] Stage 2.2: Define `OrderItemEntity` & `OrderItemDao`
-    *   [ ] Stage 2.3: Update `AppDatabase`
-    *   [ ] Stage 2.4: Extend Repository for Orders.
-    *   [ ] Stage 2.5: Integrate Order creation/viewing.
+*   [X] **Phase 2: Order Management Entities (Room)** - *COMPLETED*
+    *   [X] Stage 2.1: Define `OrderEntity` & `OrderDao` - *Completed*
+    *   [X] Stage 2.2: Define `OrderItemEntity` & `OrderItemDao` - *Completed*
+    *   [X] Stage 2.3: Update `AppDatabase` - *Completed*
+    *   [X] Stage 2.4: Extend Repository for Orders. - *Completed*
+    *   [X] Stage 2.5: Integrate Order creation/viewing. - *Completed*
 *   **Phase 3: User Preferences (Room)**
     *   [ ] Stage 3.1: Define `UserPreferenceEntity` & `UserPreferenceDao`
     *   [ ] Stage 3.2: Update `AppDatabase`
