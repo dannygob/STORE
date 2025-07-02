@@ -10,6 +10,7 @@ activityCompose = "1.10.1"
 composeBom = "2025.06.00"
 androidxNavigation = "2.7.7"
 coreSplashscreen = "1.0.1"
+kspVersion = "2.0.0-1.0.21" # KSP version compatible with Kotlin 2.0.x
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -37,4 +38,4 @@ androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscree
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-
+ksp = { id = "com.google.devtools.ksp", version.ref = "kspVersion" }
