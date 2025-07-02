@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("kotlin-kapt") // 🔹 necesario para Hilt
     id("com.google.dagger.hilt.android")
-
+    alias(libs.plugins.ksp) // KSP plugin
 }
 
 android {
@@ -71,6 +71,10 @@ dependencies {
     implementation(libs.ui)
     implementation(libs.androidx.compose.material3.material3)
 
+    // Room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
 
     // Tests
     testImplementation(libs.junit)
