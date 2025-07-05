@@ -10,20 +10,29 @@ import com.example.store.data.local.dao.SupplierDao
 import com.example.store.data.local.dao.OrderDao // New import
 import com.example.store.data.local.dao.OrderItemDao // New import
 import com.example.store.data.local.entity.CustomerEntity
+import com.example.store.data.local.dao.ProductDao
+import com.example.store.data.local.dao.SupplierDao
+import com.example.store.data.local.dao.OrderDao
+import com.example.store.data.local.dao.OrderItemDao
+import com.example.store.data.local.dao.UserPreferenceDao // New import
+import com.example.store.data.local.entity.CustomerEntity
 import com.example.store.data.local.entity.ProductEntity
 import com.example.store.data.local.entity.SupplierEntity
-import com.example.store.data.local.entity.OrderEntity // New import
-import com.example.store.data.local.entity.OrderItemEntity // New import
+import com.example.store.data.local.entity.OrderEntity
+import com.example.store.data.local.entity.OrderItemEntity
+import com.example.store.data.local.entity.UserPreferenceEntity // New import
+
 
 @Database(
     entities = [
         ProductEntity::class,
         CustomerEntity::class,
         SupplierEntity::class,
-        OrderEntity::class,      // Added OrderEntity
-        OrderItemEntity::class   // Added OrderItemEntity
+        OrderEntity::class,
+        OrderItemEntity::class,
+        UserPreferenceEntity::class // Added UserPreferenceEntity
     ],
-    version = 2, // Incremented version
+    version = 3, // Incremented version
     exportSchema = false // For now, we'll keep schema export off. Can be enabled for complex migrations.
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -31,8 +40,9 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun productDao(): ProductDao
     abstract fun customerDao(): CustomerDao
     abstract fun supplierDao(): SupplierDao
-    abstract fun orderDao(): OrderDao           // Added OrderDao accessor
-    abstract fun orderItemDao(): OrderItemDao   // Added OrderItemDao accessor
+    abstract fun orderDao(): OrderDao
+    abstract fun orderItemDao(): OrderItemDao
+    abstract fun userPreferenceDao(): UserPreferenceDao // Added UserPreferenceDao accessor
 
     companion object {
         @Volatile

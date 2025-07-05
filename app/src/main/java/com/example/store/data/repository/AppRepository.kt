@@ -56,4 +56,10 @@ interface AppRepository {
     fun getOrderWithOrderItems(orderId: String): Flow<OrderWithOrderItems?>
     fun getAllOrdersWithOrderItems(): Flow<List<OrderWithOrderItems>>
     suspend fun insertOrderWithItems(order: OrderEntity, items: List<OrderItemEntity>)
+
+    // User Preference Methods
+    fun getPreference(key: String): Flow<String?>
+    suspend fun savePreference(key: String, value: String)
+    suspend fun deletePreference(key: String)
+    suspend fun deleteAllPreferences()
 }

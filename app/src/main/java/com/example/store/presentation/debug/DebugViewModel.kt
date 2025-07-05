@@ -25,8 +25,9 @@ class DebugViewModel @Inject constructor(
 
     init {
         addMessage("DebugViewModel Initialized.")
-        testCoreDatabaseOperations() // Renamed for clarity
-        testOrderOperations()      // New method call
+        testCoreDatabaseOperations()
+        testOrderOperations()
+        testUserPreferenceOperations() // New method call
     }
 
     private fun addMessage(message: String) {
@@ -75,6 +76,58 @@ class DebugViewModel @Inject constructor(
         viewModelScope.launch {
             appRepository.getAllSuppliers().collect { suppliers ->
                 addMessage("Fetched Suppliers (${suppliers.size}): ${suppliers.joinToString { it.name }}")
+            }
+        }
+    }
+
+    fun testUserPreferenceOperations() {
+        viewModelScope.launch {
+            addMessage("Starting user preference database operations...")
+
+            val testThemeKey = "user_theme"
+            val testThemeValue = "dark_mode_v1"
+
+            // Save a preference
+            appRepository.savePreference(testThemeKey, testThemeValue)
+            addMessage("Saved preference: Key='$testThemeKey', Value='$testThemeValue'")
+
+            // Fetch the preference
+            appRepository.getPreference(testThemeKey).collect { fetchedValue ->
+                if (fetchedValue != null) {
+                    addMessage("Fetched preference: Key='$testThemeKey', Value='$fetchedValue'")
+                } else {
+                    addMessage("Preference for Key='$testThemeKey' not found after save.")
+                }
+            }
+
+            // Test deleting a preference
+            val tempKey = "temp_pref_to_delete"
+            appRepository.savePreference(tempKey, "some_value")
+            addMessage("Saved temp preference: Key='$tempKey'")
+            appRepository.deletePreference(tempKey)
+            addMessage("Deleted temp preference: Key='$tempKey'")
+            appRepository.getPreference(tempKey).collect { deletedValue ->
+                if (deletedValue == null) {
+                    addMessage("Successfully verified deletion of Key='$tempKey'.")
+                } else {
+                    addMessage("ERROR: Key='$tempKey' still exists after deletion. Value='$deletedValue'")
+                }
+            }
+
+            // Test deleting all (if desired, be careful with this in real apps without confirmation)
+            // For debug purposes, let's save one more and then delete all
+            appRepository.savePreference("another_key", "another_value")
+            addMessage("Saved 'another_key' before deleteAll.")
+            appRepository.deleteAllPreferences()
+            addMessage("Called deleteAllPreferences().")
+            appRepository.getPreference(testThemeKey).collect{themeVal -> // Check original key
+                appRepository.getPreference("another_key").collect{anotherVal ->
+                    if(themeVal == null && anotherVal == null) {
+                        addMessage("Verified: All preferences deleted (checked '$testThemeKey' and 'another_key').")
+                    } else {
+                        addMessage("ERROR: Preferences not all deleted. '$testThemeKey': $themeVal, 'another_key': $anotherVal")
+                    }
+                }
             }
         }
     }

@@ -19,10 +19,12 @@ This document tracks the progress of implementing the local Room database and fu
     *   [X] Stage 2.4: Extend Repository for Orders. - *Completed*
     *   [X] Stage 2.5: Integrate Order creation/viewing. - *Completed*
 *   **Phase 3: User Preferences (Room)**
-    *   [ ] Stage 3.1: Define `UserPreferenceEntity` & `UserPreferenceDao`
-    *   [ ] Stage 3.2: Update `AppDatabase`
-    *   [ ] Stage 3.3: Extend Repository for User Preferences.
-    *   [ ] Stage 3.4: Integrate preference loading/saving.
+    *   [X] Stage 3.1: Define `UserPreferenceEntity` & `UserPreferenceDao` - *Completed*
+    *   [X] Stage 3.2: Update `AppDatabase` - *Completed*
+    *   [X] Stage 3.3: Extend Repository for User Preferences. - *Completed*
+    *   [X] Stage 3.4: Integrate preference loading/saving. - *Completed*
+*   [X] **Phase 3: User Preferences (Room)** - *COMPLETED*
+    *   (This line is a summary, actual list of stages for phase 3 is above)
 *   **Phase 4: Warehouse/Inventory Location Entities (Room - Advanced)**
     *   (Details to be defined)
 *   **Phase 5: Advanced Room Features & Refinements**

@@ -5,8 +5,9 @@ import com.example.store.data.local.AppDatabase
 import com.example.store.data.local.dao.CustomerDao
 import com.example.store.data.local.dao.ProductDao
 import com.example.store.data.local.dao.SupplierDao
-import com.example.store.data.local.dao.OrderDao // New
-import com.example.store.data.local.dao.OrderItemDao // New
+import com.example.store.data.local.dao.OrderDao
+import com.example.store.data.local.dao.OrderItemDao
+import com.example.store.data.local.dao.UserPreferenceDao // New
 import com.example.store.data.repository.AppRepository
 import com.example.store.data.repository.AppRepositoryImpl
 import dagger.Module
@@ -52,8 +53,14 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideOrderItemDao(appDatabase: AppDatabase): OrderItemDao { // New provider
+    fun provideOrderItemDao(appDatabase: AppDatabase): OrderItemDao {
         return appDatabase.orderItemDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserPreferenceDao(appDatabase: AppDatabase): UserPreferenceDao { // New provider
+        return appDatabase.userPreferenceDao()
     }
 
     @Provides
@@ -62,9 +69,10 @@ object DatabaseModule {
         productDao: ProductDao,
         customerDao: CustomerDao,
         supplierDao: SupplierDao,
-        orderDao: OrderDao,             // Added OrderDao
-        orderItemDao: OrderItemDao      // Added OrderItemDao
+        orderDao: OrderDao,
+        orderItemDao: OrderItemDao,
+        userPreferenceDao: UserPreferenceDao // Added UserPreferenceDao
     ): AppRepository {
-        return AppRepositoryImpl(productDao, customerDao, supplierDao, orderDao, orderItemDao)
+        return AppRepositoryImpl(productDao, customerDao, supplierDao, orderDao, orderItemDao, userPreferenceDao)
     }
 }

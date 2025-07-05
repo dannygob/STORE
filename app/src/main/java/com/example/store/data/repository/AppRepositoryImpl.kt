@@ -3,14 +3,16 @@ package com.example.store.data.repository
 import com.example.store.data.local.dao.CustomerDao
 import com.example.store.data.local.dao.ProductDao
 import com.example.store.data.local.dao.SupplierDao
-import com.example.store.data.local.dao.OrderDao // New import
-import com.example.store.data.local.dao.OrderItemDao // New import
-import com.example.store.data.local.dao.OrderWithOrderItems // New import
+import com.example.store.data.local.dao.OrderDao
+import com.example.store.data.local.dao.OrderItemDao
+import com.example.store.data.local.dao.OrderWithOrderItems
+import com.example.store.data.local.dao.UserPreferenceDao // New import
 import com.example.store.data.local.entity.CustomerEntity
 import com.example.store.data.local.entity.ProductEntity
 import com.example.store.data.local.entity.SupplierEntity
-import com.example.store.data.local.entity.OrderEntity // New import
-import com.example.store.data.local.entity.OrderItemEntity // New import
+import com.example.store.data.local.entity.OrderEntity
+import com.example.store.data.local.entity.OrderItemEntity
+import com.example.store.data.local.entity.UserPreferenceEntity // New import
 import kotlinx.coroutines.flow.Flow
 
 // In a real app, DAOs would likely be injected (e.g., using Hilt)
@@ -18,8 +20,9 @@ class AppRepositoryImpl(
     private val productDao: ProductDao,
     private val customerDao: CustomerDao,
     private val supplierDao: SupplierDao,
-    private val orderDao: OrderDao,         // New DAO
-    private val orderItemDao: OrderItemDao  // New DAO
+    private val orderDao: OrderDao,
+    private val orderItemDao: OrderItemDao,
+    private val userPreferenceDao: UserPreferenceDao // New DAO
 ) : AppRepository {
 
     // Product Methods
@@ -75,5 +78,20 @@ class AppRepositoryImpl(
         // A @Transaction method in a DAO would be better for atomicity.
         orderDao.insertOrder(order)
         orderItemDao.insertAllOrderItems(items.map { it.copy(orderId = order.orderId) }) // Ensure items have correct orderId
+    }
+
+    // User Preference Methods
+    override fun getPreference(key: String): Flow<String?> = userPreferenceDao.getPreferenceValue(key)
+
+    override suspend fun savePreference(key: String, value: String) {
+        userPreferenceDao.insertPreference(UserPreferenceEntity(key, value))
+    }
+
+    override suspend fun deletePreference(key: String) {
+        userPreferenceDao.deletePreference(key)
+    }
+
+    override suspend fun deleteAllPreferences() {
+        userPreferenceDao.deleteAllPreferences()
     }
 }
