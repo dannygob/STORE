@@ -6,13 +6,15 @@ import com.example.store.data.local.dao.SupplierDao
 import com.example.store.data.local.dao.OrderDao
 import com.example.store.data.local.dao.OrderItemDao
 import com.example.store.data.local.dao.OrderWithOrderItems
-import com.example.store.data.local.dao.UserPreferenceDao // New import
+import com.example.store.data.local.dao.UserPreferenceDao
+import com.example.store.data.local.dao.WarehouseDao // New import
 import com.example.store.data.local.entity.CustomerEntity
 import com.example.store.data.local.entity.ProductEntity
 import com.example.store.data.local.entity.SupplierEntity
 import com.example.store.data.local.entity.OrderEntity
 import com.example.store.data.local.entity.OrderItemEntity
-import com.example.store.data.local.entity.UserPreferenceEntity // New import
+import com.example.store.data.local.entity.UserPreferenceEntity
+import com.example.store.data.local.entity.WarehouseEntity // New import
 import kotlinx.coroutines.flow.Flow
 
 // In a real app, DAOs would likely be injected (e.g., using Hilt)
@@ -22,7 +24,8 @@ class AppRepositoryImpl(
     private val supplierDao: SupplierDao,
     private val orderDao: OrderDao,
     private val orderItemDao: OrderItemDao,
-    private val userPreferenceDao: UserPreferenceDao // New DAO
+    private val userPreferenceDao: UserPreferenceDao,
+    private val warehouseDao: WarehouseDao // New DAO
 ) : AppRepository {
 
     // Product Methods
@@ -94,4 +97,12 @@ class AppRepositoryImpl(
     override suspend fun deleteAllPreferences() {
         userPreferenceDao.deleteAllPreferences()
     }
+
+    // Warehouse Methods
+    override fun getAllWarehouses(): Flow<List<WarehouseEntity>> = warehouseDao.getAllWarehouses()
+    override fun getWarehouseById(warehouseId: String): Flow<WarehouseEntity?> = warehouseDao.getWarehouseById(warehouseId)
+    override suspend fun insertWarehouse(warehouse: WarehouseEntity) = warehouseDao.insertWarehouse(warehouse)
+    override suspend fun updateWarehouse(warehouse: WarehouseEntity) = warehouseDao.updateWarehouse(warehouse)
+    override suspend fun deleteWarehouse(warehouse: WarehouseEntity) = warehouseDao.deleteWarehouse(warehouse)
+    override suspend fun deleteAllWarehouses() = warehouseDao.deleteAllWarehouses()
 }

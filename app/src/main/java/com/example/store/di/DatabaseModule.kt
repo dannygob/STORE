@@ -7,7 +7,8 @@ import com.example.store.data.local.dao.ProductDao
 import com.example.store.data.local.dao.SupplierDao
 import com.example.store.data.local.dao.OrderDao
 import com.example.store.data.local.dao.OrderItemDao
-import com.example.store.data.local.dao.UserPreferenceDao // New
+import com.example.store.data.local.dao.UserPreferenceDao
+import com.example.store.data.local.dao.WarehouseDao // New
 import com.example.store.data.repository.AppRepository
 import com.example.store.data.repository.AppRepositoryImpl
 import dagger.Module
@@ -59,8 +60,14 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideUserPreferenceDao(appDatabase: AppDatabase): UserPreferenceDao { // New provider
+    fun provideUserPreferenceDao(appDatabase: AppDatabase): UserPreferenceDao {
         return appDatabase.userPreferenceDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideWarehouseDao(appDatabase: AppDatabase): WarehouseDao { // New provider
+        return appDatabase.warehouseDao()
     }
 
     @Provides
@@ -71,8 +78,9 @@ object DatabaseModule {
         supplierDao: SupplierDao,
         orderDao: OrderDao,
         orderItemDao: OrderItemDao,
-        userPreferenceDao: UserPreferenceDao // Added UserPreferenceDao
+        userPreferenceDao: UserPreferenceDao,
+        warehouseDao: WarehouseDao // Added WarehouseDao
     ): AppRepository {
-        return AppRepositoryImpl(productDao, customerDao, supplierDao, orderDao, orderItemDao, userPreferenceDao)
+        return AppRepositoryImpl(productDao, customerDao, supplierDao, orderDao, orderItemDao, userPreferenceDao, warehouseDao)
     }
 }

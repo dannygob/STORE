@@ -25,8 +25,15 @@ This document tracks the progress of implementing the local Room database and fu
     *   [X] Stage 3.4: Integrate preference loading/saving. - *Completed*
 *   [X] **Phase 3: User Preferences (Room)** - *COMPLETED*
     *   (This line is a summary, actual list of stages for phase 3 is above)
-*   **Phase 4: Warehouse/Inventory Location Entities (Room - Advanced)**
-    *   (Details to be defined)
+*   **Phase 4: Warehouse & Basic Stock Entities (Room)** - *In Progress*
+    *   [X] Stage 4.1: Update Progress File for Phase 4 Start - *Completed*
+    *   [X] Stage 4.2: Define `WarehouseEntity` & `WarehouseDao` - *Completed*
+    *   [X] Stage 4.3: (Re-evaluation) Product Stock and Warehouse Linking - *Completed*
+    *   [X] Stage 4.4: Update `AppDatabase` - *Completed*
+    *   [X] Stage 4.5: Extend Repository for Warehouses - *Completed*
+    *   [X] Stage 4.6: Initial Integration for Warehouses (Placeholder) - *Completed*
+    *   [X] Stage 4.7: Update Progress File & Submit - *Completed*
+*   **Phase 4: Warehouse & Basic Stock Entities (Room)** - *COMPLETED (Initial part: WarehouseEntity)*
 *   **Phase 5: Advanced Room Features & Refinements**
     *   (Database Migrations, complex queries, etc.)
 *   **Phase 6: Firebase Integration - Firestore (Parallel or Sequential)**

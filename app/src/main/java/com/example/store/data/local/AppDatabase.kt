@@ -14,13 +14,15 @@ import com.example.store.data.local.dao.ProductDao
 import com.example.store.data.local.dao.SupplierDao
 import com.example.store.data.local.dao.OrderDao
 import com.example.store.data.local.dao.OrderItemDao
-import com.example.store.data.local.dao.UserPreferenceDao // New import
+import com.example.store.data.local.dao.UserPreferenceDao
+import com.example.store.data.local.dao.WarehouseDao // New import
 import com.example.store.data.local.entity.CustomerEntity
 import com.example.store.data.local.entity.ProductEntity
 import com.example.store.data.local.entity.SupplierEntity
 import com.example.store.data.local.entity.OrderEntity
 import com.example.store.data.local.entity.OrderItemEntity
-import com.example.store.data.local.entity.UserPreferenceEntity // New import
+import com.example.store.data.local.entity.UserPreferenceEntity
+import com.example.store.data.local.entity.WarehouseEntity // New import
 
 
 @Database(
@@ -30,9 +32,10 @@ import com.example.store.data.local.entity.UserPreferenceEntity // New import
         SupplierEntity::class,
         OrderEntity::class,
         OrderItemEntity::class,
-        UserPreferenceEntity::class // Added UserPreferenceEntity
+        UserPreferenceEntity::class,
+        WarehouseEntity::class // Added WarehouseEntity
     ],
-    version = 3, // Incremented version
+    version = 4, // Incremented version
     exportSchema = false // For now, we'll keep schema export off. Can be enabled for complex migrations.
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -42,7 +45,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun supplierDao(): SupplierDao
     abstract fun orderDao(): OrderDao
     abstract fun orderItemDao(): OrderItemDao
-    abstract fun userPreferenceDao(): UserPreferenceDao // Added UserPreferenceDao accessor
+    abstract fun userPreferenceDao(): UserPreferenceDao
+    abstract fun warehouseDao(): WarehouseDao // Added WarehouseDao accessor
 
     companion object {
         @Volatile

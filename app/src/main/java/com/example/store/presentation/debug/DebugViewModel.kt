@@ -5,8 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.store.data.local.entity.CustomerEntity
 import com.example.store.data.local.entity.ProductEntity
 import com.example.store.data.local.entity.SupplierEntity
-import com.example.store.data.local.entity.OrderEntity // New
-import com.example.store.data.local.entity.OrderItemEntity // New
+import com.example.store.data.local.entity.OrderEntity
+import com.example.store.data.local.entity.OrderItemEntity
+import com.example.store.data.local.entity.WarehouseEntity // New
 import com.example.store.data.repository.AppRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +28,8 @@ class DebugViewModel @Inject constructor(
         addMessage("DebugViewModel Initialized.")
         testCoreDatabaseOperations()
         testOrderOperations()
-        testUserPreferenceOperations() // New method call
+        testUserPreferenceOperations()
+        testWarehouseOperations() // New method call
     }
 
     private fun addMessage(message: String) {
@@ -76,6 +78,43 @@ class DebugViewModel @Inject constructor(
         viewModelScope.launch {
             appRepository.getAllSuppliers().collect { suppliers ->
                 addMessage("Fetched Suppliers (${suppliers.size}): ${suppliers.joinToString { it.name }}")
+            }
+        }
+    }
+
+    fun testWarehouseOperations() {
+        viewModelScope.launch {
+            addMessage("Starting warehouse database operations...")
+
+            // Clean up existing warehouses first for a clean test run
+            appRepository.deleteAllWarehouses()
+            addMessage("Deleted all existing warehouses.")
+
+            // Insert a sample warehouse
+            val warehouse1 = com.example.store.data.local.entity.WarehouseEntity(name = "Main Warehouse", address = "123 Storage Rd", capacity = 1000.0)
+            appRepository.insertWarehouse(warehouse1)
+            addMessage("Inserted Warehouse: Name='${warehouse1.name}', ID='${warehouse1.warehouseId}'")
+
+            // Fetch the warehouse by ID
+            appRepository.getWarehouseById(warehouse1.warehouseId).collect { fetchedWarehouse ->
+                if (fetchedWarehouse != null) {
+                    addMessage("Fetched Warehouse by ID: Name='${fetchedWarehouse.name}', Address='${fetchedWarehouse.address}'")
+                } else {
+                    addMessage("Warehouse with ID '${warehouse1.warehouseId}' not found after insert.")
+                }
+            }
+
+            // Insert another warehouse
+            val warehouse2 = com.example.store.data.local.entity.WarehouseEntity(name = "North Depot", address = "456 Distribution Ave")
+            appRepository.insertWarehouse(warehouse2)
+            addMessage("Inserted Warehouse: Name='${warehouse2.name}', ID='${warehouse2.warehouseId}'")
+
+            // Fetch all warehouses
+            appRepository.getAllWarehouses().collect { warehouses ->
+                addMessage("Fetched All Warehouses (${warehouses.size}):")
+                warehouses.forEach { wh ->
+                    addMessage("  - ID='${wh.warehouseId}', Name='${wh.name}', Address='${wh.address}'")
+                }
             }
         }
     }

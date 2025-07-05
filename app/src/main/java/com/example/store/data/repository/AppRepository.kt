@@ -4,8 +4,9 @@ import com.example.store.data.local.dao.OrderWithOrderItems // New import
 import com.example.store.data.local.entity.CustomerEntity
 import com.example.store.data.local.entity.ProductEntity
 import com.example.store.data.local.entity.SupplierEntity
-import com.example.store.data.local.entity.OrderEntity // New import
-import com.example.store.data.local.entity.OrderItemEntity // New import
+import com.example.store.data.local.entity.OrderEntity
+import com.example.store.data.local.entity.OrderItemEntity
+import com.example.store.data.local.entity.WarehouseEntity // New import
 import kotlinx.coroutines.flow.Flow
 
 interface AppRepository {
@@ -62,4 +63,12 @@ interface AppRepository {
     suspend fun savePreference(key: String, value: String)
     suspend fun deletePreference(key: String)
     suspend fun deleteAllPreferences()
+
+    // Warehouse Methods
+    fun getAllWarehouses(): Flow<List<WarehouseEntity>>
+    fun getWarehouseById(warehouseId: String): Flow<WarehouseEntity?>
+    suspend fun insertWarehouse(warehouse: WarehouseEntity)
+    suspend fun updateWarehouse(warehouse: WarehouseEntity)
+    suspend fun deleteWarehouse(warehouse: WarehouseEntity)
+    suspend fun deleteAllWarehouses()
 }
