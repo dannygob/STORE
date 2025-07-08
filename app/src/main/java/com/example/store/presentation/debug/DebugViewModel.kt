@@ -5,8 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.store.data.local.entity.CustomerEntity
 import com.example.store.data.local.entity.ProductEntity
 import com.example.store.data.local.entity.SupplierEntity
-import com.example.store.data.local.entity.OrderEntity // New
-import com.example.store.data.local.entity.OrderItemEntity // New
+import com.example.store.data.local.entity.OrderEntity
+import com.example.store.data.local.entity.OrderItemEntity
+import com.example.store.data.local.entity.WarehouseEntity
+import com.example.store.data.local.entity.StockAtWarehouseEntity // New
 import com.example.store.data.repository.AppRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,8 +27,11 @@ class DebugViewModel @Inject constructor(
 
     init {
         addMessage("DebugViewModel Initialized.")
-        testCoreDatabaseOperations() // Renamed for clarity
-        testOrderOperations()      // New method call
+        testCoreDatabaseOperations()
+        testOrderOperations()
+        testUserPreferenceOperations()
+        testWarehouseOperations()
+        testStockAtWarehouseOperations() // New method call
     }
 
     private fun addMessage(message: String) {
@@ -75,6 +80,200 @@ class DebugViewModel @Inject constructor(
         viewModelScope.launch {
             appRepository.getAllSuppliers().collect { suppliers ->
                 addMessage("Fetched Suppliers (${suppliers.size}): ${suppliers.joinToString { it.name }}")
+            }
+        }
+    }
+
+    fun testWarehouseOperations() {
+        viewModelScope.launch {
+            addMessage("Starting warehouse database operations...")
+
+            // Clean up existing warehouses first for a clean test run
+            appRepository.deleteAllWarehouses()
+            addMessage("Deleted all existing warehouses.")
+
+            // Insert a sample warehouse
+            val warehouse1 = com.example.store.data.local.entity.WarehouseEntity(name = "Main Warehouse", address = "123 Storage Rd", capacity = 1000.0, notes = "Primary facility")
+            appRepository.insertWarehouse(warehouse1)
+            addMessage("Inserted Warehouse: Name='${warehouse1.name}', ID='${warehouse1.warehouseId}', Notes='${warehouse1.notes}'")
+
+            // Fetch the warehouse by ID
+            appRepository.getWarehouseById(warehouse1.warehouseId).collect { fetchedWarehouse ->
+                if (fetchedWarehouse != null) {
+                    addMessage("Fetched Warehouse by ID: Name='${fetchedWarehouse.name}', Address='${fetchedWarehouse.address}', Notes='${fetchedWarehouse.notes}'")
+                } else {
+                    addMessage("Warehouse with ID '${warehouse1.warehouseId}' not found after insert.")
+                }
+            }
+
+            // Insert another warehouse
+            val warehouse2 = com.example.store.data.local.entity.WarehouseEntity(name = "North Depot", address = "456 Distribution Ave", notes = null) // Notes can be null
+            appRepository.insertWarehouse(warehouse2)
+            addMessage("Inserted Warehouse: Name='${warehouse2.name}', ID='${warehouse2.warehouseId}', Notes='${warehouse2.notes}'")
+
+            // Fetch all warehouses
+            appRepository.getAllWarehouses().collect { warehouses ->
+                addMessage("Fetched All Warehouses (${warehouses.size}):")
+                warehouses.forEach { wh ->
+                    addMessage("  - ID='${wh.warehouseId}', Name='${wh.name}', Address='${wh.address}', Notes='${wh.notes}'")
+                }
+            }
+        }
+    }
+
+    fun testStockAtWarehouseOperations() {
+        viewModelScope.launch {
+            addMessage("Starting StockAtWarehouse operations...")
+
+            // --- Prerequisites: Ensure a product and a warehouse exist ---
+            var testProductId: String? = null
+            var testWarehouseId: String? = null
+
+            // Get a product (assuming one was created in testCoreDatabaseOperations)
+            appRepository.getAllProducts().collect { products ->
+                if (products.isNotEmpty()) {
+                    testProductId = products.first().id
+                    addMessage("Using Product ID for stock test: $testProductId (${products.first().name})")
+                }
+            }
+            if (testProductId == null) { // Create if not found
+                val newProd = ProductEntity(name = "Stock Test Product", price = 5.0, stockQuantity = 0) // Overall stock can be 0
+                appRepository.insertProduct(newProd)
+                testProductId = newProd.id
+                addMessage("Created Product ID for stock test: $testProductId")
+            }
+
+            // Get a warehouse (assuming one was created in testWarehouseOperations)
+            appRepository.getAllWarehouses().collect { warehouses ->
+                if (warehouses.isNotEmpty()) {
+                    testWarehouseId = warehouses.first().warehouseId
+                    addMessage("Using Warehouse ID for stock test: $testWarehouseId (${warehouses.first().name})")
+                }
+            }
+             if (testWarehouseId == null) { // Create if not found
+                val newWh = com.example.store.data.local.entity.WarehouseEntity(name = "Stock Test Warehouse")
+                appRepository.insertWarehouse(newWh)
+                testWarehouseId = newWh.warehouseId
+                addMessage("Created Warehouse ID for stock test: $testWarehouseId")
+            }
+            // --- End Prerequisites ---
+
+            if (testProductId == null || testWarehouseId == null) {
+                addMessage("Failed to setup prerequisites for StockAtWarehouse test. Aborting.")
+                return@launch
+            }
+
+            // 1. Insert Stock
+            val initialStock = StockAtWarehouseEntity(productId = testProductId!!, warehouseId = testWarehouseId!!, quantity = 100)
+            appRepository.insertStockAtWarehouse(initialStock)
+            addMessage("Inserted initial stock for ProdID $testProductId in WhID $testWarehouseId: Qty ${initialStock.quantity}")
+
+            // 2. Fetch specific stock record
+            appRepository.getStockForProductInWarehouse(testProductId!!, testWarehouseId!!).collect { stock ->
+                addMessage("Fetched stock for ProdID $testProductId in WhID $testWarehouseId: Qty ${stock?.quantity ?: "Not found"}")
+            }
+
+            // 3. Update Stock
+            val updatedStock = initialStock.copy(quantity = 150)
+            appRepository.updateStockAtWarehouse(updatedStock)
+            addMessage("Updated stock for ProdID $testProductId in WhID $testWarehouseId to Qty ${updatedStock.quantity}")
+            appRepository.getStockForProductInWarehouse(testProductId!!, testWarehouseId!!).collect { stock ->
+                 addMessage("Fetched updated stock: Qty ${stock?.quantity ?: "Not found"}")
+            }
+
+            // 4. Add stock for the same product in a new warehouse to test total quantity
+            val warehouse2 = com.example.store.data.local.entity.WarehouseEntity(name = "Secondary Stock WH")
+            appRepository.insertWarehouse(warehouse2)
+            addMessage("Inserted warehouse ${warehouse2.name} for multi-stock test.")
+            val stockInWh2 = StockAtWarehouseEntity(productId = testProductId!!, warehouseId = warehouse2.warehouseId, quantity = 75)
+            appRepository.insertStockAtWarehouse(stockInWh2)
+            addMessage("Inserted stock for ProdID $testProductId in WhID ${warehouse2.warehouseId}: Qty ${stockInWh2.quantity}")
+
+
+            // 5. Get all stock for the product
+            appRepository.getAllStockForProduct(testProductId!!).collect { stocks ->
+                addMessage("All stock locations for ProdID $testProductId (${stocks.size}):")
+                stocks.forEach { s -> addMessage("  WhID ${s.warehouseId}: Qty ${s.quantity}") }
+            }
+
+            // 6. Get all stock in a warehouse
+            appRepository.getAllStockInWarehouse(testWarehouseId!!).collect { stocks ->
+                addMessage("All stock in WhID $testWarehouseId (${stocks.size}):")
+                stocks.forEach { s -> addMessage("  ProdID ${s.productId}: Qty ${s.quantity}") }
+            }
+
+            // 7. Get total stock quantity for the product
+            appRepository.getTotalStockQuantityForProduct(testProductId!!).collect { totalQty ->
+                addMessage("Total stock quantity for ProdID $testProductId across all warehouses: ${totalQty ?: 0}")
+            }
+
+            // 8. Delete a specific stock record
+            appRepository.deleteStockAtWarehouse(updatedStock) // Delete the stock from the first warehouse
+            addMessage("Deleted stock for ProdID $testProductId from WhID $testWarehouseId.")
+            appRepository.getStockForProductInWarehouse(testProductId!!, testWarehouseId!!).collect { stock ->
+                 addMessage("Stock for ProdID $testProductId in WhID $testWarehouseId after delete: ${stock?.quantity ?: "Not found (Correct)"}")
+            }
+            appRepository.getTotalStockQuantityForProduct(testProductId!!).collect { totalQty ->
+                addMessage("Total stock for ProdID $testProductId after deleting one record: ${totalQty ?: 0}")
+            }
+
+            // 9. Delete all stock (for cleanup in debug)
+            // appRepository.deleteAllStockAtWarehouse()
+            // addMessage("Deleted all stock records from stock_at_warehouse table.")
+            // appRepository.getTotalStockQuantityForProduct(testProductId!!).collect { totalQty ->
+            //     addMessage("Total stock for ProdID $testProductId after deleteAll: ${totalQty ?: "0 (Correct)"}")
+            // }
+        }
+    }
+
+    fun testUserPreferenceOperations() {
+        viewModelScope.launch {
+            addMessage("Starting user preference database operations...")
+
+            val testThemeKey = "user_theme"
+            val testThemeValue = "dark_mode_v1"
+
+            // Save a preference
+            appRepository.savePreference(testThemeKey, testThemeValue)
+            addMessage("Saved preference: Key='$testThemeKey', Value='$testThemeValue'")
+
+            // Fetch the preference
+            appRepository.getPreference(testThemeKey).collect { fetchedValue ->
+                if (fetchedValue != null) {
+                    addMessage("Fetched preference: Key='$testThemeKey', Value='$fetchedValue'")
+                } else {
+                    addMessage("Preference for Key='$testThemeKey' not found after save.")
+                }
+            }
+
+            // Test deleting a preference
+            val tempKey = "temp_pref_to_delete"
+            appRepository.savePreference(tempKey, "some_value")
+            addMessage("Saved temp preference: Key='$tempKey'")
+            appRepository.deletePreference(tempKey)
+            addMessage("Deleted temp preference: Key='$tempKey'")
+            appRepository.getPreference(tempKey).collect { deletedValue ->
+                if (deletedValue == null) {
+                    addMessage("Successfully verified deletion of Key='$tempKey'.")
+                } else {
+                    addMessage("ERROR: Key='$tempKey' still exists after deletion. Value='$deletedValue'")
+                }
+            }
+
+            // Test deleting all (if desired, be careful with this in real apps without confirmation)
+            // For debug purposes, let's save one more and then delete all
+            appRepository.savePreference("another_key", "another_value")
+            addMessage("Saved 'another_key' before deleteAll.")
+            appRepository.deleteAllPreferences()
+            addMessage("Called deleteAllPreferences().")
+            appRepository.getPreference(testThemeKey).collect{themeVal -> // Check original key
+                appRepository.getPreference("another_key").collect{anotherVal ->
+                    if(themeVal == null && anotherVal == null) {
+                        addMessage("Verified: All preferences deleted (checked '$testThemeKey' and 'another_key').")
+                    } else {
+                        addMessage("ERROR: Preferences not all deleted. '$testThemeKey': $themeVal, 'another_key': $anotherVal")
+                    }
+                }
             }
         }
     }

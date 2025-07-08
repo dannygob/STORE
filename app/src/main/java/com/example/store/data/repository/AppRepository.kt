@@ -4,8 +4,10 @@ import com.example.store.data.local.dao.OrderWithOrderItems // New import
 import com.example.store.data.local.entity.CustomerEntity
 import com.example.store.data.local.entity.ProductEntity
 import com.example.store.data.local.entity.SupplierEntity
-import com.example.store.data.local.entity.OrderEntity // New import
-import com.example.store.data.local.entity.OrderItemEntity // New import
+import com.example.store.data.local.entity.OrderEntity
+import com.example.store.data.local.entity.OrderItemEntity
+import com.example.store.data.local.entity.WarehouseEntity
+import com.example.store.data.local.entity.StockAtWarehouseEntity // New import
 import kotlinx.coroutines.flow.Flow
 
 interface AppRepository {
@@ -56,4 +58,28 @@ interface AppRepository {
     fun getOrderWithOrderItems(orderId: String): Flow<OrderWithOrderItems?>
     fun getAllOrdersWithOrderItems(): Flow<List<OrderWithOrderItems>>
     suspend fun insertOrderWithItems(order: OrderEntity, items: List<OrderItemEntity>)
+
+    // User Preference Methods
+    fun getPreference(key: String): Flow<String?>
+    suspend fun savePreference(key: String, value: String)
+    suspend fun deletePreference(key: String)
+    suspend fun deleteAllPreferences()
+
+    // Warehouse Methods
+    fun getAllWarehouses(): Flow<List<WarehouseEntity>>
+    fun getWarehouseById(warehouseId: String): Flow<WarehouseEntity?>
+    suspend fun insertWarehouse(warehouse: WarehouseEntity)
+    suspend fun updateWarehouse(warehouse: WarehouseEntity)
+    suspend fun deleteWarehouse(warehouse: WarehouseEntity)
+    suspend fun deleteAllWarehouses()
+
+    // StockAtWarehouse Methods
+    fun getStockForProductInWarehouse(productId: String, warehouseId: String): Flow<StockAtWarehouseEntity?>
+    fun getAllStockForProduct(productId: String): Flow<List<StockAtWarehouseEntity>>
+    fun getAllStockInWarehouse(warehouseId: String): Flow<List<StockAtWarehouseEntity>>
+    fun getTotalStockQuantityForProduct(productId: String): Flow<Int?>
+    suspend fun insertStockAtWarehouse(stock: StockAtWarehouseEntity)
+    suspend fun updateStockAtWarehouse(stock: StockAtWarehouseEntity)
+    suspend fun deleteStockAtWarehouse(stock: StockAtWarehouseEntity)
+    suspend fun deleteAllStockAtWarehouse()
 }
