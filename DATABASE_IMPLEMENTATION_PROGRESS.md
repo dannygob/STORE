@@ -43,8 +43,15 @@ This document tracks the progress of implementing the local Room database and fu
         *   [X] Stage 4b.5: Initial Integration for StockAtWarehouse (Placeholder) - *Completed*
         *   [X] Stage 4b.6: Update Progress File & Submit - *Completed*
 *   [X] **Phase 4: Warehouse & Basic Stock Entities (Room)** - *COMPLETED*
-*   **Phase 5: Advanced Room Features & Refinements**
-    *   (Database Migrations, complex queries, etc.)
+*   **Phase 5: Advanced Room Features & Refinements** - *In Progress*
+    *   **Phase 5a: Implement Room Database Migrations** - *COMPLETED*
+        *   [X] Stage 5a.1: Update Progress File for Phase 5a Start - *Completed*
+        *   [X] Stage 5a.2: Enable Schema Export & Define Location - *Completed*
+        *   [X] Stage 5a.3: Plan and Implement a Schema Change & Migration - *Completed*
+        *   [X] Stage 5a.4: Add Migration to `AppDatabase` Builder - *Completed*
+        *   [X] Stage 5a.5: Test Migration (Conceptual & via DebugViewModel) - *Completed*
+        *   [X] Stage 5a.6: Update Progress File & Submit - *Completed*
+    *   (Further stages for complex queries, etc. to be defined later)
 *   **Phase 6: Firebase Integration - Firestore (Parallel or Sequential)**
     *   (Details to be defined: Mirroring local data, offline support strategy)
 *   **Phase 7: Firebase Integration - Authentication**

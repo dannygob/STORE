@@ -24,7 +24,9 @@ import com.example.store.data.local.entity.OrderEntity
 import com.example.store.data.local.entity.OrderItemEntity
 import com.example.store.data.local.entity.UserPreferenceEntity
 import com.example.store.data.local.entity.WarehouseEntity
-import com.example.store.data.local.entity.StockAtWarehouseEntity // New import
+import com.example.store.data.local.entity.StockAtWarehouseEntity
+import androidx.room.migration.Migration // New import
+import androidx.sqlite.db.SupportSQLiteDatabase // New import
 
 
 @Database(
@@ -38,8 +40,8 @@ import com.example.store.data.local.entity.StockAtWarehouseEntity // New import
         WarehouseEntity::class,
         StockAtWarehouseEntity::class // Added StockAtWarehouseEntity
     ],
-    version = 5, // Incremented version
-    exportSchema = false // For now, we'll keep schema export off. Can be enabled for complex migrations.
+    version = 6, // Incremented version to 6
+    exportSchema = true // Enabled schema export
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -53,6 +55,12 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun stockAtWarehouseDao(): StockAtWarehouseDao // Added StockAtWarehouseDao accessor
 
     companion object {
+        val MIGRATION_5_6: Migration = object : Migration(5, 6) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE warehouses ADD COLUMN notes TEXT")
+            }
+        }
+
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
@@ -63,9 +71,8 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "store_app_database" // Name of the database file
                 )
-                // Add migrations here if/when schema changes
-                // .addMigrations(MIGRATION_1_2)
-                .fallbackToDestructiveMigration() // Simple for now, replace with proper migrations in production
+                .addMigrations(MIGRATION_5_6) // Added specific migration
+                // .fallbackToDestructiveMigration() // Removed for versions covered by migrations
                 .build()
                 INSTANCE = instance
                 instance
