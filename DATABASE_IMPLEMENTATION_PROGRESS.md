@@ -33,7 +33,16 @@ This document tracks the progress of implementing the local Room database and fu
     *   [X] Stage 4.5: Extend Repository for Warehouses - *Completed*
     *   [X] Stage 4.6: Initial Integration for Warehouses (Placeholder) - *Completed*
     *   [X] Stage 4.7: Update Progress File & Submit - *Completed*
-*   **Phase 4: Warehouse & Basic Stock Entities (Room)** - *COMPLETED (Initial part: WarehouseEntity)*
+*   **Phase 4: Warehouse & Basic Stock Entities (Room)** - *In Progress (Completed Part A: WarehouseEntity)*
+    *   **Phase 4a: Warehouse Entity** (Already summarized as completed by Stage 4.7)
+    *   **Phase 4b: Stock-Warehouse Linking** - *COMPLETED*
+        *   [X] Stage 4b.1: Update Progress File for Phase 4b Start - *Completed*
+        *   [X] Stage 4b.2: Define `StockAtWarehouseEntity` & `StockAtWarehouseDao` - *Completed*
+        *   [X] Stage 4b.3: Update `AppDatabase` - *Completed*
+        *   [X] Stage 4b.4: Extend Repository for StockAtWarehouse - *Completed*
+        *   [X] Stage 4b.5: Initial Integration for StockAtWarehouse (Placeholder) - *Completed*
+        *   [X] Stage 4b.6: Update Progress File & Submit - *Completed*
+*   [X] **Phase 4: Warehouse & Basic Stock Entities (Room)** - *COMPLETED*
 *   **Phase 5: Advanced Room Features & Refinements**
     *   (Database Migrations, complex queries, etc.)
 *   **Phase 6: Firebase Integration - Firestore (Parallel or Sequential)**

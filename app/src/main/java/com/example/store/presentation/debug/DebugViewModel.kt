@@ -7,7 +7,8 @@ import com.example.store.data.local.entity.ProductEntity
 import com.example.store.data.local.entity.SupplierEntity
 import com.example.store.data.local.entity.OrderEntity
 import com.example.store.data.local.entity.OrderItemEntity
-import com.example.store.data.local.entity.WarehouseEntity // New
+import com.example.store.data.local.entity.WarehouseEntity
+import com.example.store.data.local.entity.StockAtWarehouseEntity // New
 import com.example.store.data.repository.AppRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,7 +30,8 @@ class DebugViewModel @Inject constructor(
         testCoreDatabaseOperations()
         testOrderOperations()
         testUserPreferenceOperations()
-        testWarehouseOperations() // New method call
+        testWarehouseOperations()
+        testStockAtWarehouseOperations() // New method call
     }
 
     private fun addMessage(message: String) {
@@ -116,6 +118,111 @@ class DebugViewModel @Inject constructor(
                     addMessage("  - ID='${wh.warehouseId}', Name='${wh.name}', Address='${wh.address}'")
                 }
             }
+        }
+    }
+
+    fun testStockAtWarehouseOperations() {
+        viewModelScope.launch {
+            addMessage("Starting StockAtWarehouse operations...")
+
+            // --- Prerequisites: Ensure a product and a warehouse exist ---
+            var testProductId: String? = null
+            var testWarehouseId: String? = null
+
+            // Get a product (assuming one was created in testCoreDatabaseOperations)
+            appRepository.getAllProducts().collect { products ->
+                if (products.isNotEmpty()) {
+                    testProductId = products.first().id
+                    addMessage("Using Product ID for stock test: $testProductId (${products.first().name})")
+                }
+            }
+            if (testProductId == null) { // Create if not found
+                val newProd = ProductEntity(name = "Stock Test Product", price = 5.0, stockQuantity = 0) // Overall stock can be 0
+                appRepository.insertProduct(newProd)
+                testProductId = newProd.id
+                addMessage("Created Product ID for stock test: $testProductId")
+            }
+
+            // Get a warehouse (assuming one was created in testWarehouseOperations)
+            appRepository.getAllWarehouses().collect { warehouses ->
+                if (warehouses.isNotEmpty()) {
+                    testWarehouseId = warehouses.first().warehouseId
+                    addMessage("Using Warehouse ID for stock test: $testWarehouseId (${warehouses.first().name})")
+                }
+            }
+             if (testWarehouseId == null) { // Create if not found
+                val newWh = com.example.store.data.local.entity.WarehouseEntity(name = "Stock Test Warehouse")
+                appRepository.insertWarehouse(newWh)
+                testWarehouseId = newWh.warehouseId
+                addMessage("Created Warehouse ID for stock test: $testWarehouseId")
+            }
+            // --- End Prerequisites ---
+
+            if (testProductId == null || testWarehouseId == null) {
+                addMessage("Failed to setup prerequisites for StockAtWarehouse test. Aborting.")
+                return@launch
+            }
+
+            // 1. Insert Stock
+            val initialStock = StockAtWarehouseEntity(productId = testProductId!!, warehouseId = testWarehouseId!!, quantity = 100)
+            appRepository.insertStockAtWarehouse(initialStock)
+            addMessage("Inserted initial stock for ProdID $testProductId in WhID $testWarehouseId: Qty ${initialStock.quantity}")
+
+            // 2. Fetch specific stock record
+            appRepository.getStockForProductInWarehouse(testProductId!!, testWarehouseId!!).collect { stock ->
+                addMessage("Fetched stock for ProdID $testProductId in WhID $testWarehouseId: Qty ${stock?.quantity ?: "Not found"}")
+            }
+
+            // 3. Update Stock
+            val updatedStock = initialStock.copy(quantity = 150)
+            appRepository.updateStockAtWarehouse(updatedStock)
+            addMessage("Updated stock for ProdID $testProductId in WhID $testWarehouseId to Qty ${updatedStock.quantity}")
+            appRepository.getStockForProductInWarehouse(testProductId!!, testWarehouseId!!).collect { stock ->
+                 addMessage("Fetched updated stock: Qty ${stock?.quantity ?: "Not found"}")
+            }
+
+            // 4. Add stock for the same product in a new warehouse to test total quantity
+            val warehouse2 = com.example.store.data.local.entity.WarehouseEntity(name = "Secondary Stock WH")
+            appRepository.insertWarehouse(warehouse2)
+            addMessage("Inserted warehouse ${warehouse2.name} for multi-stock test.")
+            val stockInWh2 = StockAtWarehouseEntity(productId = testProductId!!, warehouseId = warehouse2.warehouseId, quantity = 75)
+            appRepository.insertStockAtWarehouse(stockInWh2)
+            addMessage("Inserted stock for ProdID $testProductId in WhID ${warehouse2.warehouseId}: Qty ${stockInWh2.quantity}")
+
+
+            // 5. Get all stock for the product
+            appRepository.getAllStockForProduct(testProductId!!).collect { stocks ->
+                addMessage("All stock locations for ProdID $testProductId (${stocks.size}):")
+                stocks.forEach { s -> addMessage("  WhID ${s.warehouseId}: Qty ${s.quantity}") }
+            }
+
+            // 6. Get all stock in a warehouse
+            appRepository.getAllStockInWarehouse(testWarehouseId!!).collect { stocks ->
+                addMessage("All stock in WhID $testWarehouseId (${stocks.size}):")
+                stocks.forEach { s -> addMessage("  ProdID ${s.productId}: Qty ${s.quantity}") }
+            }
+
+            // 7. Get total stock quantity for the product
+            appRepository.getTotalStockQuantityForProduct(testProductId!!).collect { totalQty ->
+                addMessage("Total stock quantity for ProdID $testProductId across all warehouses: ${totalQty ?: 0}")
+            }
+
+            // 8. Delete a specific stock record
+            appRepository.deleteStockAtWarehouse(updatedStock) // Delete the stock from the first warehouse
+            addMessage("Deleted stock for ProdID $testProductId from WhID $testWarehouseId.")
+            appRepository.getStockForProductInWarehouse(testProductId!!, testWarehouseId!!).collect { stock ->
+                 addMessage("Stock for ProdID $testProductId in WhID $testWarehouseId after delete: ${stock?.quantity ?: "Not found (Correct)"}")
+            }
+            appRepository.getTotalStockQuantityForProduct(testProductId!!).collect { totalQty ->
+                addMessage("Total stock for ProdID $testProductId after deleting one record: ${totalQty ?: 0}")
+            }
+
+            // 9. Delete all stock (for cleanup in debug)
+            // appRepository.deleteAllStockAtWarehouse()
+            // addMessage("Deleted all stock records from stock_at_warehouse table.")
+            // appRepository.getTotalStockQuantityForProduct(testProductId!!).collect { totalQty ->
+            //     addMessage("Total stock for ProdID $testProductId after deleteAll: ${totalQty ?: "0 (Correct)"}")
+            // }
         }
     }
 

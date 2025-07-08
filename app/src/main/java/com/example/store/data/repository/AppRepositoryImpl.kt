@@ -7,14 +7,16 @@ import com.example.store.data.local.dao.OrderDao
 import com.example.store.data.local.dao.OrderItemDao
 import com.example.store.data.local.dao.OrderWithOrderItems
 import com.example.store.data.local.dao.UserPreferenceDao
-import com.example.store.data.local.dao.WarehouseDao // New import
+import com.example.store.data.local.dao.WarehouseDao
+import com.example.store.data.local.dao.StockAtWarehouseDao // New import
 import com.example.store.data.local.entity.CustomerEntity
 import com.example.store.data.local.entity.ProductEntity
 import com.example.store.data.local.entity.SupplierEntity
 import com.example.store.data.local.entity.OrderEntity
 import com.example.store.data.local.entity.OrderItemEntity
 import com.example.store.data.local.entity.UserPreferenceEntity
-import com.example.store.data.local.entity.WarehouseEntity // New import
+import com.example.store.data.local.entity.WarehouseEntity
+import com.example.store.data.local.entity.StockAtWarehouseEntity // New import
 import kotlinx.coroutines.flow.Flow
 
 // In a real app, DAOs would likely be injected (e.g., using Hilt)
@@ -25,7 +27,8 @@ class AppRepositoryImpl(
     private val orderDao: OrderDao,
     private val orderItemDao: OrderItemDao,
     private val userPreferenceDao: UserPreferenceDao,
-    private val warehouseDao: WarehouseDao // New DAO
+    private val warehouseDao: WarehouseDao,
+    private val stockAtWarehouseDao: StockAtWarehouseDao // New DAO
 ) : AppRepository {
 
     // Product Methods
@@ -105,4 +108,29 @@ class AppRepositoryImpl(
     override suspend fun updateWarehouse(warehouse: WarehouseEntity) = warehouseDao.updateWarehouse(warehouse)
     override suspend fun deleteWarehouse(warehouse: WarehouseEntity) = warehouseDao.deleteWarehouse(warehouse)
     override suspend fun deleteAllWarehouses() = warehouseDao.deleteAllWarehouses()
+
+    // StockAtWarehouse Methods
+    override fun getStockForProductInWarehouse(productId: String, warehouseId: String): Flow<StockAtWarehouseEntity?> =
+        stockAtWarehouseDao.getStockForProductInWarehouse(productId, warehouseId)
+
+    override fun getAllStockForProduct(productId: String): Flow<List<StockAtWarehouseEntity>> =
+        stockAtWarehouseDao.getAllStockForProduct(productId)
+
+    override fun getAllStockInWarehouse(warehouseId: String): Flow<List<StockAtWarehouseEntity>> =
+        stockAtWarehouseDao.getAllStockInWarehouse(warehouseId)
+
+    override fun getTotalStockQuantityForProduct(productId: String): Flow<Int?> =
+        stockAtWarehouseDao.getTotalStockQuantityForProduct(productId)
+
+    override suspend fun insertStockAtWarehouse(stock: StockAtWarehouseEntity) =
+        stockAtWarehouseDao.insertStock(stock)
+
+    override suspend fun updateStockAtWarehouse(stock: StockAtWarehouseEntity) =
+        stockAtWarehouseDao.updateStock(stock)
+
+    override suspend fun deleteStockAtWarehouse(stock: StockAtWarehouseEntity) =
+        stockAtWarehouseDao.deleteStock(stock)
+
+    override suspend fun deleteAllStockAtWarehouse() =
+        stockAtWarehouseDao.deleteAllStock()
 }

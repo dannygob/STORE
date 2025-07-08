@@ -15,14 +15,16 @@ import com.example.store.data.local.dao.SupplierDao
 import com.example.store.data.local.dao.OrderDao
 import com.example.store.data.local.dao.OrderItemDao
 import com.example.store.data.local.dao.UserPreferenceDao
-import com.example.store.data.local.dao.WarehouseDao // New import
+import com.example.store.data.local.dao.WarehouseDao
+import com.example.store.data.local.dao.StockAtWarehouseDao // New import
 import com.example.store.data.local.entity.CustomerEntity
 import com.example.store.data.local.entity.ProductEntity
 import com.example.store.data.local.entity.SupplierEntity
 import com.example.store.data.local.entity.OrderEntity
 import com.example.store.data.local.entity.OrderItemEntity
 import com.example.store.data.local.entity.UserPreferenceEntity
-import com.example.store.data.local.entity.WarehouseEntity // New import
+import com.example.store.data.local.entity.WarehouseEntity
+import com.example.store.data.local.entity.StockAtWarehouseEntity // New import
 
 
 @Database(
@@ -33,9 +35,10 @@ import com.example.store.data.local.entity.WarehouseEntity // New import
         OrderEntity::class,
         OrderItemEntity::class,
         UserPreferenceEntity::class,
-        WarehouseEntity::class // Added WarehouseEntity
+        WarehouseEntity::class,
+        StockAtWarehouseEntity::class // Added StockAtWarehouseEntity
     ],
-    version = 4, // Incremented version
+    version = 5, // Incremented version
     exportSchema = false // For now, we'll keep schema export off. Can be enabled for complex migrations.
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -46,7 +49,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun orderDao(): OrderDao
     abstract fun orderItemDao(): OrderItemDao
     abstract fun userPreferenceDao(): UserPreferenceDao
-    abstract fun warehouseDao(): WarehouseDao // Added WarehouseDao accessor
+    abstract fun warehouseDao(): WarehouseDao
+    abstract fun stockAtWarehouseDao(): StockAtWarehouseDao // Added StockAtWarehouseDao accessor
 
     companion object {
         @Volatile

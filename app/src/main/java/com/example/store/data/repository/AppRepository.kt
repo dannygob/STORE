@@ -6,7 +6,8 @@ import com.example.store.data.local.entity.ProductEntity
 import com.example.store.data.local.entity.SupplierEntity
 import com.example.store.data.local.entity.OrderEntity
 import com.example.store.data.local.entity.OrderItemEntity
-import com.example.store.data.local.entity.WarehouseEntity // New import
+import com.example.store.data.local.entity.WarehouseEntity
+import com.example.store.data.local.entity.StockAtWarehouseEntity // New import
 import kotlinx.coroutines.flow.Flow
 
 interface AppRepository {
@@ -71,4 +72,14 @@ interface AppRepository {
     suspend fun updateWarehouse(warehouse: WarehouseEntity)
     suspend fun deleteWarehouse(warehouse: WarehouseEntity)
     suspend fun deleteAllWarehouses()
+
+    // StockAtWarehouse Methods
+    fun getStockForProductInWarehouse(productId: String, warehouseId: String): Flow<StockAtWarehouseEntity?>
+    fun getAllStockForProduct(productId: String): Flow<List<StockAtWarehouseEntity>>
+    fun getAllStockInWarehouse(warehouseId: String): Flow<List<StockAtWarehouseEntity>>
+    fun getTotalStockQuantityForProduct(productId: String): Flow<Int?>
+    suspend fun insertStockAtWarehouse(stock: StockAtWarehouseEntity)
+    suspend fun updateStockAtWarehouse(stock: StockAtWarehouseEntity)
+    suspend fun deleteStockAtWarehouse(stock: StockAtWarehouseEntity)
+    suspend fun deleteAllStockAtWarehouse()
 }
