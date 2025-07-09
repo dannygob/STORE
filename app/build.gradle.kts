@@ -71,6 +71,9 @@ dependencies {
     implementation(libs.ui)
     implementation(libs.androidx.compose.material3.material3)
 
+    implementation(platform("com.google.firebase:firebase-bom:33.16.0"))
+    implementation("com.google.firebase:firebase-storage")
+
     // Room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
