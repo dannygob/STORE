@@ -9,9 +9,12 @@ import com.example.store.data.local.dao.OrderDao
 import com.example.store.data.local.dao.OrderItemDao
 import com.example.store.data.local.dao.UserPreferenceDao
 import com.example.store.data.local.dao.WarehouseDao
-import com.example.store.data.local.dao.StockAtWarehouseDao // New
+import com.example.store.data.local.dao.StockAtWarehouseDao
 import com.example.store.data.repository.AppRepository
 import com.example.store.data.repository.AppRepositoryImpl
+import com.google.firebase.firestore.FirebaseFirestore // New
+import com.google.firebase.firestore.ktx.firestore // New
+import com.google.firebase.ktx.Firebase // New
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -73,13 +76,20 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideStockAtWarehouseDao(appDatabase: AppDatabase): StockAtWarehouseDao { // New provider
+    fun provideStockAtWarehouseDao(appDatabase: AppDatabase): StockAtWarehouseDao {
         return appDatabase.stockAtWarehouseDao()
     }
 
     @Provides
     @Singleton
+    fun provideFirebaseFirestore(): FirebaseFirestore { // New provider
+        return Firebase.firestore
+    }
+
+    @Provides
+    @Singleton
     fun provideAppRepository(
+        appDatabase: AppDatabase,
         productDao: ProductDao,
         customerDao: CustomerDao,
         supplierDao: SupplierDao,
@@ -88,8 +98,8 @@ object DatabaseModule {
         userPreferenceDao: UserPreferenceDao,
         warehouseDao: WarehouseDao,
         stockAtWarehouseDao: StockAtWarehouseDao,
-        appDatabase: AppDatabase // Added AppDatabase
+        firestore: FirebaseFirestore // Added Firestore
     ): AppRepository {
-        return AppRepositoryImpl(appDatabase, productDao, customerDao, supplierDao, orderDao, orderItemDao, userPreferenceDao, warehouseDao, stockAtWarehouseDao)
+        return AppRepositoryImpl(appDatabase, productDao, customerDao, supplierDao, orderDao, orderItemDao, userPreferenceDao, warehouseDao, stockAtWarehouseDao, firestore)
     }
 }

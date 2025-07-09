@@ -17,12 +17,17 @@ import com.example.store.data.local.entity.OrderItemEntity
 import com.example.store.data.local.entity.UserPreferenceEntity
 import com.example.store.data.local.entity.WarehouseEntity
 import com.example.store.data.local.entity.StockAtWarehouseEntity
-import com.example.store.data.local.AppDatabase // New import for runInTransaction
+import com.example.store.data.local.AppDatabase
+import com.google.firebase.firestore.FirebaseFirestore // Firebase Firestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.channels.awaitClose // New import
 
 // In a real app, DAOs would likely be injected (e.g., using Hilt)
 class AppRepositoryImpl(
-    private val appDatabase: AppDatabase, // Inject AppDatabase
+    private val appDatabase: AppDatabase,
     private val productDao: ProductDao,
     private val customerDao: CustomerDao,
     private val supplierDao: SupplierDao,
@@ -30,7 +35,8 @@ class AppRepositoryImpl(
     private val orderItemDao: OrderItemDao,
     private val userPreferenceDao: UserPreferenceDao,
     private val warehouseDao: WarehouseDao,
-    private val stockAtWarehouseDao: StockAtWarehouseDao
+    private val stockAtWarehouseDao: StockAtWarehouseDao,
+    private val firestore: FirebaseFirestore // Add Firestore instance
 ) : AppRepository {
 
     // Product Methods
@@ -143,4 +149,41 @@ class AppRepositoryImpl(
 
     override suspend fun deleteAllStockAtWarehouse() =
         stockAtWarehouseDao.deleteAllStock()
+
+    // Firestore Sync Methods
+    override suspend fun syncProductToFirestore(product: ProductEntity): Result<Unit> {
+        return try {
+            // Using product.id as the document ID in Firestore
+            firestore.collection("products").document(product.id)
+                .set(product) // Using the ProductEntity directly (ensure it's Firestore compatible)
+                .await() // Suspends until the operation is complete
+            Result.success(Unit)
+        } catch (e: Exception) {
+            // Log.e("AppRepositoryImpl", "Error syncing product to Firestore", e) // Proper logging
+            Result.failure(e)
+        }
+    }
+
+    override fun getProductFromFirestore(productId: String): Flow<Result<ProductEntity?>> = kotlinx.coroutines.flow.callbackFlow {
+        val documentRef = firestore.collection("products").document(productId)
+        val listenerRegistration = documentRef.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                trySend(Result.failure(error))
+                close(error) // Close the flow on error
+                return@addSnapshotListener
+            }
+
+            if (snapshot != null && snapshot.exists()) {
+                try {
+                    val product = snapshot.toObject(ProductEntity::class.java)
+                    trySend(Result.success(product))
+                } catch (e: Exception) {
+                    trySend(Result.failure(e)) // Failure in converting snapshot
+                }
+            } else {
+                trySend(Result.success(null)) // Document does not exist
+            }
+        }
+        awaitClose { listenerRegistration.remove() } // Remove listener when flow is cancelled
+    }
 }
