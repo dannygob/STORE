@@ -16,11 +16,13 @@ import com.example.store.data.local.entity.OrderEntity
 import com.example.store.data.local.entity.OrderItemEntity
 import com.example.store.data.local.entity.UserPreferenceEntity
 import com.example.store.data.local.entity.WarehouseEntity
-import com.example.store.data.local.entity.StockAtWarehouseEntity // New import
+import com.example.store.data.local.entity.StockAtWarehouseEntity
+import com.example.store.data.local.AppDatabase // New import for runInTransaction
 import kotlinx.coroutines.flow.Flow
 
 // In a real app, DAOs would likely be injected (e.g., using Hilt)
 class AppRepositoryImpl(
+    private val appDatabase: AppDatabase, // Inject AppDatabase
     private val productDao: ProductDao,
     private val customerDao: CustomerDao,
     private val supplierDao: SupplierDao,
@@ -28,7 +30,7 @@ class AppRepositoryImpl(
     private val orderItemDao: OrderItemDao,
     private val userPreferenceDao: UserPreferenceDao,
     private val warehouseDao: WarehouseDao,
-    private val stockAtWarehouseDao: StockAtWarehouseDao // New DAO
+    private val stockAtWarehouseDao: StockAtWarehouseDao
 ) : AppRepository {
 
     // Product Methods
@@ -39,6 +41,7 @@ class AppRepositoryImpl(
     override suspend fun deleteProduct(product: ProductEntity) = productDao.delete(product)
     override suspend fun insertAllProducts(products: List<ProductEntity>) = productDao.insertAll(products)
     override suspend fun deleteAllProducts() = productDao.deleteAllProducts()
+    override fun searchProductsByName(query: String): Flow<List<ProductEntity>> = productDao.searchProductsByName(query)
 
     // Customer Methods
     override fun getAllCustomers(): Flow<List<CustomerEntity>> = customerDao.getAllCustomers()
@@ -61,6 +64,7 @@ class AppRepositoryImpl(
     override fun getAllOrders(): Flow<List<OrderEntity>> = orderDao.getAllOrders()
     override fun getOrderById(orderId: String): Flow<OrderEntity?> = orderDao.getOrderById(orderId)
     override fun getOrdersByCustomerId(customerId: String): Flow<List<OrderEntity>> = orderDao.getOrdersByCustomerId(customerId)
+    override fun getOrdersByDateRange(startDate: Long, endDate: Long): Flow<List<OrderEntity>> = orderDao.getOrdersByDateRange(startDate, endDate)
     override suspend fun insertOrder(order: OrderEntity) = orderDao.insertOrder(order)
     override suspend fun updateOrder(order: OrderEntity) = orderDao.updateOrder(order)
     override suspend fun deleteOrder(order: OrderEntity) = orderDao.deleteOrder(order)
@@ -82,8 +86,14 @@ class AppRepositoryImpl(
         // or ensure DAOs handle conflicts appropriately.
         // For simplicity here, we call them sequentially.
         // A @Transaction method in a DAO would be better for atomicity.
-        orderDao.insertOrder(order)
-        orderItemDao.insertAllOrderItems(items.map { it.copy(orderId = order.orderId) }) // Ensure items have correct orderId
+        // orderDao.insertOrder(order)
+        // orderItemDao.insertAllOrderItems(items.map { it.copy(orderId = order.orderId) }) // Ensure items have correct orderId
+        appDatabase.runInTransaction {
+            // It's generally better to access DAOs via appDatabase instance inside transaction
+            // if they weren't already class members. Since they are, we can use them.
+            orderDao.insertOrder(order)
+            orderItemDao.insertAllOrderItems(items.map { it.copy(orderId = order.orderId) })
+        }
     }
 
     // User Preference Methods

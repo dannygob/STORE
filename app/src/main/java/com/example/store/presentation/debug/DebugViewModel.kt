@@ -67,6 +67,21 @@ class DebugViewModel @Inject constructor(
             appRepository.getAllProducts().collect { products ->
                 addMessage("Fetched Products (${products.size}): ${products.joinToString { it.name }}")
             }
+
+            // Test Product Search
+            addMessage("Searching for products with 'Widget'...")
+            appRepository.searchProductsByName("Widget").collect { searchResults ->
+                addMessage("Search Results for 'Widget' (${searchResults.size}): ${searchResults.joinToString { it.name }}")
+            }
+            addMessage("Searching for products with 'Gadget'...")
+            appRepository.searchProductsByName("Gadget").collect { searchResults ->
+                addMessage("Search Results for 'Gadget' (${searchResults.size}): ${searchResults.joinToString { it.name }}")
+            }
+            addMessage("Searching for products with 'NonExistent'...")
+            appRepository.searchProductsByName("NonExistent").collect { searchResults ->
+                addMessage("Search Results for 'NonExistent' (${searchResults.size}): ${searchResults.joinToString { it.name }}")
+            }
+
             // Note: Collecting multiple flows like this directly in init/one function can be tricky
             // for continuous updates. For a one-time test, it's okay, but typically you'd expose
             // individual flows to the UI or combine them more carefully.
@@ -378,12 +393,46 @@ class DebugViewModel @Inject constructor(
             appRepository.getAllOrdersWithOrderItems().collect { allOrdersWithItems ->
                  addMessage("--- All Orders with Items (${allOrdersWithItems.size}) ---")
                  allOrdersWithItems.forEach { orderWithItems ->
-                     addMessage("Order: ID=${orderWithItems.order.orderId}, CustID=${orderWithItems.order.customerId}, Status=${orderWithItems.order.status}, Total=${orderWithItems.order.totalAmount}")
+                     addMessage("Order: ID=${orderWithItems.order.orderId}, CustID=${orderWithItems.order.customerId}, Status=${orderWithItems.order.status}, Total=${orderWithItems.order.totalAmount}, Date=${orderWithItems.order.orderDate}")
                      orderWithItems.items.forEach { item ->
                          addMessage("  Item: ProdID=${item.productId}, Qty=${item.quantity}, Price=${item.pricePerUnit}")
                      }
                  }
                  addMessage("--- End of All Orders ---")
+            }
+
+            // Test Order Date Range Query
+            val today = System.currentTimeMillis()
+            val yesterday = today - (24 * 60 * 60 * 1000)
+            val dayBeforeYesterday = yesterday - (24 * 60 * 60 * 1000)
+            val tomorrow = today + (24 * 60 * 60 * 1000)
+
+            // Clean up orders for this specific test section for clarity
+            appRepository.deleteAllOrderItemsForOrder(order1.orderId) // Assuming order1 is still in scope
+            appRepository.deleteOrder(order1)
+
+            val orderYesterday = OrderEntity(customerId = testCustomerId, status = "Delivered", totalAmount = 50.0, orderDate = yesterday)
+            val orderToday = OrderEntity(customerId = testCustomerId, status = "Processing", totalAmount = 75.0, orderDate = today)
+            appRepository.insertOrder(orderYesterday)
+            appRepository.insertOrder(orderToday)
+            addMessage("Inserted order for yesterday (ID ${orderYesterday.orderId}) and today (ID ${orderToday.orderId}) for date range test.")
+
+            addMessage("Fetching orders from dayBeforeYesterday to today (should include 2 orders)...")
+            appRepository.getOrdersByDateRange(dayBeforeYesterday, today).collect { dateRangeOrders ->
+                addMessage("Orders in range D-2 to Today (${dateRangeOrders.size}):")
+                dateRangeOrders.forEach { order -> addMessage("  Order ID: ${order.orderId}, Date: ${order.orderDate}, Status: ${order.status}")}
+            }
+
+            addMessage("Fetching orders for just yesterday (should include 1 order)...")
+            appRepository.getOrdersByDateRange(dayBeforeYesterday, yesterday).collect { dateRangeOrders ->
+                 addMessage("Orders in range D-2 to Yesterday (${dateRangeOrders.size}):")
+                dateRangeOrders.forEach { order -> addMessage("  Order ID: ${order.orderId}, Date: ${order.orderDate}, Status: ${order.status}")}
+            }
+
+            addMessage("Fetching orders for future (should include 0 orders)...")
+            appRepository.getOrdersByDateRange(tomorrow, tomorrow + (24*60*60*1000)).collect { dateRangeOrders ->
+                addMessage("Orders in future range (${dateRangeOrders.size}):")
+                dateRangeOrders.forEach { order -> addMessage("  Order ID: ${order.orderId}, Date: ${order.orderDate}, Status: ${order.status}")}
             }
         }
     }

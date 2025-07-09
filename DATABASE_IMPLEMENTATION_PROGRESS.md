@@ -51,7 +51,15 @@ This document tracks the progress of implementing the local Room database and fu
         *   [X] Stage 5a.4: Add Migration to `AppDatabase` Builder - *Completed*
         *   [X] Stage 5a.5: Test Migration (Conceptual & via DebugViewModel) - *Completed*
         *   [X] Stage 5a.6: Update Progress File & Submit - *Completed*
-    *   (Further stages for complex queries, etc. to be defined later)
+    *   **Phase 5b: Implement Complex Queries & Relationships** - *COMPLETED*
+        *   [X] Stage 5b.1: Update Progress File for Phase 5b Start - *Completed*
+        *   [X] Stage 5b.2: Implement Product Search Query - *Completed*
+        *   [X] Stage 5b.3: Implement Order Date Range Query - *Completed*
+        *   [X] Stage 5b.4: Refactor `insertOrderWithItems` to use `@Transaction` (via `AppDatabase.runInTransaction`) - *Completed*
+        *   [X] Stage 5b.5: Test New Queries & Transactional Method - *Completed*
+        *   [X] Stage 5b.6: Update Progress File & Submit - *Completed*
+*   [X] **Phase 5: Advanced Room Features & Refinements** - *COMPLETED*
+    *   (This line is a summary, actual list of stages for phase 5 is above)
 *   **Phase 6: Firebase Integration - Firestore (Parallel or Sequential)**
     *   (Details to be defined: Mirroring local data, offline support strategy)
 *   **Phase 7: Firebase Integration - Authentication**
