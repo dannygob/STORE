@@ -20,6 +20,7 @@ interface AppRepository {
     suspend fun deleteProduct(product: ProductEntity)
     suspend fun insertAllProducts(products: List<ProductEntity>)
     suspend fun deleteAllProducts()
+    fun searchProductsByName(query: String): Flow<List<ProductEntity>> // New method
 
     // Customer Methods
     fun getAllCustomers(): Flow<List<CustomerEntity>>
@@ -42,6 +43,7 @@ interface AppRepository {
     fun getAllOrders(): Flow<List<OrderEntity>>
     fun getOrderById(orderId: String): Flow<OrderEntity?>
     fun getOrdersByCustomerId(customerId: String): Flow<List<OrderEntity>>
+    fun getOrdersByDateRange(startDate: Long, endDate: Long): Flow<List<OrderEntity>> // New method
     suspend fun insertOrder(order: OrderEntity)
     suspend fun updateOrder(order: OrderEntity)
     suspend fun deleteOrder(order: OrderEntity)

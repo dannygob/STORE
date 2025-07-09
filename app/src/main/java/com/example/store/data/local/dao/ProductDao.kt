@@ -30,6 +30,9 @@ interface ProductDao {
     @Query("SELECT * FROM products ORDER BY name ASC")
     fun getAllProducts(): Flow<List<ProductEntity>>
 
+    @Query("SELECT * FROM products WHERE name LIKE '%' || :query || '%' ORDER BY name ASC")
+    fun searchProductsByName(query: String): Flow<List<ProductEntity>>
+
     @Query("DELETE FROM products")
     suspend fun deleteAllProducts() // Example of a bulk operation
 }

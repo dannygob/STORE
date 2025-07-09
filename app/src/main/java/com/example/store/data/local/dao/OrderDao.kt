@@ -33,6 +33,9 @@ interface OrderDao {
     @Query("SELECT * FROM orders WHERE status = :status ORDER BY orderDate DESC")
     fun getOrdersByStatus(status: String): Flow<List<OrderEntity>>
 
+    @Query("SELECT * FROM orders WHERE orderDate BETWEEN :startDate AND :endDate ORDER BY orderDate DESC")
+    fun getOrdersByDateRange(startDate: Long, endDate: Long): Flow<List<OrderEntity>>
+
     @Query("DELETE FROM orders")
     suspend fun deleteAllOrders()
 }

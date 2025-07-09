@@ -87,8 +87,9 @@ object DatabaseModule {
         orderItemDao: OrderItemDao,
         userPreferenceDao: UserPreferenceDao,
         warehouseDao: WarehouseDao,
-        stockAtWarehouseDao: StockAtWarehouseDao // Added StockAtWarehouseDao
+        stockAtWarehouseDao: StockAtWarehouseDao,
+        appDatabase: AppDatabase // Added AppDatabase
     ): AppRepository {
-        return AppRepositoryImpl(productDao, customerDao, supplierDao, orderDao, orderItemDao, userPreferenceDao, warehouseDao, stockAtWarehouseDao)
+        return AppRepositoryImpl(appDatabase, productDao, customerDao, supplierDao, orderDao, orderItemDao, userPreferenceDao, warehouseDao, stockAtWarehouseDao)
     }
 }
