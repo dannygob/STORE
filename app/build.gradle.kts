@@ -5,7 +5,11 @@ plugins {
     id("kotlin-kapt") // 🔹 necesario para Hilt
     id("com.google.dagger.hilt.android")
     alias(libs.plugins.ksp) // KSP plugin
+
     alias(libs.plugins.googleServices) // Google Services plugin
+
+    id("com.android.application")
+   
 }
 
 android {
@@ -77,10 +81,12 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
 
+
     // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore.ktx)
     // Add other Firebase SDKs here if needed, e.g., libs.firebase.auth.ktx
+
 
     ksp {
         arg("room.schemaLocation", "$projectDir/schemas")
