@@ -59,6 +59,34 @@ class DebugViewModel @Inject constructor(
             appRepository.insertAllProducts(listOf(product1, product2))
             addMessage("Inserted Products: ${product1.name}, ${product2.name}")
 
+            // Sync product1 to Firestore
+            viewModelScope.launch {
+                addMessage("Attempting to sync ${product1.name} to Firestore...")
+                val syncResult = appRepository.syncProductToFirestore(product1)
+                if (syncResult.isSuccess) {
+                    addMessage("Successfully synced ${product1.name} to Firestore.")
+
+                    // Attempt to read it back
+                    viewModelScope.launch {
+                        addMessage("Attempting to read ${product1.name} (ID: ${product1.id}) back from Firestore...")
+                        appRepository.getProductFromFirestore(product1.id).collect { result ->
+                            if (result.isSuccess) {
+                                val fetchedProduct = result.getOrNull()
+                                if (fetchedProduct != null) {
+                                    addMessage("Successfully read ${fetchedProduct.name} from Firestore. Price: ${fetchedProduct.price}")
+                                } else {
+                                    addMessage("${product1.name} not found in Firestore after sync (or was null).")
+                                }
+                            } else {
+                                addMessage("Failed to read ${product1.name} from Firestore: ${result.exceptionOrNull()?.message}")
+                            }
+                        }
+                    }
+                } else {
+                    addMessage("Failed to sync ${product1.name} to Firestore: ${syncResult.exceptionOrNull()?.message}")
+                }
+            }
+
             val customer1 = CustomerEntity(name = "Alice Wonderland", email = "alice@example.com")
             appRepository.insertCustomer(customer1)
             addMessage("Inserted Customer: ${customer1.name}")

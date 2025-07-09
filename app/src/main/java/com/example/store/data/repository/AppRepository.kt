@@ -84,4 +84,8 @@ interface AppRepository {
     suspend fun updateStockAtWarehouse(stock: StockAtWarehouseEntity)
     suspend fun deleteStockAtWarehouse(stock: StockAtWarehouseEntity)
     suspend fun deleteAllStockAtWarehouse()
+
+    // Firestore Sync Methods
+    suspend fun syncProductToFirestore(product: ProductEntity): Result<Unit> // Using Result for success/failure
+    fun getProductFromFirestore(productId: String): Flow<Result<ProductEntity?>> // Using Flow and Result
 }

@@ -60,8 +60,14 @@ This document tracks the progress of implementing the local Room database and fu
         *   [X] Stage 5b.6: Update Progress File & Submit - *Completed*
 *   [X] **Phase 5: Advanced Room Features & Refinements** - *COMPLETED*
     *   (This line is a summary, actual list of stages for phase 5 is above)
-*   **Phase 6: Firebase Integration - Firestore (Parallel or Sequential)**
-    *   (Details to be defined: Mirroring local data, offline support strategy)
+*   **Phase 6: Firebase Integration - Firestore (Parallel or Sequential)** - *In Progress*
+    *   **Phase 6a: Initial Firebase Setup & Product Sync Test** - *COMPLETED*
+        *   [X] Stage 6a.1: Update Progress File & Review Firebase Project Setup - *Completed*
+        *   [X] Stage 6a.2: Verify `google-services.json` & Add Firebase SDKs - *Completed*
+        *   [X] Stage 6a.3: Implement One-Way Sync for `ProductEntity` (Room -> Firestore) - *Completed*
+        *   [X] Stage 6a.4: Basic Firestore Read Operation (Firestore -> App) - *Completed*
+        *   [X] Stage 6a.5: Update Progress File & Submit - *Completed*
+    *   (Further sub-phases for other entities and bi-directional sync to be defined)
 *   **Phase 7: Firebase Integration - Authentication**
     *   (Details to be defined)
 *   **Phase 8: Firebase Integration - Cloud Storage (Optional, for images etc.)**

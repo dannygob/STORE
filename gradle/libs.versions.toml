@@ -45,12 +45,21 @@ androidx-room-runtime = { group = "androidx.room", name = "room-runtime", versio
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 
+# Firebase
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
+# Add other Firebase SDKs here as needed, e.g., firebase-auth-ktx
 
 ksp = "1.9.22-1.0.17" # KSP version
+
+firebaseBom = "33.2.0" # Firebase BOM version
+firebaseFirestoreKtx = "25.0.0" # Firestore KTX version
+googleServicesPlugin = "4.4.2" # Google Services plugin version
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp"}
+googleServices = { id = "com.google.gms.google-services", version.ref = "googleServicesPlugin" } # Google Services plugin
 
