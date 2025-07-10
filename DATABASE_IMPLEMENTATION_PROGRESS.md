@@ -67,9 +67,21 @@ This document tracks the progress of implementing the local Room database and fu
         *   [X] Stage 6a.3: Implement One-Way Sync for `ProductEntity` (Room -> Firestore) - *Completed*
         *   [X] Stage 6a.4: Basic Firestore Read Operation (Firestore -> App) - *Completed*
         *   [X] Stage 6a.5: Update Progress File & Submit - *Completed*
+    *   **Pending Firestore Sync Tasks (Future Sub-Phases of Phase 6):**
+        *   Sync other entities (Customers, Orders, etc.) with Firestore.
+        *   Implement bi-directional sync strategies and conflict resolution.
     *   (Further sub-phases for other entities and bi-directional sync to be defined)
-*   **Phase 7: Firebase Integration - Authentication**
-    *   (Details to be defined)
+*   **Phase 7: Firebase Integration - Authentication** - *In Progress*
+    *   [X] Stage 7.1: Update Progress File for Phase 7 Start - *Completed*
+        *   [X] Stage 7.2: Add Firebase Authentication SDK - *Completed*
+        *   [X] Stage 7.3: Basic Email/Password Sign-Up UI (Placeholder) - *Completed (Existing UI sufficient)*
+        *   [X] Stage 7.4: Implement Email/Password Sign-Up Logic - *Completed*
+        *   [X] Stage 7.5: Implement Email/Password Sign-In Logic - *Completed*
+        *   [X] Stage 7.6: Implement Sign-Out Logic - *Completed*
+    *   [ ] Stage 7.7: Observe Auth State Changes
+    *   [ ] Stage 7.8: Update Firestore Security Rules (Conceptual)
+    *   [ ] Stage 7.9: Test Authentication Flow (Conceptual & via UI)
+    *   [ ] Stage 7.10: Update Progress File & Submit
 *   **Phase 8: Firebase Integration - Cloud Storage (Optional, for images etc.)**
     *   (Details to be defined)
 
