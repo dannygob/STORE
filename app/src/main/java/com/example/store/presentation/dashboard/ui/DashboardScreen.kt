@@ -54,7 +54,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.Button // Added for Debug button
+import androidx.compose.material3.Button
+import androidx.compose.material.icons.filled.Logout // New Import
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -115,6 +116,15 @@ fun DashboardScreen(
     val uiState by viewModel.uiState.collectAsState()
     var showNotificationsPanel by remember { mutableStateOf(false) }
 
+    LaunchedEffect(key1 = Unit) {
+        viewModel.navigateToLogin.collect {
+            navController.navigate(com.example.store.presentation.common.navigation.Route.Login.route) {
+                popUpTo(com.example.store.presentation.common.navigation.Route.Dashboard.route) { inclusive = true }
+                launchSingleTop = true
+            }
+        }
+    }
+
     // Extraer datos a funciones separadas para mejor organización
     val dashboardItems = getDashboardItems()
     // Pass NavController to getMenuItems
@@ -151,6 +161,12 @@ fun DashboardScreen(
                                 contentDescription = "Notifications"
                             )
                         }
+                    }
+                    IconButton(onClick = { viewModel.signOut() }) { // Sign Out Button
+                        Icon(
+                            imageVector = Icons.Filled.Logout,
+                            contentDescription = "Sign Out"
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -557,10 +573,10 @@ private fun DashboardCard(
                         // Info Icon and Dropdown
                         Box { // Box to anchor the Low Stock DropdownMenu
                             IconButton(onClick = {
-                                Toast.makeText(context, "Low Stock Info icon clicked", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Low Availability Info icon clicked", Toast.LENGTH_SHORT).show()
                                 showLowStockDropdown = true
                             }) {
-                                Icon(Icons.Filled.Info, "Low Stock details", tint = Brown, modifier = Modifier.size(30.dp))
+                                Icon(Icons.Filled.Info, "Low Availability details", tint = Brown, modifier = Modifier.size(30.dp))
                             }
                             DropdownMenu(
                                 expanded = showLowStockDropdown,
@@ -569,7 +585,7 @@ private fun DashboardCard(
                             ) {
                                 if (uiState.lowStockItemsList.isEmpty()) {
                                     DropdownMenuItem(
-                                        text = { Text("No low Stock items.") },
+                                        text = { Text("No low availability items.") },
                                         onClick = { showLowStockDropdown = false }
                                     )
                                 } else {
@@ -591,7 +607,7 @@ private fun DashboardCard(
                         }
                         Spacer(modifier = Modifier.height(4.dp))
                         // Header Text
-                        Text("Low Stock", style = MaterialTheme.typography.labelMedium, textAlign = TextAlign.Center)
+                        Text("Low Availability", style = MaterialTheme.typography.labelMedium, textAlign = TextAlign.Center)
                         Spacer(modifier = Modifier.height(8.dp))
                         // Count or OK Icon
                         if (uiState.lowStockItemCount > 0) {

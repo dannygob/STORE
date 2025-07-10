@@ -9,6 +9,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject // Hilt
+import dagger.hilt.android.lifecycle.HiltViewModel // Hilt
+import com.example.store.domain.repository.AuthRepository // Auth Repo
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
 
 data class DashboardUiState(
     val notifications: List<NotificationItemUi> = emptyList(), // All notifications for the panel
@@ -21,13 +26,26 @@ data class DashboardUiState(
     val expiringItemsList: List<NotificationItemUi> = emptyList() // Specific list for expiring card
 )
 
-class DashboardViewModel : ViewModel() {
+@HiltViewModel
+class DashboardViewModel @Inject constructor(
+    private val authRepository: AuthRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DashboardUiState())
     val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
 
+    private val _navigateToLogin = MutableSharedFlow<Unit>()
+    val navigateToLogin: SharedFlow<Unit> = _navigateToLogin
+
     init {
         loadNotifications()
+    }
+
+    fun signOut() {
+        viewModelScope.launch {
+            authRepository.signOut()
+            _navigateToLogin.emit(Unit)
+        }
     }
 
     fun loadNotifications() {
