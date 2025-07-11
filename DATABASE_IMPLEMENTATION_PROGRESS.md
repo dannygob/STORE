@@ -85,13 +85,4 @@ This document tracks the progress of implementing the local Room database and fu
 *   **Phase 8: Firebase Integration - Cloud Storage (Optional, for images etc.)**
     *   (Details to be defined)
 
-## Current Status
 
-*   **Phase 1: Core Entities Setup (Product, Customer, Supplier) with Room** - *COMPLETED*
-    *   [X] Stage 1.1: Add Room Dependencies & Initial Progress File - *Completed*
-    *   [X] Stage 1.2: Define `ProductEntity` & `ProductDao` - *Completed*
-    *   [X] Stage 1.3: Define `CustomerEntity` & `CustomerDao` - *Completed*
-    *   [X] Stage 1.4: Define `SupplierEntity` & `SupplierDao` - *Completed*
-    *   [X] Stage 1.5: Create `AppDatabase` class - *Completed*
-    *   [X] Stage 1.6: Implement basic Repository for Product, Customer, Supplier. - *Completed*
-    *   [X] Stage 1.7: Initial integration for creating/reading entities. - *Completed*
