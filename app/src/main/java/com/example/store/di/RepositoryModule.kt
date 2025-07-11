@@ -1,7 +1,7 @@
 package com.example.store.di
 
-import com.example.store.domain.repository.AuthRepository
-import com.example.store.domain.repository.AuthRepositoryImpl
+import com.example.store.domain.repository.AuthRepository // Interface from domain
+import com.example.store.data.repository.AuthRepositoryImpl // **Corrected: Implementation from data**
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
