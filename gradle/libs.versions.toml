@@ -1,6 +1,6 @@
 [versions]
 agp = "8.4.0"
-kotlin = "2.0.21"
+kotlin = "2.0.0"
 composeBom = "2025.06.00"
 coreKtx = "1.16.0"
 coreSplashscreen = "1.0.1"
@@ -16,7 +16,8 @@ firebaseBom = "33.2.0"
 firebaseFirestoreKtx = "25.0.0"
 firebaseAuthKtx = "23.0.0"
 googleServicesPlugin = "4.4.2"
-ksp = "1.9.22-1.0.17"
+ksp = "2.0.0-1.0.22"  # 🔹 Versión corregida y estable para Kotlin 2.0.21
+glance = "1.0.0"  # 🔹 Versión estable de Glance para Jetpack Compose
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -27,6 +28,8 @@ androidx-activity-compose = { group = "androidx.activity", name = "activity-comp
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+androidx-glance-appwidget = { group = "androidx.glance", name = "glance-appwidget", version.ref = "glance" }
+
 
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
