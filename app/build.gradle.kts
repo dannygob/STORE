@@ -5,7 +5,7 @@ plugins {
     id("kotlin-kapt") // 🔹 necesario para Hilt
     id("com.google.dagger.hilt.android")
     alias(libs.plugins.ksp) // KSP plugin
-    alias(libs.plugins.googleServices) // Google Services plugin
+    alias(libs.plugins.google.services) // Google Services plugin
 }
 
 android {
