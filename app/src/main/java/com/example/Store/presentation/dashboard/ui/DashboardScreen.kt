@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.NotificationsNone
 import androidx.compose.material3.*
@@ -66,7 +67,7 @@ fun DashboardScreen(
 
     LaunchedEffect(key1 = Unit) {
         viewModel.navigateToLogin.collect {
-            navController.navigate(ScreenRoutes.Login.route) {
+            navController.navigate(Icons.AutoMirrored.Filled.Login.route) {
                 popUpTo(ScreenRoutes.Dashboard.route) {
                     inclusive = true
                 }
