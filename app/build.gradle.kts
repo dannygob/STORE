@@ -84,6 +84,7 @@ dependencies {
     implementation(libs.hilt.android)
 //    ksp(libs.hilt.android.compiler) // Use ksp instead of kapt for annotation processing
     implementation(libs.androidx.hilt.navigation.compose) // For Hilt and Navigation Compose integration
+    implementation(libs.kotlinx.coroutines.play.services) // Or the latest version
 
 
     // Glance (App Widgets)

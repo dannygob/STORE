@@ -153,8 +153,8 @@ class AppRepositoryImpl(
         return try {
             // Using product.id as the document ID in Firestore
             firestore.collection("products").document(product.id)
-                .set(product) // Using the ProductEntity directly (ensure it's Firestore compatible)
-                .await() // Suspends until the operation is complete
+                .set(product)
+                .await() // Using the ProductEntity directly (ensure it's Firestore compatible)
             Result.success(Unit)
         } catch (e: Exception) {
             // Log.e("AppRepositoryImpl", "Error syncing product to Firestore", e) // Proper logging

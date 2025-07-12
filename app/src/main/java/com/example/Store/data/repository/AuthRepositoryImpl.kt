@@ -3,7 +3,12 @@ package com.example.Store.data.repository
 import com.example.Store.domain.model.LoginResult
 import com.example.Store.domain.model.UserRole
 import com.example.Store.domain.repository.AuthRepository
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor() : AuthRepository {
@@ -43,6 +48,28 @@ class AuthRepositoryImpl @Inject constructor() : AuthRepository {
             Result.success(Unit)
         } else {
             Result.failure(Exception("Correo electrónico no encontrado"))
+        }
+    }
+
+    override suspend fun signOut(): Result<Unit> {
+        return try {
+            FirebaseAuth.getInstance().signOut()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override fun getAuthState(): Flow<FirebaseUser?> = callbackFlow {
+        val authStateListener = object : FirebaseAuth.AuthStateListener {
+            override fun onAuthStateChanged(firebaseAuth: FirebaseAuth) {
+                trySend(firebaseAuth.currentUser)
+            }
+        }
+
+        FirebaseAuth.getInstance().addAuthStateListener(authStateListener)
+        awaitClose {
+            FirebaseAuth.getInstance().removeAuthStateListener(authStateListener)
         }
     }
 }

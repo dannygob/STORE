@@ -4,6 +4,7 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.example.Store.presentation.inventory.model.InventoryItemUi
 import com.example.Store.presentation.inventory.ui.InventoryScreen
+import com.example.Store.presentation.inventory.ui.InventoryUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before
 import org.junit.Rule
