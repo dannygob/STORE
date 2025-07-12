@@ -773,22 +773,22 @@ private fun getMenuItems(context: Context, navController: NavController) = listO
     },
     MenuItem(Icons.Filled.ShoppingCart, "Purchases") {
         Toast.makeText(context, "Purchases clicked", Toast.LENGTH_SHORT).show()
-        // navController.navigate(ScreenRoutes.PURCHASES) // Temporarily disabled
+        navController.navigate(ScreenRoutes.PURCHASES) // Temporarily disabled
     },
     MenuItem(Icons.Filled.Sell, "Sales") {
         navController.navigate(ScreenRoutes.Sales.route)
     },
     MenuItem(Icons.Filled.LocalShipping, "Orders") {
         Toast.makeText(context, "Orders clicked", Toast.LENGTH_SHORT).show()
-        // navController.navigate(ScreenRoutes.ORDERS) // Temporarily disabled
+        navController.navigate(ScreenRoutes.ORDERS) // Temporarily disabled
     },
     MenuItem(Icons.Filled.QrCodeScanner, "Scanner") {
         Toast.makeText(context, "Scanner clicked", Toast.LENGTH_SHORT).show()
-        // navController.navigate(ScreenRoutes.SCANNER) // Temporarily disabled
+        navController.navigate(ScreenRoutes.SCANNER) // Temporarily disabled
     },
     MenuItem(Icons.Filled.Payment, "Expenses") {
         Toast.makeText(context, "Expenses clicked", Toast.LENGTH_SHORT).show()
-        // navController.navigate(ScreenRoutes.EXPENSES) // Temporarily disabled
+        navController.navigate(ScreenRoutes.EXPENSES) // Temporarily disabled
     }
 )
 
