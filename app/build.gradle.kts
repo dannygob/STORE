@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.example.Store" // ⬅️ cámbialo por tu paquete real
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.Store"
@@ -94,6 +94,7 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.firestore.ktx)
+//    implementation(libs.firebase.auth.ktx.v2230)
 
     // Tests
     testImplementation(libs.junit)

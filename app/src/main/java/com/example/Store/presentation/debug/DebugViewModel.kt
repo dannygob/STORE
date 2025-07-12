@@ -29,89 +29,79 @@ class DebugViewModel @Inject constructor(
         testOrderOperations()
         testUserPreferenceOperations()
         testWarehouseOperations()
-        testStockAtWarehouseOperations() // New method call
+        testStockAtWarehouseOperations()
     }
 
     private fun addMessage(message: String) {
         _debugMessages.value = _debugMessages.value + message
-        // Log.d("DebugViewModel", message) // Optional: Log to Logcat
     }
 
-    fun testCoreDatabaseOperations() { // Renamed
+    fun testCoreDatabaseOperations() {
         viewModelScope.launch {
-            addMessage("Starting core database operations (Products, Customers, Suppliers)...")
+            addMessage("Starting core database operations...")
 
-            // Clean up existing data for fresh test
             appRepository.deleteAllProducts()
             appRepository.deleteAllCustomers()
             appRepository.deleteAllSuppliers()
             addMessage("Cleared old data.")
 
-            // Insert Sample Data
-            val supplier1 = SupplierEntity(name = "MegaCorp Supplies")
+            val supplier1 = SupplierEntity(
+                name = "MegaCorp Supplies",
+                phone = "123-456-7890",
+                addressLine1 = "123 Main St",
+                addressLine2 = null,
+                city = "Anytown",
+                postalCode = "12345",
+                country = "USA",
+                latitude = 0.0,
+                longitude = 0.0
+            )
             appRepository.insertSupplier(supplier1)
             addMessage("Inserted Supplier: ${supplier1.name}")
 
-            val product1 = ProductEntity(name = "Super Widget", price = 19.99, stockQuantity = 100, supplierId = supplier1.id)
-            val product2 = ProductEntity(name = "Hyper Gadget", price = 149.50, stockQuantity = 50)
+            val product1 = ProductEntity(
+                name = "Super Widget",
+                description = "A super widget",
+                category = "Widgets",
+                imageUrl = "https://example.com/widget.jpg",
+                price = 19.99,
+                stockQuantity = 100,
+                supplierId = supplier1.id
+            )
+            val product2 = ProductEntity(
+                name = "Hyper Gadget",
+                description = "A hyper gadget",
+                category = "Gadgets",
+                imageUrl = "https://example.com/gadget.jpg",
+                price = 149.50,
+                stockQuantity = 50,
+                supplierId = supplier1.id
+            )
             appRepository.insertAllProducts(listOf(product1, product2))
             addMessage("Inserted Products: ${product1.name}, ${product2.name}")
 
-            // Sync product1 to Firestore
-            viewModelScope.launch {
-                addMessage("Attempting to sync ${product1.name} to Firestore...")
-                val syncResult = appRepository.syncProductToFirestore(product1)
-                if (syncResult.isSuccess) {
-                    addMessage("Successfully synced ${product1.name} to Firestore.")
-
-                    // Attempt to read it back
-                    viewModelScope.launch {
-                        addMessage("Attempting to read ${product1.name} (ID: ${product1.id}) back from Firestore...")
-                        appRepository.getProductFromFirestore(product1.id).collect { result ->
-                            if (result.isSuccess) {
-                                val fetchedProduct = result.getOrNull()
-                                if (fetchedProduct != null) {
-                                    addMessage("Successfully read ${fetchedProduct.name} from Firestore. Price: ${fetchedProduct.price}")
-                                } else {
-                                    addMessage("${product1.name} not found in Firestore after sync (or was null).")
-                                }
-                            } else {
-                                addMessage("Failed to read ${product1.name} from Firestore: ${result.exceptionOrNull()?.message}")
-                            }
-                        }
-                    }
-                } else {
-                    addMessage("Failed to sync ${product1.name} to Firestore: ${syncResult.exceptionOrNull()?.message}")
-                }
-            }
-
-            val customer1 = CustomerEntity(name = "Alice Wonderland", email = "alice@example.com")
+            val customer1 = CustomerEntity(
+                name = "Alice Wonderland",
+                email = "alice@example.com",
+                phone = "555-123-4567",
+                addressLine1 = "456 Elm St",
+                addressLine2 = null,
+                city = "Wonderland",
+                postalCode = "67890",
+                country = "Fantasy",
+                latitude = 0.0,
+                longitude = 0.0
+            )
             appRepository.insertCustomer(customer1)
             addMessage("Inserted Customer: ${customer1.name}")
 
-            // Fetch and Log Data
             appRepository.getAllProducts().collect { products ->
                 addMessage("Fetched Products (${products.size}): ${products.joinToString { it.name }}")
             }
 
-            // Test Product Search
-            addMessage("Searching for products with 'Widget'...")
             appRepository.searchProductsByName("Widget").collect { searchResults ->
                 addMessage("Search Results for 'Widget' (${searchResults.size}): ${searchResults.joinToString { it.name }}")
             }
-            addMessage("Searching for products with 'Gadget'...")
-            appRepository.searchProductsByName("Gadget").collect { searchResults ->
-                addMessage("Search Results for 'Gadget' (${searchResults.size}): ${searchResults.joinToString { it.name }}")
-            }
-            addMessage("Searching for products with 'NonExistent'...")
-            appRepository.searchProductsByName("NonExistent").collect { searchResults ->
-                addMessage("Search Results for 'NonExistent' (${searchResults.size}): ${searchResults.joinToString { it.name }}")
-            }
-
-            // Note: Collecting multiple flows like this directly in init/one function can be tricky
-            // for continuous updates. For a one-time test, it's okay, but typically you'd expose
-            // individual flows to the UI or combine them more carefully.
-            // For this placeholder, we'll let them run and collect initial values.
         }
         viewModelScope.launch {
             appRepository.getAllCustomers().collect { customers ->
@@ -129,11 +119,9 @@ class DebugViewModel @Inject constructor(
         viewModelScope.launch {
             addMessage("Starting warehouse database operations...")
 
-            // Clean up existing warehouses first for a clean test run
             appRepository.deleteAllWarehouses()
             addMessage("Deleted all existing warehouses.")
 
-            // Insert a sample warehouse
             val warehouse1 = com.example.Store.data.local.entity.WarehouseEntity(
                 name = "Main Warehouse",
                 address = "123 Storage Rd",
@@ -143,7 +131,6 @@ class DebugViewModel @Inject constructor(
             appRepository.insertWarehouse(warehouse1)
             addMessage("Inserted Warehouse: Name='${warehouse1.name}', ID='${warehouse1.warehouseId}', Notes='${warehouse1.notes}'")
 
-            // Fetch the warehouse by ID
             appRepository.getWarehouseById(warehouse1.warehouseId).collect { fetchedWarehouse ->
                 if (fetchedWarehouse != null) {
                     addMessage("Fetched Warehouse by ID: Name='${fetchedWarehouse.name}', Address='${fetchedWarehouse.address}', Notes='${fetchedWarehouse.notes}'")
@@ -152,16 +139,15 @@ class DebugViewModel @Inject constructor(
                 }
             }
 
-            // Insert another warehouse
             val warehouse2 = com.example.Store.data.local.entity.WarehouseEntity(
                 name = "North Depot",
                 address = "456 Distribution Ave",
+                capacity = 500.0,
                 notes = null
-            ) // Notes can be null
+            )
             appRepository.insertWarehouse(warehouse2)
             addMessage("Inserted Warehouse: Name='${warehouse2.name}', ID='${warehouse2.warehouseId}', Notes='${warehouse2.notes}'")
 
-            // Fetch all warehouses
             appRepository.getAllWarehouses().collect { warehouses ->
                 addMessage("Fetched All Warehouses (${warehouses.size}):")
                 warehouses.forEach { wh ->
@@ -175,39 +161,48 @@ class DebugViewModel @Inject constructor(
         viewModelScope.launch {
             addMessage("Starting StockAtWarehouse operations...")
 
-            // --- Prerequisites: Ensure a product and a warehouse exist ---
             var testProductId: String? = null
             var testWarehouseId: String? = null
 
-            // Get a product (assuming one was created in testCoreDatabaseOperations)
             appRepository.getAllProducts().collect { products ->
                 if (products.isNotEmpty()) {
                     testProductId = products.first().id
                     addMessage("Using Product ID for stock test: $testProductId (${products.first().name})")
                 }
             }
-            if (testProductId == null) { // Create if not found
-                val newProd = ProductEntity(name = "Stock Test Product", price = 5.0, stockQuantity = 0) // Overall stock can be 0
+            if (testProductId == null) {
+                val newProd = ProductEntity(
+                    name = "Stock Test Product",
+                    description = "Stock Test Product",
+                    category = "Test",
+                    imageUrl = "https://example.com/test.jpg",
+                    price = 5.0,
+                    stockQuantity = 0,
+                    supplierId = "test"
+                )
                 appRepository.insertProduct(newProd)
                 testProductId = newProd.id
                 addMessage("Created Product ID for stock test: $testProductId")
             }
 
-            // Get a warehouse (assuming one was created in testWarehouseOperations)
             appRepository.getAllWarehouses().collect { warehouses ->
                 if (warehouses.isNotEmpty()) {
                     testWarehouseId = warehouses.first().warehouseId
                     addMessage("Using Warehouse ID for stock test: $testWarehouseId (${warehouses.first().name})")
                 }
             }
-             if (testWarehouseId == null) { // Create if not found
+            if (testWarehouseId == null) {
                  val newWh =
-                     com.example.Store.data.local.entity.WarehouseEntity(name = "Stock Test Warehouse")
+                     com.example.Store.data.local.entity.WarehouseEntity(
+                         name = "Stock Test Warehouse",
+                         address = "Test Address",
+                         capacity = 100.0,
+                         notes = "Test Notes"
+                     )
                 appRepository.insertWarehouse(newWh)
                 testWarehouseId = newWh.warehouseId
                 addMessage("Created Warehouse ID for stock test: $testWarehouseId")
             }
-            // --- End Prerequisites ---
 
             if (testProductId == null || testWarehouseId == null) {
                 addMessage("Failed to setup prerequisites for StockAtWarehouse test. Aborting.")
@@ -234,7 +229,12 @@ class DebugViewModel @Inject constructor(
 
             // 4. Add stock for the same product in a new warehouse to test total quantity
             val warehouse2 =
-                com.example.Store.data.local.entity.WarehouseEntity(name = "Secondary Stock WH")
+                com.example.Store.data.local.entity.WarehouseEntity(
+                    name = "Secondary Stock WH",
+                    address = "Test Address 2",
+                    capacity = 200.0,
+                    notes = "Test Notes 2"
+                )
             appRepository.insertWarehouse(warehouse2)
             addMessage("Inserted warehouse ${warehouse2.name} for multi-stock test.")
             val stockInWh2 = StockAtWarehouseEntity(productId = testProductId!!, warehouseId = warehouse2.warehouseId, quantity = 75)
@@ -285,11 +285,9 @@ class DebugViewModel @Inject constructor(
             val testThemeKey = "user_theme"
             val testThemeValue = "dark_mode_v1"
 
-            // Save a preference
             appRepository.savePreference(testThemeKey, testThemeValue)
             addMessage("Saved preference: Key='$testThemeKey', Value='$testThemeValue'")
 
-            // Fetch the preference
             appRepository.getPreference(testThemeKey).collect { fetchedValue ->
                 if (fetchedValue != null) {
                     addMessage("Fetched preference: Key='$testThemeKey', Value='$fetchedValue'")
@@ -318,7 +316,7 @@ class DebugViewModel @Inject constructor(
             addMessage("Saved 'another_key' before deleteAll.")
             appRepository.deleteAllPreferences()
             addMessage("Called deleteAllPreferences().")
-            appRepository.getPreference(testThemeKey).collect{themeVal -> // Check original key
+            appRepository.getPreference(testThemeKey).collect { themeVal ->
                 appRepository.getPreference("another_key").collect{anotherVal ->
                     if(themeVal == null && anotherVal == null) {
                         addMessage("Verified: All preferences deleted (checked '$testThemeKey' and 'another_key').")
@@ -346,7 +344,18 @@ class DebugViewModel @Inject constructor(
                 }
             }
             if (testCustomerId == null) {
-                val newCustomer = CustomerEntity(name = "Order Test Customer", email = "ordertest@example.com")
+                val newCustomer = CustomerEntity(
+                    name = "Order Test Customer",
+                    email = "ordertest@example.com",
+                    phone = "555-123-4567",
+                    addressLine1 = "Test Address",
+                    addressLine2 = null,
+                    city = "Test City",
+                    postalCode = "12345",
+                    country = "Test Country",
+                    latitude = 0.0,
+                    longitude = 0.0
+                )
                 appRepository.insertCustomer(newCustomer)
                 testCustomerId = newCustomer.id
                 addMessage("Inserted new customer for order: ${newCustomer.name}")
@@ -366,8 +375,24 @@ class DebugViewModel @Inject constructor(
             }
 
             if (testProductIds.size < 2) {
-                val newProduct1 = ProductEntity(name = "OrderTest Product A", price = 10.0, stockQuantity = 10)
-                val newProduct2 = ProductEntity(name = "OrderTest Product B", price = 25.0, stockQuantity = 5)
+                val newProduct1 = ProductEntity(
+                    name = "OrderTest Product A",
+                    description = "Test Product A",
+                    category = "Test",
+                    imageUrl = "https://example.com/test.jpg",
+                    price = 10.0,
+                    stockQuantity = 10,
+                    supplierId = "test"
+                )
+                val newProduct2 = ProductEntity(
+                    name = "OrderTest Product B",
+                    description = "Test Product B",
+                    category = "Test",
+                    imageUrl = "https://example.com/test.jpg",
+                    price = 25.0,
+                    stockQuantity = 5,
+                    supplierId = "test"
+                )
                 appRepository.insertAllProducts(listOf(newProduct1, newProduct2))
                 testProductIds.clear() // Clear any partially filled list
                 testProductPrices.clear()
@@ -388,12 +413,10 @@ class DebugViewModel @Inject constructor(
             val order1 = OrderEntity(
                 customerId = testCustomerId,
                 status = "Pending",
-                totalAmount = (1 * testProductPrices[testProductIds[0]]!!) + (2 * testProductPrices[testProductIds[1]]!!) // Calculated based on items below
+                totalAmount = (1 * testProductPrices[testProductIds[0]]!!) + (2 * testProductPrices[testProductIds[1]]!!), // Calculated based on items below
+                orderDate = System.currentTimeMillis()
             )
-            // appRepository.insertOrder(order1) // Using insertOrderWithItems instead
-            // addMessage("Inserted Order ID: ${order1.orderId} for customer ID: $testCustomerId")
 
-            // 2. Create and Insert OrderItems
             val orderItem1 = com.example.Store.data.local.entity.OrderItemEntity(
                 orderId = order1.orderId, // Will be set by insertOrderWithItems if not set here
                 productId = testProductIds[0],
@@ -406,18 +429,13 @@ class DebugViewModel @Inject constructor(
                 quantity = 2,
                 pricePerUnit = testProductPrices[testProductIds[1]]!!
             )
-            // appRepository.insertAllOrderItems(listOf(orderItem1, orderItem2))
-            // addMessage("Inserted 2 order items for Order ID: ${order1.orderId}")
 
-            // Use combined operation
             appRepository.insertOrderWithItems(order1, listOf(orderItem1, orderItem2))
             addMessage("Inserted Order ID: ${order1.orderId} with 2 items using combined operation.")
 
-
-            // 3. Fetch the Order with its Items and Log
             appRepository.getOrderWithOrderItems(order1.orderId).collect { orderWithItems ->
                 if (orderWithItems != null) {
-                    addMessage("Fetched Order with Items: ID=${orderWithItems.order.orderId}, CustID=${orderWithItems.order.customerId}, Status=${orderWithItems.order.status}, Total=${orderWithItems.order.totalAmount}")
+                    addMessage("Fetched Order with Items: ID=${orderWithItems.order.orderId}, CustID=${orderWithItems.order.customerId}, Status=${orderWithItems.order.status}, Total=${orderWithItems.order.totalAmount}, Date=${orderWithItems.order.orderDate}")
                     orderWithItems.items.forEach { item ->
                         addMessage("  Item: ProdID=${item.productId}, Qty=${item.quantity}, Price=${item.pricePerUnit}")
                     }
@@ -426,7 +444,6 @@ class DebugViewModel @Inject constructor(
                 }
             }
 
-            // Fetch all orders with items to see the list
             appRepository.getAllOrdersWithOrderItems().collect { allOrdersWithItems ->
                  addMessage("--- All Orders with Items (${allOrdersWithItems.size}) ---")
                  allOrdersWithItems.forEach { orderWithItems ->
@@ -444,8 +461,7 @@ class DebugViewModel @Inject constructor(
             val dayBeforeYesterday = yesterday - (24 * 60 * 60 * 1000)
             val tomorrow = today + (24 * 60 * 60 * 1000)
 
-            // Clean up orders for this specific test section for clarity
-            appRepository.deleteAllOrderItemsForOrder(order1.orderId) // Assuming order1 is still in scope
+            appRepository.deleteAllOrderItemsForOrder(order1.orderId)
             appRepository.deleteOrder(order1)
 
             val orderYesterday = OrderEntity(customerId = testCustomerId, status = "Delivered", totalAmount = 50.0, orderDate = yesterday)
@@ -454,19 +470,16 @@ class DebugViewModel @Inject constructor(
             appRepository.insertOrder(orderToday)
             addMessage("Inserted order for yesterday (ID ${orderYesterday.orderId}) and today (ID ${orderToday.orderId}) for date range test.")
 
-            addMessage("Fetching orders from dayBeforeYesterday to today (should include 2 orders)...")
             appRepository.getOrdersByDateRange(dayBeforeYesterday, today).collect { dateRangeOrders ->
                 addMessage("Orders in range D-2 to Today (${dateRangeOrders.size}):")
                 dateRangeOrders.forEach { order -> addMessage("  Order ID: ${order.orderId}, Date: ${order.orderDate}, Status: ${order.status}")}
             }
 
-            addMessage("Fetching orders for just yesterday (should include 1 order)...")
             appRepository.getOrdersByDateRange(dayBeforeYesterday, yesterday).collect { dateRangeOrders ->
                  addMessage("Orders in range D-2 to Yesterday (${dateRangeOrders.size}):")
                 dateRangeOrders.forEach { order -> addMessage("  Order ID: ${order.orderId}, Date: ${order.orderDate}, Status: ${order.status}")}
             }
 
-            addMessage("Fetching orders for future (should include 0 orders)...")
             appRepository.getOrdersByDateRange(tomorrow, tomorrow + (24*60*60*1000)).collect { dateRangeOrders ->
                 addMessage("Orders in future range (${dateRangeOrders.size}):")
                 dateRangeOrders.forEach { order -> addMessage("  Order ID: ${order.orderId}, Date: ${order.orderDate}, Status: ${order.status}")}

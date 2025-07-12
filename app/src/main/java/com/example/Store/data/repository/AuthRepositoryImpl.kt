@@ -8,7 +8,8 @@ import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor() : AuthRepository {
@@ -60,18 +61,22 @@ class AuthRepositoryImpl @Inject constructor() : AuthRepository {
         }
     }
 
-    override fun getAuthState(): Flow<FirebaseUser?> {
-        return callbackFlow {
-            val authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
-                val user = firebaseAuth.currentUser
-                trySend(user)
-            }
-
-            FirebaseAuth.getInstance().addAuthStateListener(authStateListener)
-
-            awaitClose {
-                FirebaseAuth.getInstance().removeAuthStateListener(authStateListener)
+    override fun getAuthState(): Flow<FirebaseUser?> = flow {
+        val auth = FirebaseAuth.getInstance()
+        val listener = FirebaseAuth.AuthStateListener { authState ->
+            val user = authState.currentUser
+            try {
+                emit(user)
+            } catch (e: Exception) {
+                // Log the error
             }
         }
+        auth.addAuthStateListener(listener)
+
+        awaitClose {
+            auth.removeAuthStateListener(listener)
+        }
+    }.catch { e ->
+        // Log the error
     }
 }

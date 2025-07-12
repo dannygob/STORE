@@ -1,5 +1,6 @@
 [versions]
 agp = "8.11.1"
+firebaseAuthKtxVersion = "22.3.0"
 kotlin = "2.0.0"
 composeBom = "2025.06.00"
 coreKtx = "1.16.0"
@@ -15,13 +16,14 @@ espressoCore = "3.6.1"
 room = "2.6.1"
 firebaseBom = "33.2.0"
 firebaseFirestoreKtx = "25.0.0"
-firebaseAuthKtx = "23.0.0"
+firebaseAuthKtx = "23.2.1"
 googleServicesPlugin = "4.4.3"
 ksp = "2.0.0-1.0.22"  # 🔹 Versión corregida y estable para Kotlin 2.0.21
 glance = "1.0.0"  # 🔹 Versión estable de Glance para Jetpack Compose
 hilt = "2.56.2"
 hiltNavigationCompose = "1.2.0"
 uiTestJunit4 = "VERSION"
+
 
 
 [libraries]
@@ -49,6 +51,7 @@ androidx-compose-material3 = { group = "androidx.compose.material3", name = "mat
 androidx-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "uiTestJunit4" }
 androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+firebase-auth-ktx-v2230 = { module = "com.google.firebase:firebase-auth-ktx", version.ref = "firebaseAuthKtxVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitExt" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -66,6 +69,8 @@ hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-comp
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutinesPlayServices" }
 ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
+
+
 
 
 

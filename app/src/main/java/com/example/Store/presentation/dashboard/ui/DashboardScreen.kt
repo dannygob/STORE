@@ -8,7 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Login
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.NotificationsNone
 import androidx.compose.material3.*
@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.Store.presentation.common.navigation.ScreenRoutes
+import com.example.Store.presentation.common.navigation.Route
 import com.example.Store.presentation.dashboard.DashboardViewModel
 import com.example.Store.presentation.dashboard.model.NotificationItemUi
 import com.example.Store.presentation.dashboard.model.NotificationType
@@ -67,8 +67,8 @@ fun DashboardScreen(
 
     LaunchedEffect(key1 = Unit) {
         viewModel.navigateToLogin.collect {
-            navController.navigate(Icons.AutoMirrored.Filled.Login.route) {
-                popUpTo(ScreenRoutes.Dashboard.route) {
+            navController.navigate(Route.Login.route) {
+                popUpTo(Route.Dashboard.route) {
                     inclusive = true
                 }
                 launchSingleTop = true
@@ -113,7 +113,7 @@ fun DashboardScreen(
                     }
                     IconButton(onClick = { viewModel.signOut() }) {
                         Icon(
-                            imageVector = Icons.Filled.Logout,
+                            imageVector = Icons.AutoMirrored.Filled.Logout,
                             contentDescription = "Sign Out"
                         )
                     }
@@ -145,7 +145,7 @@ fun DashboardScreen(
                 .padding(padding)
         ) {
             Button(
-                onClick = { navController.navigate(ScreenRoutes.Debug.route) },
+                onClick = { navController.navigate(Route.Debug.route) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
@@ -153,21 +153,25 @@ fun DashboardScreen(
                 Text("Go to DB Debug Screen (TEMP)")
             }
 
+            // Menú horizontal mejorado
             HorizontalMenuBar(
                 items = menuItems,
                 modifier = Modifier.padding(top = 8.dp)
             )
 
+            // Sección de tarjetas mejorada
             DashboardCardsSection(
                 items = dashboardItems,
                 viewModel = viewModel,
                 modifier = Modifier.weight(1f)
             )
 
+            // Charts Placeholder Section
             ChartsSectionPlaceholder(
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
 
+            // Sección de dropdowns mejorada
             DropdownMenusSection(
                 sections = dropdownSections,
                 modifier = Modifier.padding(16.dp)
@@ -176,11 +180,11 @@ fun DashboardScreen(
             if (showNotificationsPanel) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd) {
                     DropdownMenu(
-                        expanded = true,
+                        expanded = true, // Controlled by showNotificationsPanel
                         onDismissRequest = { showNotificationsPanel = false },
                         modifier = Modifier
-                            .widthIn(max = 300.dp)
-                            .padding(top = 8.dp, end = 8.dp)
+                            .widthIn(max = 300.dp) // Max width for the panel
+                            .padding(top = 8.dp, end = 8.dp) // Align under TopAppBar actions
                     ) {
                         if (uiState.isLoadingNotifications) {
                             DropdownMenuItem(
@@ -214,6 +218,7 @@ fun DashboardScreen(
                                 )
                                 HorizontalDivider()
                             }
+                            // Actions for all notifications
                             if (uiState.notifications.any { notificationItem -> !notificationItem.isRead }) {
                                 DropdownMenuItem(
                                     text = {
@@ -333,25 +338,34 @@ private fun MenuItemComponent(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
-            .clickable { onClick() }
-            .padding(horizontal = 4.dp, vertical = 8.dp)
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = label,
-            modifier = Modifier.size(24.dp),
-            tint = MaterialTheme.colorScheme.onPrimaryContainer
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
-            textAlign = TextAlign.Center,
-            maxLines = 1
-        )
+        Surface(
+            onClick = onClick,
+            modifier = modifier
+                .clickable()
+                .padding(horizontal = 4.dp, vertical = 8.dp)
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = label,
+                    modifier = Modifier.size(24.dp),
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    textAlign = TextAlign.Center,
+                    maxLines = 1
+                )
+            }
+        }
     }
 }
 
