@@ -3,66 +3,15 @@ package com.example.Store.presentation.dashboard.ui
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.DeleteSweep
-import androidx.compose.material.icons.filled.DoneAll
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Inventory
-import androidx.compose.material.icons.filled.LocalShipping
-import androidx.compose.material.icons.filled.Logout
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Payment
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.QrCodeScanner
-import androidx.compose.material.icons.filled.Sell
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.WarningAmber
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.NotificationsNone
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -83,10 +32,9 @@ import com.example.Store.presentation.dashboard.model.NotificationItemUi
 import com.example.Store.presentation.dashboard.model.NotificationType
 
 // Custom Colors
-val Brown = Color(0xFF8D6E63) // A Material Design like brown
-val GreenPositive = Color(0xFF4CAF50) // Material Green 500
-val RedNegative = Color(0xFFF44336) // Material Red 500
-
+val Brown = Color(0xFF8D6E63)
+val GreenPositive = Color(0xFF4CAF50)
+val RedNegative = Color(0xFFF44336)
 
 // Data classes
 data class DashboardData(
@@ -118,8 +66,8 @@ fun DashboardScreen(
 
     LaunchedEffect(key1 = Unit) {
         viewModel.navigateToLogin.collect {
-            navController.navigate(com.example.Store.presentation.common.navigation.Route.Login.route) {
-                popUpTo(com.example.Store.presentation.common.navigation.Route.Dashboard.route) {
+            navController.navigate(ScreenRoutes.Login.route) {
+                popUpTo(ScreenRoutes.Dashboard.route) {
                     inclusive = true
                 }
                 launchSingleTop = true
@@ -127,9 +75,7 @@ fun DashboardScreen(
         }
     }
 
-    // Extraer datos a funciones separadas para mejor organización
     val dashboardItems = getDashboardItems()
-    // Pass NavController to getMenuItems
     val menuItems = getMenuItems(context, navController)
     val dropdownSections = getDropdownSections()
 
@@ -164,7 +110,7 @@ fun DashboardScreen(
                             )
                         }
                     }
-                    IconButton(onClick = { viewModel.signOut() }) { // Sign Out Button
+                    IconButton(onClick = { viewModel.signOut() }) {
                         Icon(
                             imageVector = Icons.Filled.Logout,
                             contentDescription = "Sign Out"
@@ -175,9 +121,8 @@ fun DashboardScreen(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 ),
-                scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(), // Behavior needed for shadow with content scroll
-
-                modifier = Modifier.shadow(4.dp) // Added shadow to TopAppBar
+                scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
+                modifier = Modifier.shadow(4.dp)
             )
         },
         bottomBar = {
@@ -199,7 +144,7 @@ fun DashboardScreen(
                 .padding(padding)
         ) {
             Button(
-                onClick = { navController.navigate(com.example.Store.presentation.common.navigation.Route.Debug.route) },
+                onClick = { navController.navigate(ScreenRoutes.Debug.route) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
@@ -207,59 +152,44 @@ fun DashboardScreen(
                 Text("Go to DB Debug Screen (TEMP)")
             }
 
-            // Menú horizontal mejorado
             HorizontalMenuBar(
                 items = menuItems,
-                modifier = Modifier.padding(top = 8.dp) // Adjusted padding
+                modifier = Modifier.padding(top = 8.dp)
             )
 
-            // Sección de tarjetas mejorada
             DashboardCardsSection(
                 items = dashboardItems,
-                viewModel = viewModel, // Pass viewModel here
+                viewModel = viewModel,
                 modifier = Modifier.weight(1f)
             )
 
-            // Charts Placeholder Section
             ChartsSectionPlaceholder(
-                modifier = Modifier.padding(horizontal = 16.dp) // Match horizontal padding of other sections
+                modifier = Modifier.padding(horizontal = 16.dp)
             )
 
-            // Sección de dropdowns mejorada
             DropdownMenusSection(
                 sections = dropdownSections,
                 modifier = Modifier.padding(16.dp)
             )
 
-            // Notifications Panel (DropdownMenu as a panel)
-            // This DropdownMenu is part of the Scaffold's content but positioned via Box
-            // Alternatively, a custom dialog or a bottom sheet could be used for more complex panels.
             if (showNotificationsPanel) {
-                // This Box is a bit of a workaround to use DropdownMenu not directly anchored to an action item
-                // but more like a panel. For a true side panel, different components would be used.
-                // However, for a list popping up from the top, DropdownMenu can be styled.
-                // Consider this an "absolute" positioned dropdown relative to the screen.
-                // A better approach for a full panel might be a Dialog or a custom Composable that overlays.
-                // For simplicity of this step, we use DropdownMenu, knowing its limitations for this use case.
-
-                // Box to align the DropdownMenu to the top-end (where the bell icon is)
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd) {
                     DropdownMenu(
-                        expanded = true, // Controlled by showNotificationsPanel
+                        expanded = true,
                         onDismissRequest = { showNotificationsPanel = false },
                         modifier = Modifier
-                            .widthIn(max = 300.dp) // Max width for the panel
-                            .padding(top = 8.dp, end = 8.dp) // Align under TopAppBar actions
+                            .widthIn(max = 300.dp)
+                            .padding(top = 8.dp, end = 8.dp)
                     ) {
                         if (uiState.isLoadingNotifications) {
                             DropdownMenuItem(
                                 text = { Text("Loading notifications...") },
-                                onClick = {} // No action
+                                onClick = {}
                             )
                         } else if (uiState.notifications.isEmpty()) {
                             DropdownMenuItem(
                                 text = { Text("No new notifications.") },
-                                onClick = {} // No action
+                                onClick = {}
                             )
                         } else {
                             Text(
@@ -273,19 +203,17 @@ fun DashboardScreen(
                                     onDismiss = { viewModel.dismissNotification(notification.id) },
                                     onClick = {
                                         viewModel.markAsRead(notification.id)
-                                        // Potentially navigate to a relevant screen or show details
                                         Toast.makeText(
                                             context,
                                             "Notification '${notification.title}' clicked.",
                                             Toast.LENGTH_SHORT
                                         ).show()
-                                        showNotificationsPanel = false // Close panel on item click
+                                        showNotificationsPanel = false
                                     }
                                 )
                                 HorizontalDivider()
                             }
-                            // Actions for all notifications
-                            if (uiState.notifications.any { notificationItem -> !notificationItem.isRead }) { // Explicit lambda parameter
+                            if (uiState.notifications.any { notificationItem -> !notificationItem.isRead }) {
                                 DropdownMenuItem(
                                     text = {
                                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -333,7 +261,7 @@ private fun NotificationDropdownItem(
         NotificationType.ORDER_NEW, NotificationType.ORDER_DELIVERED -> Icons.Filled.ShoppingCart
         NotificationType.LOW_STOCK, NotificationType.ITEM_EXPIRED -> Icons.Filled.WarningAmber
         NotificationType.INFO -> Icons.Filled.Info
-        NotificationType.SYSTEM_ALERT -> Icons.Filled.WarningAmber // Or a more specific system icon
+        NotificationType.SYSTEM_ALERT -> Icons.Filled.WarningAmber
     }
     val itemWeight = if (notification.isRead) FontWeight.Normal else FontWeight.Bold
 
@@ -356,7 +284,7 @@ private fun NotificationDropdownItem(
                     Text(notification.message, style = MaterialTheme.typography.bodySmall, maxLines = 2)
                     Text(notification.getFormattedTimestamp(), style = MaterialTheme.typography.labelSmall, color = Color.Gray)
                 }
-                IconButton(onClick = onDismiss, modifier = Modifier.size(36.dp)) { // Smaller icon button for dismiss
+                IconButton(onClick = onDismiss, modifier = Modifier.size(36.dp)) {
                     Icon(Icons.Filled.Close, contentDescription = "Dismiss notification", modifier = Modifier.size(18.dp))
                 }
             }
@@ -429,7 +357,7 @@ private fun MenuItemComponent(
 @Composable
 private fun DashboardCardsSection(
     items: List<DashboardData>,
-    viewModel: DashboardViewModel, // Added viewModel
+    viewModel: DashboardViewModel,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -444,11 +372,10 @@ private fun DashboardCardsSection(
                 rowItems.forEach { item ->
                     DashboardCard(
                         data = item,
-                        viewModel = viewModel, // Pass viewModel
+                        viewModel = viewModel,
                         modifier = Modifier.weight(1f)
                     )
                 }
-                // Espaciador para filas incompletas
                 if (rowItems.size < 2) {
                     Spacer(modifier = Modifier.weight(1f))
                 }
@@ -460,31 +387,30 @@ private fun DashboardCardsSection(
 @Composable
 private fun DashboardCard(
     data: DashboardData,
-    viewModel: DashboardViewModel, // Added viewModel
+    viewModel: DashboardViewModel,
     modifier: Modifier = Modifier,
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
-    val context = LocalContext.current // For Toasts
-    val uiState by viewModel.uiState.collectAsState() // Collect uiState
+    val context = LocalContext.current
+    val uiState by viewModel.uiState.collectAsState()
 
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp), // Increased elevation
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         )
     ) {
         Column(
             modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 12.dp) // Adjusted padding slightly
+                .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Conditionally display the title. If it's "Low Stock & Expiration", title is omitted.
                 if (data.title != "Low Stock & Expiration") {
                     val titleStyle = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold
@@ -493,21 +419,13 @@ private fun DashboardCard(
                         text = data.title,
                         style = titleStyle,
                         color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.weight(1f) // Allow title to take space
+                        modifier = Modifier.weight(1f)
                     )
                 } else {
-                    // If title is omitted, add a Spacer to keep the Info icon to the right if it were the only element.
-                    // However, for "Low Stock & Expiration", the main Info icon for the card itself will also be removed
-                    // in favor of specific icons within its new content structure.
-                    // For now, let's ensure the structure doesn't break.
-                    // The main IconButton for the card will be handled later for this specific card.
-                    Spacer(modifier = Modifier.weight(1f)) // Occupy space if title is not shown
+                    Spacer(modifier = Modifier.weight(1f))
                 }
 
-                // The generic Info icon for the card. This will be conditionally rendered or altered
-                // for the "Low Stock & Expiration" card later.
-                // For now, it remains, but its utility for "Low Stock & Expiration" card changes.
-                Box { // This box is for the top-right action icon of the card
+                Box {
                     if (data.title != "Low Stock & Expiration") {
                         IconButton(onClick = { showDropdownMenu = true }) {
                             Icon(
@@ -516,7 +434,6 @@ private fun DashboardCard(
                                 tint = Brown
                             )
                         }
-                        // Associated DropdownMenu, also conditional
                         DropdownMenu(
                             expanded = showDropdownMenu,
                             onDismissRequest = { showDropdownMenu = false }
@@ -546,10 +463,8 @@ private fun DashboardCard(
                             }
                         }
                     }
-                    // If title IS "Low Stock & Expiration", no IconButton or DropdownMenu is rendered here.
                 }
             }
-            // Spacer after the header row. Only add if the header was actually rendered.
             if (data.title != "Low Stock & Expiration") {
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -561,19 +476,17 @@ private fun DashboardCard(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp), // Added some vertical padding
+                        .padding(vertical = 8.dp),
                     horizontalArrangement = Arrangement.SpaceAround,
-                    verticalAlignment = Alignment.Top // Align items to the top of the row
+                    verticalAlignment = Alignment.Top
                 ) {
-                    // Section 1: Low Stock
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
                             .weight(1f)
-                            .padding(horizontal = 4.dp) // Added padding for spacing between columns
+                            .padding(horizontal = 4.dp)
                     ) {
-                        // Info Icon and Dropdown
-                        Box { // Box to anchor the Low Stock DropdownMenu
+                        Box {
                             IconButton(onClick = {
                                 Toast.makeText(context, "Low Availability Info icon clicked", Toast.LENGTH_SHORT).show()
                                 showLowStockDropdown = true
@@ -583,7 +496,7 @@ private fun DashboardCard(
                             DropdownMenu(
                                 expanded = showLowStockDropdown,
                                 onDismissRequest = { showLowStockDropdown = false },
-                                modifier = Modifier.width(220.dp) // Applied fixed width to DropdownMenu
+                                modifier = Modifier.width(220.dp)
                             ) {
                                 if (uiState.lowStockItemsList.isEmpty()) {
                                     DropdownMenuItem(
@@ -592,7 +505,7 @@ private fun DashboardCard(
                                     )
                                 } else {
                                     Box(modifier = Modifier.height(120.dp)) {
-                                        LazyColumn(modifier = Modifier.fillMaxWidth()) { // Added fillMaxWidth
+                                        LazyColumn(modifier = Modifier.fillMaxWidth()) {
                                             items(uiState.lowStockItemsList, key = { it.id }) { item ->
                                                 DropdownMenuItem(
                                                     text = { Text(item.message) },
@@ -608,10 +521,8 @@ private fun DashboardCard(
                             }
                         }
                         Spacer(modifier = Modifier.height(4.dp))
-                        // Header Text
                         Text("Low Availability", style = MaterialTheme.typography.labelMedium, textAlign = TextAlign.Center)
                         Spacer(modifier = Modifier.height(8.dp))
-                        // Count or OK Icon
                         if (uiState.lowStockItemCount > 0) {
                             Text(
                                 text = "${uiState.lowStockItemCount}",
@@ -628,15 +539,13 @@ private fun DashboardCard(
                         }
                     }
 
-                    // Section 2: Expiring Soon
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
                             .weight(1f)
-                            .padding(horizontal = 4.dp) // Added padding for spacing between columns
+                            .padding(horizontal = 4.dp)
                     ) {
-                        // Info Icon and Dropdown
-                        Box { // Box to anchor the Expiring DropdownMenu
+                        Box {
                             IconButton(onClick = {
                                 Toast.makeText(context, "Expiring Soon Info icon clicked", Toast.LENGTH_SHORT).show()
                                 showExpiringDropdown = true
@@ -646,7 +555,7 @@ private fun DashboardCard(
                             DropdownMenu(
                                 expanded = showExpiringDropdown,
                                 onDismissRequest = { showExpiringDropdown = false },
-                                modifier = Modifier.width(220.dp) // Applied fixed width to DropdownMenu
+                                modifier = Modifier.width(220.dp)
                             ) {
                                 if (uiState.expiringItemsList.isEmpty()) {
                                     DropdownMenuItem(
@@ -655,7 +564,7 @@ private fun DashboardCard(
                                     )
                                 } else {
                                     Box(modifier = Modifier.height(120.dp)) {
-                                        LazyColumn(modifier = Modifier.fillMaxWidth()) { // Added fillMaxWidth
+                                        LazyColumn(modifier = Modifier.fillMaxWidth()) {
                                             items(uiState.expiringItemsList, key = { it.id }) { item ->
                                                 DropdownMenuItem(
                                                     text = { Text(item.message) },
@@ -671,10 +580,8 @@ private fun DashboardCard(
                             }
                         }
                         Spacer(modifier = Modifier.height(4.dp))
-                        // Header Text
                         Text("Expiring Soon", style = MaterialTheme.typography.labelMedium, textAlign = TextAlign.Center)
                         Spacer(modifier = Modifier.height(8.dp))
-                        // Count or OK Icon
                         if (uiState.expiringItemCount > 0) {
                             Text(
                                 text = "${uiState.expiringItemCount}",
@@ -782,7 +689,7 @@ private fun DropdownMenuComponent(
                         )
                     },
                     onClick = {
-                        Toast.makeText(context, "$option clicked", Toast.LENGTH_SHORT).show() // Ensured it's just a toast
+                        Toast.makeText(context, "$option clicked", Toast.LENGTH_SHORT).show()
                         expanded = false
                     }
                 )
@@ -791,7 +698,6 @@ private fun DropdownMenuComponent(
     }
 }
 
-// Funciones de datos separadas para mejor organización
 private fun getDashboardItems() = listOf(
     DashboardData("Order Alerts", listOf(
         "Order #101 - Pending Shipment",
@@ -844,7 +750,6 @@ private fun getDashboardItems() = listOf(
         "Disk Space: 75% Used (Server 1)",
         "Security Alerts: 0"
     )),
-    // Adding two more to make it 10 items for better scrolling
     DashboardData("Upcoming Tasks", listOf(
         "Follow up with Supplier X",
         "Schedule staff meeting",
@@ -870,7 +775,7 @@ private fun getMenuItems(context: Context, navController: NavController) = listO
         // navController.navigate(ScreenRoutes.PURCHASES) // Temporarily disabled
     },
     MenuItem(Icons.Filled.Sell, "Sales") {
-        navController.navigate("sales")
+        navController.navigate(ScreenRoutes.Sales.route)
     },
     MenuItem(Icons.Filled.LocalShipping, "Orders") {
         Toast.makeText(context, "Orders clicked", Toast.LENGTH_SHORT).show()
@@ -909,7 +814,7 @@ private fun ChartsSectionPlaceholder(modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp), // Add some vertical spacing around this section
+            .padding(vertical = 8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
@@ -917,7 +822,7 @@ private fun ChartsSectionPlaceholder(modifier: Modifier = Modifier) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(150.dp) // Give it a noticeable height
+                .height(150.dp)
                 .padding(16.dp),
             contentAlignment = Alignment.Center
         ) {
@@ -938,7 +843,7 @@ fun DashboardPreview() {
         // Explicitly create a DashboardViewModel for the preview
         DashboardScreen(
             navController = rememberNavController(),
-            viewModel = DashboardViewModel() // Explicitly pass a new instance
+            viewModel = hiltViewModel()
         )
     }
 }
