@@ -110,7 +110,7 @@ data class DropdownSection(
 @Composable
 fun DashboardScreen(
     navController: NavController,
-    viewModel: DashboardViewModel = viewModel() // Added DashboardViewModel
+    viewModel: DashboardViewModel
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
@@ -861,26 +861,26 @@ private fun getDashboardItems() = listOf(
 private fun getMenuItems(context: Context, navController: NavController) = listOf(
     MenuItem(Icons.Filled.Inventory, "Inventory") {
         Toast.makeText(context, "Inventory clicked", Toast.LENGTH_SHORT).show()
-        navController.navigate(ScreenRoutes.INVENTORY) // Temporarily disabled
+        navController.navigate("inventory") // Temporarily disabled
     },
     MenuItem(Icons.Filled.ShoppingCart, "Purchases") {
         Toast.makeText(context, "Purchases clicked", Toast.LENGTH_SHORT).show()
-        // navController.navigate(ScreenRoutes.PURCHASES) // Temporarily disabled
+        navController.navigate("purchases") // Temporarily disabled
     },
     MenuItem(Icons.Filled.Sell, "Sales") {
         navController.navigate("sales")
     },
     MenuItem(Icons.Filled.LocalShipping, "Orders") {
         Toast.makeText(context, "Orders clicked", Toast.LENGTH_SHORT).show()
-        // navController.navigate(ScreenRoutes.ORDERS) // Temporarily disabled
+        navController.navigate("orders") // Temporarily disabled
     },
     MenuItem(Icons.Filled.QrCodeScanner, "Scanner") {
         Toast.makeText(context, "Scanner clicked", Toast.LENGTH_SHORT).show()
-        // navController.navigate(ScreenRoutes.SCANNER) // Temporarily disabled
+        navController.navigate("scanner") // Temporarily disabled
     },
     MenuItem(Icons.Filled.Payment, "Expenses") {
         Toast.makeText(context, "Expenses clicked", Toast.LENGTH_SHORT).show()
-        // navController.navigate(ScreenRoutes.EXPENSES) // Temporarily disabled
+        navController.navigate("expenses") // Temporarily disabled
     }
 )
 
