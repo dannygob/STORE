@@ -1,4 +1,4 @@
-package values.splashscreen
+package com.example.Store.presentation.splash.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.Store.R
@@ -30,7 +31,7 @@ fun SplashScreen(onTimeout: () -> Unit) {
 
     LaunchedEffect(Unit) {
         visible = true
-        delay(3000)
+        delay(2000)
         onTimeout()
     }
 
@@ -57,5 +58,15 @@ fun SplashScreen(onTimeout: () -> Unit) {
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SplashScreenPreview() {
+    // It's good practice to wrap previews in your app's theme if they rely on it.
+    // If StoreApp is your theme wrapper, use it. Otherwise, use MaterialTheme directly.
+    MaterialTheme { // Or YourAppTheme { ... }
+        SplashScreen(onTimeout = {})
     }
 }

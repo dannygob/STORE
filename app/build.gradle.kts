@@ -1,25 +1,24 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.google.services)
     alias(libs.plugins.kotlin.compose)
-    id("kotlin-kapt") // 🔹 necesario para Hilt
-    id("com.google.dagger.hilt.android")
-    alias(libs.plugins.ksp) // KSP plugin
-    alias(libs.plugins.google.services) // Google Services plugin
 }
 
 android {
-    namespace = "com.example.store"
+    namespace = "com.example.Store" // ⬅️ cámbialo por tu paquete real
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.store"
+        applicationId = "com.example.Store"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled = true
     }
 
     buildTypes {
@@ -33,65 +32,80 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 
     buildFeatures {
         compose = true
     }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = libs.versions.kotlin.get()
+    }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
 }
 
 dependencies {
-    // Core y Compose
+    // Core
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
-    implementation(libs.material3)
     implementation(libs.androidx.core.splashscreen)
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.material.icons.extended)
-
-    // Hilt (añadido correctamente con kapt)
-    implementation("com.google.dagger:hilt-android:2.51")
-    kapt("com.google.dagger:hilt-android-compiler:2.51")
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     implementation(libs.androidx.multidex)
 
-    implementation(libs.androidx.navigation.compose.v290) // Use the latest stable version
-    implementation(libs.androidx.compose.bom.v20240600) // Use the latest BOM
-    implementation(libs.ui)
-    implementation(libs.androidx.compose.material3.material3)
+    // Compose BOM
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material.icons.extended)
+
+    // Compose Navigation & Activity
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.navigation.compose)
+
+    // Lifecycle
+    implementation(libs.androidx.lifecycle.runtime.ktx)
 
     // Room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-    ksp(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler) // ✅ Usar KSP, no kapt
+    implementation(libs.hilt.android)
+//    ksp(libs.hilt.android.compiler) // Use ksp instead of kapt for annotation processing
+    implementation(libs.androidx.hilt.navigation.compose) // For Hilt and Navigation Compose integration
+
+
+    // Glance (App Widgets)
+    implementation(libs.androidx.glance.appwidget)
 
     // Firebase
     implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.firestore.ktx)
-    implementation(libs.firebase.auth.ktx) // Added Firebase Auth KTX
-
-    ksp {
-        arg("room.schemaLocation", "$projectDir/schemas")
-    }
 
     // Tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    androidTestImplementation(libs.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
+
+
+
+
