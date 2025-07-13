@@ -39,7 +39,6 @@ import androidx.compose.material.icons.outlined.NotificationsNone
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -194,15 +193,6 @@ fun DashboardScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            Button(
-                onClick = { navController.navigate(Route.Debug.route) {} },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Text("Go to DB Debug Screen (TEMP)")
-            }
-
             // Menú horizontal mejorado
             HorizontalMenuBar(
                 items = menuItems,
@@ -227,25 +217,14 @@ fun DashboardScreen(
                 modifier = Modifier.padding(16.dp)
             )
 
-            // Notifications Panel (DropdownMenu as a panel)
-            // This DropdownMenu is part of the Scaffold's content but positioned via Box
-            // Alternatively, a custom dialog or a bottom sheet could be used for more complex panels.
             if (showNotificationsPanel) {
-                // This Box is a bit of a workaround to use DropdownMenu not directly anchored to an action item
-                // but more like a panel. For a true side panel, different components would be used.
-                // However, for a list popping up from the top, DropdownMenu can be styled.
-                // Consider this an "absolute" positioned dropdown relative to the screen.
-                // A better approach for a full panel might be a Dialog or a custom Composable that overlays.
-                // For simplicity of this step, we use DropdownMenu, knowing its limitations for this use case.
-
-                // Box to align the DropdownMenu to the top-end (where the bell icon is)
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd) {
                     DropdownMenu(
-                        expanded = true, // Controlled by showNotificationsPanel
+                        expanded = true,
                         onDismissRequest = { showNotificationsPanel = false },
                         modifier = Modifier
-                            .widthIn(max = 300.dp) // Max width for the panel
-                            .padding(top = 8.dp, end = 8.dp) // Align under TopAppBar actions
+                            .widthIn(max = 300.dp)
+                            .padding(top = 8.dp, end = 8.dp)
                     ) {
                         if (uiState.isLoadingNotifications) {
                             DropdownMenuItem(
@@ -279,7 +258,6 @@ fun DashboardScreen(
                                 )
                                 HorizontalDivider()
                             }
-                            // Actions for all notifications
                             if (uiState.notifications.any { notificationItem -> !notificationItem.isRead }) {
                                 DropdownMenuItem(
                                     text = {
@@ -399,12 +377,12 @@ private fun MenuItemComponent(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+            .padding(horizontal = 4.dp, vertical = 8.dp)
     ) {
         Surface(
-            onClick = onClick,
-            modifier = modifier
-                .padding(horizontal = 4.dp, vertical = 8.dp)
+            onClick = onClick
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -787,35 +765,35 @@ private fun getDashboardItems() = listOf(
         "Product D - Expires Today"
     )),
     DashboardData("Sales Statistics", listOf(
-        "Today's Sales: \$150.75 (5 transactions)",
-        "Week to Date: \$1050.20 (32 transactions)",
-        "Month to Date: \$4500.60 (120 transactions)",
+        "Today's Sales: $150.75 (5 transactions)",
+        "Week to Date: $1050.20 (32 transactions)",
+        "Month to Date: $4500.60 (120 transactions)",
         "Top Product: Product X"
     )),
     DashboardData("Admin Balance", listOf(
-        "Account A: \$5000.00",
-        "Account B: \$2345.10 (Overdraft)",
-        "Pending Transfers: \$300.00",
+        "Account A: $5000.00",
+        "Account B: $2345.10 (Overdraft)",
+        "Pending Transfers: $300.00",
         "Last Statement: 01 Nov 2023"
     )),
     DashboardData(
         "Expenses & Services",
         listOf(
-            "Water Bill: \$200 (Due 15th)",
-            "Electricity: \$150 (Paid)",
-            "Internet: \$50 (Due 10th)",
-            "Cleaning Service: \$120 (Scheduled Fri)"
+            "Water Bill: $200 (Due 15th)",
+            "Electricity: $150 (Paid)",
+            "Internet: $50 (Due 10th)",
+            "Cleaning Service: $120 (Scheduled Fri)"
         )
     ),
     DashboardData("Other Expenses", listOf(
-        "Maintenance: \$300 (Repair AC)",
-        "Stationery: \$50 (Pens, Paper)",
-        "Software Subscription: \$25 (Monthly)",
-        "Unexpected Repair: \$150 (Freezer)"
+        "Maintenance: $300 (Repair AC)",
+        "Stationery: $50 (Pens, Paper)",
+        "Software Subscription: $25 (Monthly)",
+        "Unexpected Repair: $150 (Freezer)"
     )),
     DashboardData("Customer Insights", listOf(
         "New Customers This Week: 5",
-        "Top Customer: Jane Doe (\$500 spend)",
+        "Top Customer: Jane Doe ($500 spend)",
         "Recent Feedback: Positive (Order #103)",
         "Loyalty Program Members: 120"
     )),
@@ -839,7 +817,6 @@ private fun getDashboardItems() = listOf(
     ))
 )
 
-// Updated getMenuItems to accept NavController and use ScreenRoutes
 private fun getMenuItems(context: Context, navController: NavController) = listOf(
     MenuItem(Icons.Filled.Inventory, "Inventory") {
         Toast.makeText(context, "Inventory clicked", Toast.LENGTH_SHORT).show()
@@ -850,6 +827,7 @@ private fun getMenuItems(context: Context, navController: NavController) = listO
         navController.navigate(ScreenRoutes.PURCHASES) {}
     },
     MenuItem(Icons.Filled.Sell, "Sales") {
+        Toast.makeText(context, "Sales clicked", Toast.LENGTH_SHORT).show()
         navController.navigate(ScreenRoutes.SALES) {}
     },
     MenuItem(Icons.Filled.LocalShipping, "Orders") {
@@ -913,12 +891,43 @@ private fun ChartsSectionPlaceholder(modifier: Modifier = Modifier) {
 @Preview(showSystemUi = true)
 @Composable
 fun DashboardPreview() {
+    LocalContext.current
+    // Create a fake AuthRepository for the preview
+    val fakeAuthRepository = object : com.example.Store.domain.repository.AuthRepository {
+        override suspend fun login(
+            email: String,
+            password: String,
+        ): Result<com.example.Store.domain.model.LoginResult> {
+            return Result.success(com.example.Store.domain.model.LoginResult(com.example.Store.domain.model.UserRole.ADMIN))
+        }
+
+        override suspend fun register(
+            email: String,
+            password: String,
+            role: com.example.Store.domain.model.UserRole,
+        ): Result<Unit> {
+            return Result.success(Unit)
+        }
+
+        override suspend fun recoverPassword(email: String): Result<Unit> {
+            return Result.success(Unit)
+        }
+
+        override suspend fun signOut(): Result<Unit> {
+            return Result.success(Unit)
+        }
+
+        override fun getAuthState(): kotlinx.coroutines.flow.Flow<com.google.firebase.auth.FirebaseUser?> {
+            return kotlinx.coroutines.flow.flowOf(null)
+        }
+    }
+    // Create a ViewModel instance with the fake repository
+    val fakeViewModel = DashboardViewModel(fakeAuthRepository)
+
     MaterialTheme {
-        // Provide a dummy NavController for the preview
-        // Explicitly create a DashboardViewModel for the preview
         DashboardScreen(
             navController = rememberNavController(),
-            viewModel = hiltViewModel()
+            viewModel = fakeViewModel
         )
     }
 }
