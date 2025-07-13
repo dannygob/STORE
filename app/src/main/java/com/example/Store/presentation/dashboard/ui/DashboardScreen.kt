@@ -631,7 +631,11 @@ private fun DashboardCard(
                             }
                         }
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text("Expiring Soon", style = MaterialTheme.typography.labelMedium, textAlign = TextAlign.Center)
+                        Text(
+                            "Exp Soon",
+                            style = MaterialTheme.typography.labelMedium,
+                            textAlign = TextAlign.Center
+                        )
                         Spacer(modifier = Modifier.height(8.dp))
                         if (uiState.expiringItemCount > 0) {
                             Text(

@@ -8,11 +8,15 @@ import androidx.navigation.compose.composable
 import com.example.Store.presentation.dashboard.DashboardViewModel
 import com.example.Store.presentation.dashboard.ui.DashboardScreen
 import com.example.Store.presentation.debug.ui.DebugScreen
+import com.example.Store.presentation.expenses.ui.ExpensesScreen
 import com.example.Store.presentation.inventory.ui.InventoryItemUi
 import com.example.Store.presentation.inventory.ui.InventoryScreen
 import com.example.Store.presentation.inventory.ui.InventoryUiState
 import com.example.Store.presentation.login.ui.LoginScreen
+import com.example.Store.presentation.orders.ui.OrdersScreen
+import com.example.Store.presentation.purchases.ui.PurchasesScreen
 import com.example.Store.presentation.sales.ui.SalesScreen
+import com.example.Store.presentation.scanner.ui.ScannerScreen
 import com.example.Store.presentation.splash.ui.SplashScreen
 
 sealed class Route(val route: String) {
@@ -21,7 +25,11 @@ sealed class Route(val route: String) {
     object Dashboard : Route("dashboard")
     object Inventory : Route("inventory")
     object Sales : Route("sales")
-    object Debug : Route("debug") // New Route
+    object Debug : Route("debug")
+    object Purchases : Route("purchases")
+    object Orders : Route("orders")
+    object Scanner : Route("scanner")
+    object Expenses : Route("expenses")
 }
 
 @Composable
@@ -81,9 +89,24 @@ fun MainNavHost(navController: NavHostController) {
             SalesScreen(navController = navController)
         }
 
-        composable(Route.Debug.route) { // Composable for DebugScreen
+        composable(Route.Debug.route) {
             DebugScreen()
         }
 
+        composable(Route.Purchases.route) {
+            PurchasesScreen(navController = navController)
+        }
+
+        composable(Route.Orders.route) {
+            OrdersScreen(navController = navController)
+        }
+
+        composable(Route.Scanner.route) {
+            ScannerScreen(navController = navController)
+        }
+
+        composable(Route.Expenses.route) {
+            ExpensesScreen(navController = navController)
+        }
     }
 }
