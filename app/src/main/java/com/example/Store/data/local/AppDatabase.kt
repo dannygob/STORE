@@ -36,7 +36,7 @@ import com.example.Store.data.local.entity.WarehouseEntity
         StockAtWarehouseEntity::class // Added StockAtWarehouseEntity
     ],
     version = 6, // Incremented version to 6
-    exportSchema = true // Enabled schema export
+    exportSchema = false // Enabled schema export
 )
 abstract class AppDatabase : RoomDatabase() {
 

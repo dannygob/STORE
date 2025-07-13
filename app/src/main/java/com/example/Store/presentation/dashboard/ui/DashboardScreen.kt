@@ -28,6 +28,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.Store.presentation.common.navigation.Route
+import com.example.Store.presentation.common.navigation.ScreenRoutes
 import com.example.Store.presentation.dashboard.DashboardViewModel
 import com.example.Store.presentation.dashboard.model.NotificationItemUi
 import com.example.Store.presentation.dashboard.model.NotificationType
@@ -801,7 +802,7 @@ private fun getMenuItems(context: Context, navController: NavController) = listO
         navController.navigate(ScreenRoutes.PURCHASES.route) // Temporarily disabled
     },
     MenuItem(Icons.Filled.Sell, "Sales") {
-        navController.navigate(ScreenRoutes.Sales.route)
+        navController.navigate(ScreenRoutes.SALES.route)
     },
     MenuItem(Icons.Filled.LocalShipping, "Orders") {
         Toast.makeText(context, "Orders clicked", Toast.LENGTH_SHORT).show()

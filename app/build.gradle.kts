@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.google.services)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.hilt)
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -88,6 +88,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.play.services) // Or the latest version
 
 
+
     // Glance (App Widgets)
     implementation(libs.androidx.glance.appwidget)
 
@@ -96,7 +97,7 @@ dependencies {
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.firestore.ktx)
 //    implementation(libs.firebase.auth.ktx.v2230)
-    implementation(libs.kotlinx.coroutines.play.services.v164)
+    implementation(libs.kotlinx.coroutines.play.services)
 
     // Tests
     testImplementation(libs.junit)
