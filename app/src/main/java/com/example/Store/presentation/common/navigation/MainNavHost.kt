@@ -1,7 +1,7 @@
 package com.example.Store.presentation.common.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -53,7 +53,7 @@ fun MainNavHost(navController: NavHostController) {
         }
 
         composable(Route.Dashboard.route) {
-            val dashboardViewModel: DashboardViewModel = viewModel()
+            val dashboardViewModel: DashboardViewModel = hiltViewModel()
             DashboardScreen(
                 navController = navController,
                 viewModel = dashboardViewModel
