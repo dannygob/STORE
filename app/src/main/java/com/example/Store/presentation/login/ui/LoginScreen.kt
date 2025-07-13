@@ -49,7 +49,7 @@ fun LoginScreen(
     val focusManager = LocalFocusManager.current
     var passwordVisible by remember { mutableStateOf(false) }
 
-    // Navegar al dashboard en caso de login exitoso
+    // Navigate to dashboard on successful login
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) {
             onLoginSuccess()
@@ -69,7 +69,7 @@ fun LoginScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
-                    text = "Inicia sesión",
+                    text = "Login",
                     style = MaterialTheme.typography.headlineMedium
                 )
 
@@ -77,7 +77,7 @@ fun LoginScreen(
                 OutlinedTextField(
                     value = state.email,
                     onValueChange = { viewModel.onEvent(LoginEvent.EmailChanged(it)) },
-                    label = { Text("Correo electrónico") },
+                    label = { Text("Email") },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Email,
                         imeAction = ImeAction.Next
@@ -96,7 +96,7 @@ fun LoginScreen(
                 OutlinedTextField(
                     value = state.password,
                     onValueChange = { viewModel.onEvent(LoginEvent.PasswordChanged(it)) },
-                    label = { Text("Contraseña") },
+                    label = { Text("Password") },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Password,
                         imeAction = ImeAction.Done
@@ -128,7 +128,7 @@ fun LoginScreen(
                     modifier = Modifier.fillMaxWidth(),
                     enabled = !state.isLoading
                 ) {
-                    Text("Iniciar sesión")
+                    Text("Login")
                 }
 
                 // Botón de recuperación de contraseña
@@ -139,7 +139,7 @@ fun LoginScreen(
                     },
                     modifier = Modifier.align(Alignment.End)
                 ) {
-                    Text("¿Olvidaste tu contraseña?")
+                    Text("Forgot your password?")
                 }
 
                 // Botón de registro rápido
@@ -157,7 +157,7 @@ fun LoginScreen(
                     modifier = Modifier.fillMaxWidth(),
                     enabled = !state.isLoading
                 ) {
-                    Text("Registrarse")
+                    Text("Register")
                 }
 
                 // Mensaje de error global
@@ -178,10 +178,10 @@ fun LoginScreen(
     }
 }
 
-/*- Usa uno de los usuarios registrados en tu AuthRepositoryImpl. Por ejemplo:
-- Usuario: admin@store.com
-- Contraseña: admin123
+/*- Use one of the registered users in your AuthRepositoryImpl. For example:
+- User: admin@store.com
+- Password: admin123
 - o
-- Usuario: user@store.com
-- Contraseña: user123
-- Asegúrate de que el rol del usuario sea ADMIN o USER según corresponda.*/
+- User: user@store.com
+- Password: user123
+- Make sure the user's role is ADMIN or USER as appropriate.*/
