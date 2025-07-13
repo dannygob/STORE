@@ -69,7 +69,7 @@ fun LoginScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
-                    text = "Inicia sesión",
+                    text = "Log in",
                     style = MaterialTheme.typography.headlineMedium
                 )
 
@@ -77,7 +77,7 @@ fun LoginScreen(
                 OutlinedTextField(
                     value = state.email,
                     onValueChange = { viewModel.onEvent(LoginEvent.EmailChanged(it)) },
-                    label = { Text("Correo electrónico") },
+                    label = { Text("Email") },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Email,
                         imeAction = ImeAction.Next
@@ -96,7 +96,7 @@ fun LoginScreen(
                 OutlinedTextField(
                     value = state.password,
                     onValueChange = { viewModel.onEvent(LoginEvent.PasswordChanged(it)) },
-                    label = { Text("Contraseña") },
+                    label = { Text("Password") },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Password,
                         imeAction = ImeAction.Done
@@ -128,7 +128,7 @@ fun LoginScreen(
                     modifier = Modifier.fillMaxWidth(),
                     enabled = !state.isLoading
                 ) {
-                    Text("Iniciar sesión")
+                    Text("Login")
                 }
 
                 // Botón de recuperación de contraseña
@@ -139,7 +139,7 @@ fun LoginScreen(
                     },
                     modifier = Modifier.align(Alignment.End)
                 ) {
-                    Text("¿Olvidaste tu contraseña?")
+                    Text("¿Forgot Your Password?")
                 }
 
                 // Botón de registro rápido
@@ -157,7 +157,7 @@ fun LoginScreen(
                     modifier = Modifier.fillMaxWidth(),
                     enabled = !state.isLoading
                 ) {
-                    Text("Registrarse")
+                    Text("Register")
                 }
 
                 // Mensaje de error global
