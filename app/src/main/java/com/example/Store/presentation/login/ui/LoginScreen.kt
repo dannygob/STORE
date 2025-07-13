@@ -69,7 +69,9 @@ fun LoginScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
+
                     text = "Login",
+
                     style = MaterialTheme.typography.headlineMedium
                 )
 
@@ -139,7 +141,9 @@ fun LoginScreen(
                     },
                     modifier = Modifier.align(Alignment.End)
                 ) {
+
                     Text("Forgot your password?")
+
                 }
 
                 // Botón de registro rápido

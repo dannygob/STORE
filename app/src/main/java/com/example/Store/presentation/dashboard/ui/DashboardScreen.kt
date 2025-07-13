@@ -2,6 +2,7 @@ package com.example.Store.presentation.dashboard.ui
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -71,7 +72,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -125,9 +125,9 @@ fun DashboardScreen(
         }
     }
 
-    val dashboardItems = getDashboardItems()
+    val dashboardItems = getDashboardItems(context)
     val menuItems = getMenuItems(context, navController)
-    val dropdownSections = getDropdownSections()
+    val dropdownSections = getDropdownSections(context)
 
     LaunchedEffect(key1 = uiState.userMessage) {
         uiState.userMessage?.let {
@@ -171,7 +171,6 @@ fun DashboardScreen(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 ),
-                scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
                 modifier = Modifier.shadow(4.dp)
             )
         },
@@ -179,11 +178,13 @@ fun DashboardScreen(
             BottomAppBar(
                 containerColor = MaterialTheme.colorScheme.surfaceContainer
             ) {
+                // Move version to the right
+                Spacer(Modifier.weight(1f))
                 Text(
                     text = "Version 1.0",
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(horizontal = 16.dp),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )
             }
         }
@@ -193,25 +194,29 @@ fun DashboardScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
+
             // Improved horizontal menu
+
             HorizontalMenuBar(
                 items = menuItems,
-                modifier = Modifier.padding(top = 8.dp)
+                modifier = Modifier.padding(vertical = 8.dp)
             )
 
+
             // Improved card section
+
             DashboardCardsSection(
                 items = dashboardItems,
                 viewModel = viewModel,
                 modifier = Modifier.weight(1f)
             )
 
-            // Charts Placeholder Section
             ChartsSectionPlaceholder(
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
 
             // Improved dropdowns section
+
             DropdownMenusSection(
                 sections = dropdownSections,
                 modifier = Modifier.padding(16.dp)
@@ -258,7 +263,7 @@ fun DashboardScreen(
                                 )
                                 HorizontalDivider()
                             }
-                            if (uiState.notifications.any { notificationItem -> !notificationItem.isRead }) {
+                            if (uiState.notifications.any { !it.isRead }) {
                                 DropdownMenuItem(
                                     text = {
                                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -378,11 +383,12 @@ private fun MenuItemComponent(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
-            .padding(horizontal = 4.dp, vertical = 8.dp)
+        modifier = modifier.padding(vertical = 4.dp)
     ) {
         Surface(
-            onClick = onClick
+            onClick = onClick,
+            shape = RoundedCornerShape(8.dp),
+            color = Color.Transparent
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -391,13 +397,13 @@ private fun MenuItemComponent(
                 Icon(
                     imageVector = icon,
                     contentDescription = label,
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(28.dp), // Slightly larger icon
                     tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = label,
-                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                    style = MaterialTheme.typography.labelMedium, // Larger font
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                     textAlign = TextAlign.Center,
                     maxLines = 1
@@ -415,12 +421,12 @@ private fun DashboardCardsSection(
 ) {
     LazyColumn(
         modifier = modifier.padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp) // Increased spacing
     ) {
         items(items.chunked(2)) { rowItems ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(12.dp) // Increased spacing
             ) {
                 rowItems.forEach { item ->
                     DashboardCard(
@@ -448,8 +454,10 @@ private fun DashboardCard(
     val uiState by viewModel.uiState.collectAsState()
 
     Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(12.dp),
+        modifier = modifier.clickable {
+            Toast.makeText(context, "${data.title} card clicked", Toast.LENGTH_SHORT).show()
+        },
+        shape = RoundedCornerShape(16.dp), // More rounded corners
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -465,12 +473,10 @@ private fun DashboardCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (data.title != "Low Stock & Expiration") {
-                    val titleStyle = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Bold
-                    )
                     Text(
                         text = data.title,
-                        style = titleStyle,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.weight(1f)
                     )
@@ -491,28 +497,18 @@ private fun DashboardCard(
                             expanded = showDropdownMenu,
                             onDismissRequest = { showDropdownMenu = false }
                         ) {
-                            val placeholderTitles = setOf("Upcoming Tasks", "General Reminders", "System Health", "Customer Insights")
-                            if (data.title in placeholderTitles || data.details.isEmpty()) {
-                                val placeholderActions = listOf("Placeholder Action 1", "Placeholder Action 2", "Placeholder Action 3")
-                                placeholderActions.forEach { actionText ->
-                                    DropdownMenuItem(
-                                        text = { Text(actionText) },
-                                        onClick = {
-                                            Toast.makeText(context, "$actionText selected.", Toast.LENGTH_SHORT).show()
-                                            showDropdownMenu = false
-                                        }
-                                    )
-                                }
-                            } else {
-                                data.details.forEach { detail ->
-                                    DropdownMenuItem(
-                                        text = { Text(detail) },
-                                        onClick = {
-                                            Toast.makeText(context, "Selected: $detail", Toast.LENGTH_SHORT).show()
-                                            showDropdownMenu = false
-                                        }
-                                    )
-                                }
+                            data.details.forEach { detail ->
+                                DropdownMenuItem(
+                                    text = { Text(detail) },
+                                    onClick = {
+                                        Toast.makeText(
+                                            context,
+                                            "Selected: $detail",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        showDropdownMenu = false
+                                    }
+                                )
                             }
                         }
                     }
@@ -541,7 +537,6 @@ private fun DashboardCard(
                     ) {
                         Box {
                             IconButton(onClick = {
-                                Toast.makeText(context, "Low Availability Info icon clicked", Toast.LENGTH_SHORT).show()
                                 showLowStockDropdown = true
                             }) {
                                 Icon(Icons.Filled.Info, "Low Availability details", tint = Brown, modifier = Modifier.size(30.dp))
@@ -574,7 +569,11 @@ private fun DashboardCard(
                             }
                         }
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text("Low Availability", style = MaterialTheme.typography.labelMedium, textAlign = TextAlign.Center)
+                        Text(
+                            "Low Stock",
+                            style = MaterialTheme.typography.labelMedium,
+                            textAlign = TextAlign.Center
+                        )
                         Spacer(modifier = Modifier.height(8.dp))
                         if (uiState.lowStockItemCount > 0) {
                             Text(
@@ -600,7 +599,6 @@ private fun DashboardCard(
                     ) {
                         Box {
                             IconButton(onClick = {
-                                Toast.makeText(context, "Expiring Soon Info icon clicked", Toast.LENGTH_SHORT).show()
                                 showExpiringDropdown = true
                             }) {
                                 Icon(Icons.Filled.Info, "Expiring items details", tint = Brown, modifier = Modifier.size(30.dp))
@@ -653,10 +651,7 @@ private fun DashboardCard(
                 }
             } else {
                 Text(
-                    text = if (data.details.isNotEmpty() || (data.title in setOf("Upcoming Tasks", "General Reminders", "System Health", "Customer Insights")))
-                        "Click the icon for details/actions."
-                    else
-                        "No details available.",
+                    text = if (data.details.isNotEmpty()) "Click for details" else "No details available.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
@@ -735,12 +730,7 @@ private fun DropdownMenuComponent(
         ) {
             options.forEach { option ->
                 DropdownMenuItem(
-                    text = {
-                        Text(
-                            option,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    },
+                    text = { Text(option) },
                     onClick = {
                         Toast.makeText(context, "$option clicked", Toast.LENGTH_SHORT).show()
                         expanded = false
@@ -751,70 +741,20 @@ private fun DropdownMenuComponent(
     }
 }
 
-private fun getDashboardItems() = listOf(
-    DashboardData("Order Alerts", listOf(
-        "Order #101 - Pending Shipment",
-        "Order #102 - Payment Due",
-        "Order #103 - Ready for Pickup",
-        "Order #104 - New Inquiry"
-    )),
-    DashboardData("Low Stock & Expiration", listOf(
-        "Product A - Low Stock (5 remaining)",
-        "Product B - Expires Soon (2 days)",
-        "Product C - Out of Stock",
-        "Product D - Expires Today"
-    )),
-    DashboardData("Sales Statistics", listOf(
-        "Today's Sales: $150.75 (5 transactions)",
-        "Week to Date: $1050.20 (32 transactions)",
-        "Month to Date: $4500.60 (120 transactions)",
-        "Top Product: Product X"
-    )),
-    DashboardData("Admin Balance", listOf(
-        "Account A: $5000.00",
-        "Account B: $2345.10 (Overdraft)",
-        "Pending Transfers: $300.00",
-        "Last Statement: 01 Nov 2023"
-    )),
+private fun getDashboardItems(context: Context) = listOf(
+    DashboardData("Order Alerts", listOf("Order #101 - Pending", "Order #102 - Payment Due")),
+    DashboardData("Low Stock & Expiration", listOf()),
     DashboardData(
-        "Expenses & Services",
-        listOf(
-            "Water Bill: $200 (Due 15th)",
-            "Electricity: $150 (Paid)",
-            "Internet: $50 (Due 10th)",
-            "Cleaning Service: $120 (Scheduled Fri)"
-        )
+        "Sales Statistics",
+        listOf("Today's Sales: $1,234.56", "Top Product: Super Widget")
     ),
-    DashboardData("Other Expenses", listOf(
-        "Maintenance: $300 (Repair AC)",
-        "Stationery: $50 (Pens, Paper)",
-        "Software Subscription: $25 (Monthly)",
-        "Unexpected Repair: $150 (Freezer)"
-    )),
-    DashboardData("Customer Insights", listOf(
-        "New Customers This Week: 5",
-        "Top Customer: Jane Doe ($500 spend)",
-        "Recent Feedback: Positive (Order #103)",
-        "Loyalty Program Members: 120"
-    )),
-    DashboardData("System Health", listOf(
-        "Backup Status: Successful (Today 03:00)",
-        "API Latency: 250ms (Normal)",
-        "Disk Space: 75% Used (Server 1)",
-        "Security Alerts: 0"
-    )),
-    DashboardData("Upcoming Tasks", listOf(
-        "Follow up with Supplier X",
-        "Schedule staff meeting",
-        "Plan holiday promotion",
-        "Renew business license"
-    )),
-    DashboardData("General Reminders", listOf(
-        "Bank holiday next Monday",
-        "Submit tax forms by EOM",
-        "Check email for new regulations",
-        "Water plants"
-    ))
+    DashboardData("Admin Balance", listOf("Main Account: $15,000.00", "Pending: $1,200.00")),
+    DashboardData("Expenses & Services", listOf("Rent: Due in 5 days", "Electricity: Paid")),
+    DashboardData("Other Expenses", listOf("Maintenance: $300", "Supplies: $150")),
+    DashboardData("Customer Insights", listOf("New Customers: 5", "Top Spender: J. Doe")),
+    DashboardData("System Health", listOf("Backup: OK", "API Latency: 120ms")),
+    DashboardData("Upcoming Tasks", listOf("Call Supplier X", "Staff Meeting @ 3pm")),
+    DashboardData("General Reminders", listOf("Bank Holiday Monday", "Submit Tax Forms"))
 )
 
 private fun getMenuItems(context: Context, navController: NavController) = listOf(
@@ -844,11 +784,11 @@ private fun getMenuItems(context: Context, navController: NavController) = listO
     }
 )
 
-private fun getDropdownSections() = listOf(
+private fun getDropdownSections(context: Context) = listOf(
     DropdownSection(
         Icons.Filled.LocalShipping,
         "Orders",
-        listOf("Create Order", "Order Status", "Order Cancellation", "Shipping Notification")
+        listOf("Create Order", "Order Status", "Shipping Notification")
     ),
     DropdownSection(
         Icons.Filled.Add,
@@ -858,7 +798,7 @@ private fun getDropdownSections() = listOf(
     DropdownSection(
         Icons.Filled.Person,
         "People",
-        listOf("Add Customer", "Add Supplier", "Add Service Provider")
+        listOf("Add Customer", "Add Supplier")
     )
 )
 
@@ -892,7 +832,6 @@ private fun ChartsSectionPlaceholder(modifier: Modifier = Modifier) {
 @Composable
 fun DashboardPreview() {
     LocalContext.current
-    // Create a fake AuthRepository for the preview
     val fakeAuthRepository = object : com.example.Store.domain.repository.AuthRepository {
         override suspend fun login(
             email: String,
@@ -908,20 +847,16 @@ fun DashboardPreview() {
         ): Result<Unit> {
             return Result.success(Unit)
         }
-
         override suspend fun recoverPassword(email: String): Result<Unit> {
             return Result.success(Unit)
         }
-
         override suspend fun signOut(): Result<Unit> {
             return Result.success(Unit)
         }
-
         override fun getAuthState(): kotlinx.coroutines.flow.Flow<com.google.firebase.auth.FirebaseUser?> {
             return kotlinx.coroutines.flow.flowOf(null)
         }
     }
-    // Create a ViewModel instance with the fake repository
     val fakeViewModel = DashboardViewModel(fakeAuthRepository)
 
     MaterialTheme {
