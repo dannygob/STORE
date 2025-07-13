@@ -76,7 +76,7 @@ import com.example.Store.presentation.sales.CartItem
 import com.example.Store.presentation.sales.Customer
 import com.example.Store.presentation.sales.Product
 import com.example.Store.presentation.sales.SalesViewModel
-import com.example.Store.utils.PermissionUtils
+import com.example.Store.util.PermissionUtils
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)

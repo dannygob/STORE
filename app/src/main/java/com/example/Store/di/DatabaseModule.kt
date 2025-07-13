@@ -10,8 +10,6 @@ import com.example.Store.data.local.dao.StockAtWarehouseDao
 import com.example.Store.data.local.dao.SupplierDao
 import com.example.Store.data.local.dao.UserPreferenceDao
 import com.example.Store.data.local.dao.WarehouseDao
-import com.example.Store.data.repository.AppRepository
-import com.example.Store.data.repository.AppRepositoryImpl
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -84,22 +82,5 @@ object DatabaseModule {
     @Singleton
     fun provideFirebaseFirestore(): FirebaseFirestore { // New provider
         return Firebase.firestore
-    }
-
-    @Provides
-    @Singleton
-    fun provideAppRepository(
-        appDatabase: AppDatabase,
-        productDao: ProductDao,
-        customerDao: CustomerDao,
-        supplierDao: SupplierDao,
-        orderDao: OrderDao,
-        orderItemDao: OrderItemDao,
-        userPreferenceDao: UserPreferenceDao,
-        warehouseDao: WarehouseDao,
-        stockAtWarehouseDao: StockAtWarehouseDao,
-        firestore: FirebaseFirestore // Added Firestore
-    ): AppRepository {
-        return AppRepositoryImpl(appDatabase, productDao, customerDao, supplierDao, orderDao, orderItemDao, userPreferenceDao, warehouseDao, stockAtWarehouseDao, firestore)
     }
 }

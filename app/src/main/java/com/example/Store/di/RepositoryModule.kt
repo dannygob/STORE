@@ -1,5 +1,7 @@
 package com.example.Store.di
 
+import com.example.Store.data.repository.AppRepository
+import com.example.Store.data.repository.AppRepositoryImpl
 import com.example.Store.data.repository.AuthRepositoryImpl
 import com.example.Store.domain.repository.AuthRepository
 import dagger.Binds
@@ -17,4 +19,10 @@ abstract class RepositoryModule {
     abstract fun bindAuthRepository(
         impl: AuthRepositoryImpl,
     ): AuthRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAppRepository(
+        impl: AppRepositoryImpl,
+    ): AppRepository
 }

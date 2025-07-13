@@ -4,6 +4,7 @@ import com.example.Store.domain.model.LoginResult
 import com.example.Store.domain.model.UserRole
 import com.google.firebase.auth.FirebaseUser // Moved import
 import kotlinx.coroutines.flow.Flow // Moved import
+import kotlinx.coroutines.flow.FlowCollector
 
 interface AuthRepository {
     suspend fun login(email: String, password: String): Result<LoginResult>
@@ -11,4 +12,6 @@ interface AuthRepository {
     suspend fun recoverPassword(email: String): Result<Unit>
     suspend fun signOut(): Result<Unit>
     fun getAuthState(): Flow<FirebaseUser?>
+
+    fun flow(block: suspend (FlowCollector<FirebaseUser?>) -> Unit): Flow<FirebaseUser?>
 }

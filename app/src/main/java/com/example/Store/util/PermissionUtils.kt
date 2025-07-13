@@ -1,4 +1,4 @@
-package com.example.Store.utils
+package com.example.Store.util
 
 import android.Manifest
 import android.content.Context

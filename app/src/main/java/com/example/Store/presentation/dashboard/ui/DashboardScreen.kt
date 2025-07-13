@@ -28,7 +28,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.Store.presentation.common.navigation.Route
-import com.example.Store.presentation.common.navigation.ScreenRoutes
 import com.example.Store.presentation.dashboard.DashboardViewModel
 import com.example.Store.presentation.dashboard.model.NotificationItemUi
 import com.example.Store.presentation.dashboard.model.NotificationType
@@ -178,7 +177,18 @@ fun DashboardScreen(
                 modifier = Modifier.padding(16.dp)
             )
 
+            // Notifications Panel (DropdownMenu as a panel)
+            // This DropdownMenu is part of the Scaffold's content but positioned via Box
+            // Alternatively, a custom dialog or a bottom sheet could be used for more complex panels.
             if (showNotificationsPanel) {
+                // This Box is a bit of a workaround to use DropdownMenu not directly anchored to an action item
+                // but more like a panel. For a true side panel, different components would be used.
+                // However, for a list popping up from the top, DropdownMenu can be styled.
+                // Consider this an "absolute" positioned dropdown relative to the screen.
+                // A better approach for a full panel might be a Dialog or a custom Composable that overlays.
+                // For simplicity of this step, we use DropdownMenu, knowing its limitations for this use case.
+
+                // Box to align the DropdownMenu to the top-end (where the bell icon is)
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd) {
                     DropdownMenu(
                         expanded = true, // Controlled by showNotificationsPanel
@@ -784,22 +794,22 @@ private fun getDashboardItems() = listOf(
 private fun getMenuItems(context: Context, navController: NavController) = listOf(
     MenuItem(Icons.Filled.Inventory, "Inventory") {
         Toast.makeText(context, "Inventory clicked", Toast.LENGTH_SHORT).show()
-        navController.navigate(ScreenRoutes.INVENTORY) // Temporarily disabled
+        navController.navigate(ScreenRoutes.INVENTORY.route) // Temporarily disabled
     },
     MenuItem(Icons.Filled.ShoppingCart, "Purchases") {
         Toast.makeText(context, "Purchases clicked", Toast.LENGTH_SHORT).show()
-        navController.navigate(ScreenRoutes.PURCHASES) // Temporarily disabled
+        navController.navigate(ScreenRoutes.PURCHASES.route) // Temporarily disabled
     },
     MenuItem(Icons.Filled.Sell, "Sales") {
-        navController.navigate(ScreenRoutes.SALES.route)
+        navController.navigate(ScreenRoutes.Sales.route)
     },
     MenuItem(Icons.Filled.LocalShipping, "Orders") {
         Toast.makeText(context, "Orders clicked", Toast.LENGTH_SHORT).show()
-        navController.navigate(ScreenRoutes.ORDERS) // Temporarily disabled
+        navController.navigate(ScreenRoutes.ORDERS.route) // Temporarily disabled
     },
     MenuItem(Icons.Filled.QrCodeScanner, "Scanner") {
         Toast.makeText(context, "Scanner clicked", Toast.LENGTH_SHORT).show()
-        navController.navigate(ScreenRoutes.SCANNER) // Temporarily disabled
+        navController.navigate(ScreenRoutes.SCANNER.route) // Temporarily disabled
     },
     MenuItem(Icons.Filled.Payment, "Expenses") {
         Toast.makeText(context, "Expenses clicked", Toast.LENGTH_SHORT).show()

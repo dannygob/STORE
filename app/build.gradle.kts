@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.google.services)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -82,7 +83,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler) // ✅ Usar KSP, no kapt
     implementation(libs.hilt.android)
-//    ksp(libs.hilt.android.compiler) // Use ksp instead of kapt for annotation processing
+    ksp(libs.hilt.android.compiler) // Use ksp instead of kapt for annotation processing
     implementation(libs.androidx.hilt.navigation.compose) // For Hilt and Navigation Compose integration
     implementation(libs.kotlinx.coroutines.play.services) // Or the latest version
 
@@ -95,6 +96,7 @@ dependencies {
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.firestore.ktx)
 //    implementation(libs.firebase.auth.ktx.v2230)
+    implementation(libs.kotlinx.coroutines.play.services.v164)
 
     // Tests
     testImplementation(libs.junit)
@@ -107,7 +109,3 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
-
-
-
-
