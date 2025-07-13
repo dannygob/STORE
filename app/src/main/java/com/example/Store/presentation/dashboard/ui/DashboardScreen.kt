@@ -194,10 +194,16 @@ fun DashboardScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
+
+            // Improved horizontal menu
+
             HorizontalMenuBar(
                 items = menuItems,
                 modifier = Modifier.padding(vertical = 8.dp)
             )
+
+
+            // Improved card section
 
             DashboardCardsSection(
                 items = dashboardItems,
@@ -208,6 +214,8 @@ fun DashboardScreen(
             ChartsSectionPlaceholder(
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
+
+            // Improved dropdowns section
 
             DropdownMenusSection(
                 sections = dropdownSections,

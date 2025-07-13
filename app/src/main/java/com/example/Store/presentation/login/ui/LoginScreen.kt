@@ -49,7 +49,7 @@ fun LoginScreen(
     val focusManager = LocalFocusManager.current
     var passwordVisible by remember { mutableStateOf(false) }
 
-    // Navegar al dashboard en caso de login exitoso
+    // Navigate to dashboard on successful login
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) {
             onLoginSuccess()
@@ -69,7 +69,9 @@ fun LoginScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
-                    text = "Log in",
+
+                    text = "Login",
+
                     style = MaterialTheme.typography.headlineMedium
                 )
 
@@ -139,7 +141,9 @@ fun LoginScreen(
                     },
                     modifier = Modifier.align(Alignment.End)
                 ) {
-                    Text("¿Forgot Your Password?")
+
+                    Text("Forgot your password?")
+
                 }
 
                 // Botón de registro rápido
@@ -178,10 +182,10 @@ fun LoginScreen(
     }
 }
 
-/*- Usa uno de los usuarios registrados en tu AuthRepositoryImpl. Por ejemplo:
-- Usuario: admin@store.com
-- Contraseña: admin123
+/*- Use one of the registered users in your AuthRepositoryImpl. For example:
+- User: admin@store.com
+- Password: admin123
 - o
-- Usuario: user@store.com
-- Contraseña: user123
-- Asegúrate de que el rol del usuario sea ADMIN o USER según corresponda.*/
+- User: user@store.com
+- Password: user123
+- Make sure the user's role is ADMIN or USER as appropriate.*/

@@ -110,7 +110,7 @@ fun InventoryScreenContent(
         OutlinedTextField(
             value = state.searchText,
             onValueChange = onSearchChanged,
-            label = { Text("Buscar producto") },
+            label = { Text("Search product") },
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
             modifier = Modifier.fillMaxWidth()
         )
@@ -157,7 +157,7 @@ fun SummaryRow(state: InventoryUiState) {
         ) {
             Text("Total: $total")
             Text("Stock: $stock")
-            Text("Valor: $${"%.2f".format(value)}")
+            Text("Value: $${"%.2f".format(value)}")
         }
     }
 }
@@ -188,11 +188,11 @@ fun InventoryCard(item: InventoryItemUi) {
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(item.name, style = MaterialTheme.typography.titleMedium)
-                Text("Cantidad: ${item.quantity}", color = stockColor)
-                Text("Precio: ${item.getFormattedPrice()}")
-                Text("Categoría: ${item.category}")
+                Text("Quantity: ${item.quantity}", color = stockColor)
+                Text("Price: ${item.getFormattedPrice()}")
+                Text("Category: ${item.category}")
                 if (item.isExpiringSoon()) {
-                    Text("⚠️ Expira pronto", color = Color.Red)
+                    Text("⚠️ Expires soon", color = Color.Red)
                 }
             }
         }
