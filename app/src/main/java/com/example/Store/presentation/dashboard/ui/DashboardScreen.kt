@@ -2,17 +2,66 @@ package com.example.Store.presentation.dashboard.ui
 
 import android.content.Context
 import android.widget.Toast
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.DeleteSweep
+import androidx.compose.material.icons.filled.DoneAll
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Inventory
+import androidx.compose.material.icons.filled.LocalShipping
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Payment
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.Sell
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material.icons.outlined.NotificationsNone
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -146,7 +195,7 @@ fun DashboardScreen(
                 .padding(padding)
         ) {
             Button(
-                onClick = { navController.navigate(Route.Debug.route) },
+                onClick = { navController.navigate(Route.Debug.route) {} },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
@@ -355,7 +404,6 @@ private fun MenuItemComponent(
         Surface(
             onClick = onClick,
             modifier = modifier
-                .clickable()
                 .padding(horizontal = 4.dp, vertical = 8.dp)
         ) {
             Column(
@@ -795,26 +843,26 @@ private fun getDashboardItems() = listOf(
 private fun getMenuItems(context: Context, navController: NavController) = listOf(
     MenuItem(Icons.Filled.Inventory, "Inventory") {
         Toast.makeText(context, "Inventory clicked", Toast.LENGTH_SHORT).show()
-        navController.navigate(ScreenRoutes.INVENTORY.route) // Temporarily disabled
+        navController.navigate(ScreenRoutes.INVENTORY) {}
     },
     MenuItem(Icons.Filled.ShoppingCart, "Purchases") {
         Toast.makeText(context, "Purchases clicked", Toast.LENGTH_SHORT).show()
-        navController.navigate(ScreenRoutes.PURCHASES.route) // Temporarily disabled
+        navController.navigate(ScreenRoutes.PURCHASES) {}
     },
     MenuItem(Icons.Filled.Sell, "Sales") {
-        navController.navigate(ScreenRoutes.SALES.route)
+        navController.navigate(ScreenRoutes.SALES) {}
     },
     MenuItem(Icons.Filled.LocalShipping, "Orders") {
         Toast.makeText(context, "Orders clicked", Toast.LENGTH_SHORT).show()
-        navController.navigate(ScreenRoutes.ORDERS.route) // Temporarily disabled
+        navController.navigate(ScreenRoutes.ORDERS) {}
     },
     MenuItem(Icons.Filled.QrCodeScanner, "Scanner") {
         Toast.makeText(context, "Scanner clicked", Toast.LENGTH_SHORT).show()
-        navController.navigate(ScreenRoutes.SCANNER.route) // Temporarily disabled
+        navController.navigate(ScreenRoutes.SCANNER) {}
     },
     MenuItem(Icons.Filled.Payment, "Expenses") {
         Toast.makeText(context, "Expenses clicked", Toast.LENGTH_SHORT).show()
-        navController.navigate(ScreenRoutes.EXPENSES) // Temporarily disabled
+        navController.navigate(ScreenRoutes.EXPENSES) {}
     }
 )
 

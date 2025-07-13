@@ -47,14 +47,9 @@ class DebugViewModel @Inject constructor(
 
             val supplier1 = SupplierEntity(
                 name = "MegaCorp Supplies",
-                phone = "123-456-7890",
-                addressLine1 = "123 Main St",
-                addressLine2 = null,
-                city = "Anytown",
-                postalCode = "12345",
-                country = "USA",
-                latitude = 0.0,
-                longitude = 0.0
+                contactPerson = "John Doe",
+                email = "contact@megacorp.com",
+                phone = "123-456-7890"
             )
             appRepository.insertSupplier(supplier1)
             addMessage("Inserted Supplier: ${supplier1.name}")
@@ -202,11 +197,6 @@ class DebugViewModel @Inject constructor(
                 appRepository.insertWarehouse(newWh)
                 testWarehouseId = newWh.warehouseId
                 addMessage("Created Warehouse ID for stock test: $testWarehouseId")
-            }
-
-            if (testProductId == null || testWarehouseId == null) {
-                addMessage("Failed to setup prerequisites for StockAtWarehouse test. Aborting.")
-                return@launch
             }
 
             // 1. Insert Stock
@@ -404,7 +394,7 @@ class DebugViewModel @Inject constructor(
             }
             // --- End Prerequisites ---
 
-            if (testCustomerId == null || testProductIds.size < 2) {
+            if (testProductIds.size < 2) {
                 addMessage("Failed to setup prerequisites for order test. Aborting order operations.")
                 return@launch
             }
