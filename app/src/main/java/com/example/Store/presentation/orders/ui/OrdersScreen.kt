@@ -81,7 +81,7 @@ import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SalesScreen(
+fun OrdersScreen(
     navController: NavController,
     viewModel: SalesViewModel = viewModel()
 ) {
@@ -666,9 +666,9 @@ fun ConfirmOrderDialog(
 
 @androidx.compose.ui.tooling.preview.Preview(showBackground = true)
 @Composable
-fun SalesScreenPreview() {
+fun OrdersScreenPreview() {
     MaterialTheme {
-        SalesScreen(
+        OrdersScreen(
             navController = androidx.navigation.compose.rememberNavController(),
             viewModel = SalesViewModel() // Using real ViewModel, assumes it has reasonable default/mock state
         )
