@@ -1,7 +1,6 @@
 package com.example.Store.di
 
 import com.example.Store.data.repository.AppRepository
-import com.example.Store.data.repository.AppRepositoryImpl
 import com.example.Store.data.repository.AuthRepositoryImpl
 import com.example.Store.domain.repository.AuthRepository
 import dagger.Binds
