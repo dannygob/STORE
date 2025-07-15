@@ -2,9 +2,11 @@ package com.example.Store.data.repository
 
 import com.example.Store.data.local.dao.OrderWithOrderItems
 import com.example.Store.data.local.entity.CustomerEntity
+import com.example.Store.data.local.entity.LocationEntity
 import com.example.Store.data.local.entity.OrderEntity
 import com.example.Store.data.local.entity.OrderItemEntity
 import com.example.Store.data.local.entity.ProductEntity
+import com.example.Store.data.local.entity.ProductLocationEntity
 import com.example.Store.data.local.entity.StockAtWarehouseEntity
 import com.example.Store.data.local.entity.SupplierEntity
 import com.example.Store.data.local.entity.WarehouseEntity
@@ -75,6 +77,15 @@ interface AppRepository {
     suspend fun deleteWarehouse(warehouse: WarehouseEntity)
     suspend fun deleteAllWarehouses()
 
+    // Location Methods
+    fun getAllLocations(): Flow<List<LocationEntity>>
+    fun getLocationById(locationId: String): Flow<LocationEntity?>
+    suspend fun insertLocation(location: LocationEntity)
+    suspend fun updateLocation(location: LocationEntity)
+    suspend fun deleteLocation(location: LocationEntity)
+    suspend fun deleteAllLocations()
+
+
     // StockAtWarehouse Methods
     fun getStockForProductInWarehouse(productId: String, warehouseId: String): Flow<StockAtWarehouseEntity?>
     fun getAllStockForProduct(productId: String): Flow<List<StockAtWarehouseEntity>>
@@ -84,6 +95,38 @@ interface AppRepository {
     suspend fun updateStockAtWarehouse(stock: StockAtWarehouseEntity)
     suspend fun deleteStockAtWarehouse(stock: StockAtWarehouseEntity)
     suspend fun deleteAllStockAtWarehouse()
+
+    // ProductLocation Methods
+    fun getLocationsForProduct(productId: String): Flow<List<ProductLocationEntity>>
+    fun getProductsAtLocation(locationId: String): Flow<List<ProductLocationEntity>>
+    fun getTotalStockForProduct(productId: String): Flow<Int?>
+    suspend fun addStockToLocation(
+        productId: String,
+        locationId: String,
+        aisle: String?,
+        shelf: String?,
+        level: String?,
+        amount: Int
+    )
+
+    suspend fun transferStock(
+        productId: String,
+        fromLocationId: String,
+        fromAisle: String?,
+        fromShelf: String?,
+        fromLevel: String?,
+        toLocationId: String,
+        toAisle: String?,
+        toShelf: String?,
+        toLevel: String?,
+        amount: Int
+    )
+
+    suspend fun insertProductLocation(productLocation: ProductLocationEntity)
+    suspend fun updateProductLocation(productLocation: ProductLocationEntity)
+    suspend fun deleteProductLocation(productLocation: ProductLocationEntity)
+    suspend fun deleteAllProductLocations()
+
 
     // Firestore Sync Methods
     suspend fun syncProductToFirestore(product: ProductEntity): Result<Unit> // Using Result for success/failure

@@ -12,9 +12,11 @@ import com.example.Store.data.local.dao.SupplierDao
 import com.example.Store.data.local.dao.UserPreferenceDao
 import com.example.Store.data.local.dao.WarehouseDao
 import com.example.Store.data.local.entity.CustomerEntity
+import com.example.Store.data.local.entity.LocationEntity
 import com.example.Store.data.local.entity.OrderEntity
 import com.example.Store.data.local.entity.OrderItemEntity
 import com.example.Store.data.local.entity.ProductEntity
+import com.example.Store.data.local.entity.ProductLocationEntity
 import com.example.Store.data.local.entity.StockAtWarehouseEntity
 import com.example.Store.data.local.entity.SupplierEntity
 import com.example.Store.data.local.entity.UserPreferenceEntity
@@ -37,6 +39,8 @@ class AppRepositoryImpl @Inject constructor(
     private val warehouseDao: WarehouseDao,
     private val stockAtWarehouseDao: StockAtWarehouseDao,
     private val firestore: FirebaseFirestore,
+    private val locationDao: LocationDao, // Changed
+    private val productLocationDao: ProductLocationDao, // Changed
 ) : AppRepository {
 
     // Product operations
@@ -112,6 +116,81 @@ class AppRepositoryImpl @Inject constructor(
     override suspend fun updateWarehouse(warehouse: WarehouseEntity) = warehouseDao.updateWarehouse(warehouse)
     override suspend fun deleteWarehouse(warehouse: WarehouseEntity) = warehouseDao.deleteWarehouse(warehouse)
     override suspend fun deleteAllWarehouses() = warehouseDao.deleteAllWarehouses()
+
+    // Location Methods
+    override fun getAllLocations(): Flow<List<LocationEntity>> = locationDao.getAllLocations()
+    override fun getLocationById(locationId: String): Flow<LocationEntity?> =
+        locationDao.getLocationById(locationId)
+
+    override suspend fun insertLocation(location: LocationEntity) =
+        locationDao.insertLocation(location)
+
+    override suspend fun updateLocation(location: LocationEntity) =
+        locationDao.updateLocation(location)
+
+    override suspend fun deleteLocation(location: LocationEntity) =
+        locationDao.deleteLocation(location)
+
+    override suspend fun deleteAllLocations() = locationDao.deleteAllLocations()
+
+    ProductLocation Methods
+    override fun getLocationsForProduct(productId: String): Flow<List<ProductLocationEntity>> =
+        productLocationDao.getLocationsForProduct(productId)
+    ProductLocation Methods
+    override fun getLocationsForProduct(productId: String): Flow<List<ProductLocationEntity>> =
+        productLocationDao.getLocationsForProduct(productId)
+
+    override fun getTotalStockForProduct(productId: String): Flow<Int?> =
+        productLocationDao.getTotalStockForProduct(productId)
+
+    override suspend fun addStockToLocation(
+        productId: String,
+        locationId: String,
+        aisle: String?,
+        shelf: String?,
+        level: String?,
+        amount: Int
+    ) =
+        appDatabase.addStockToLocation(productId, locationId, aisle, shelf, level, amount)
+
+    override suspend fun transferStock(
+        productId: String,
+        fromLocationId: String,
+        fromAisle: String?,
+        fromShelf: String?,
+        fromLevel: String?,
+        toLocationId: String,
+        toAisle: String?,
+        toShelf: String?,
+        toLevel: String?,
+        amount: Int
+    ) =
+        appDatabase.transferStock(
+            productId,
+            fromLocationId,
+            fromAisle,
+            fromShelf,
+            fromLevel,
+            toLocationId,
+            toAisle,
+            toShelf,
+            toLevel,
+            amount
+        )
+
+    override suspend fun insertProductLocation(productLocation: ProductLocationEntity) =
+        productLocationDao.insertProductLocation(productLocation)
+
+    override suspend fun updateProductLocation(productLocation: ProductLocationEntity) =
+        productLocationDao.updateProductLocation(productLocation)
+
+    override suspend fun deleteProductLocation(productLocation: ProductLocationEntity) =
+        productLocationDao.deleteProductLocation(productLocation)
+
+    override suspend fun deleteAllProductLocations() =
+        productLocationDao.deleteAll()
+
+
 
     // Stock operations
     override fun getStockForProductInWarehouse(productId: String, warehouseId: String): Flow<StockAtWarehouseEntity?> =
