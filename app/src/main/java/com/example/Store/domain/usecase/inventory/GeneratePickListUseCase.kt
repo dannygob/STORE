@@ -1,8 +1,8 @@
 package com.example.Store.domain.usecase.inventory
 
 
+import com.example.Store.data.local.entity.ProductLocationEntity
 import com.example.Store.data.repository.AppRepository
-import com.example.store.data.local.entity.ProductLocationEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow

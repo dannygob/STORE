@@ -37,8 +37,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.Store.presentation.inventory.InventoryViewModel
 
 
 // MOCK DE DATOS Y FUNCIONALIDAD
@@ -50,6 +52,7 @@ fun InventoryScreen(
     state: InventoryUiState,
     onSearchChanged: (String) -> Unit,
     onTabSelected: (InventoryTab) -> Unit,
+    viewModel: InventoryViewModel = hiltViewModel(),
 ) {
     Scaffold(
         topBar = {
