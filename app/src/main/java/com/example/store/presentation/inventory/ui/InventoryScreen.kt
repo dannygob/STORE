@@ -37,26 +37,35 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-
-
-// MOCK DE DATOS Y FUNCIONALIDAD
+import com.example.store.data.local.entity.ProductLocationEntity
+import com.example.store.presentation.inventory.InventoryViewModel
+import com.example.store.presentation.inventory.model.InventoryItemUi
+import com.example.store.presentation.inventory.model.InventoryTab
+import com.example.store.presentation.inventory.model.InventoryUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InventoryScreen(
     navController: NavController,
-    state: InventoryUiState,
-    onSearchChanged: (String) -> Unit,
-    onTabSelected: (InventoryTab) -> Unit,
+    viewModel: InventoryViewModel = hiltViewModel(),
 ) {
+    val state by viewModel.uiState.collectAsState()
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Inventory") },
+                title = { Text(if (state.selectedProduct == null) "Inventory" else state.selectedProduct!!.name) },
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
+                    IconButton(onClick = {
+                        if (state.selectedProduct != null) {
+                            viewModel.onDismissProductDetail()
+                        } else {
+                            navController.navigateUp()
+                        }
+                    }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
                             contentDescription = "Back"
@@ -66,16 +75,25 @@ fun InventoryScreen(
             )
         }
     ) { padding ->
-        InventoryScreenContent(
-            state = state,
-            modifier = Modifier.padding(padding),
-            onSearchChanged = onSearchChanged,
-            onTabSelected = onTabSelected
-        )
+        if (state.selectedProduct == null) {
+            InventoryListContent(
+                state = state,
+                modifier = Modifier.padding(padding),
+                onSearchChanged = viewModel::onSearchChanged,
+                onTabSelected = viewModel::onTabSelected,
+                onProductClick = viewModel::onProductSelected
+            )
+        } else {
+            ProductDetailView(
+                state = state,
+                modifier = Modifier.padding(padding),
+                onManageStockClick = { productId ->
+                    navController.navigate("${com.example.store.presentation.common.navigation.Route.ProductStockManagement.route}/$productId")
+                }
+            )
+        }
     }
 }
-
-enum class InventoryTab { ALL, LOW_STOCK }
 
 data class InventoryItemUi(
     val id: String,
@@ -100,77 +118,102 @@ data class InventoryUiState(
 )
 
 @Composable
-fun InventoryScreenContent(
+fun InventoryListContent(
     state: InventoryUiState,
     modifier: Modifier = Modifier,
-    onSearchChanged: (String) -> Unit = {},
-    onTabSelected: (InventoryTab) -> Unit = {},
+    onSearchChanged: (String) -> Unit,
+    onTabSelected: (InventoryTab) -> Unit,
+    onProductClick: (String) -> Unit
 ) {
-    Column(modifier = modifier) {
+    Column(modifier = modifier.padding(16.dp)) {
         OutlinedTextField(
             value = state.searchText,
             onValueChange = onSearchChanged,
-            label = { Text("Buscar producto") },
+            label = { Text("Search Products") },
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(12.dp))
-
-        TabRow(selectedTabIndex = state.selectedTab.ordinal) {
-            InventoryTab.entries.forEachIndexed { index, tab ->
-                Tab(
-                    selected = index == state.selectedTab.ordinal,
-                    onClick = { onTabSelected(tab) },
-                    text = { Text(tab.name) }
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        SummaryRow(state)
-
-        Spacer(modifier = Modifier.height(8.dp))
+        // Tabs can be re-enabled if filtering logic is added back
+        // TabRow(...)
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(state.filteredItems) { item ->
-                InventoryCard(item)
+                InventoryCard(item, onClick = { onProductClick(item.id) })
             }
         }
     }
 }
 
 @Composable
-fun SummaryRow(state: InventoryUiState) {
-    val total = state.items.size
-    val stock = state.items.sumOf { it.quantity }
-    val value = state.items.sumOf { it.price * it.quantity }
+fun ProductDetailView(
+    state: InventoryUiState,
+    modifier: Modifier = Modifier,
+    onManageStockClick: (String) -> Unit
+) {
+    val product = state.selectedProduct
+    if (product == null) {
+        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text("Product not found.")
+        }
+        return
+    }
 
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-    ) {
-        Row(
-            modifier = Modifier.padding(12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text("Total: $total")
-            Text("Stock: $stock")
-            Text("Valor: $${"%.2f".format(value)}")
+    Column(modifier = modifier.padding(16.dp)) {
+        Text("Name: ${product.name}", style = MaterialTheme.typography.headlineSmall)
+        Text("Description: ${product.description ?: "N/A"}")
+        Text("Stock: ${product.stock}")
+        Text("Price: ${product.salePrice}")
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(onClick = { onManageStockClick(product.id) }) {
+            Text("Manage Stock")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text("Locations", style = MaterialTheme.typography.titleMedium)
+
+        if (state.productLocations.isEmpty()) {
+            Text("This product is not currently stored in any location.")
+        } else {
+            LazyColumn {
+                items(state.productLocations) { location ->
+                    ProductLocationCard(location)
+                }
+            }
         }
     }
 }
 
 @Composable
-fun InventoryCard(item: InventoryItemUi) {
+fun ProductLocationCard(location: ProductLocationEntity) {
+    Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text("Location ID: ${location.locationId}") // In a real app, you'd look up the location name
+            Text("Quantity: ${location.quantity}")
+            Text("Aisle: ${location.aisle ?: "N/A"}")
+            Text("Shelf: ${location.shelf ?: "N/A"}")
+            Text("Level: ${location.level ?: "N/A"}")
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun InventoryCard(item: InventoryItemUi, onClick: () -> Unit) {
     val stockColor = when {
         item.isOutOfStock() -> Color.Red
         item.isLowStock() -> Color(0xFFFFA500)
         else -> MaterialTheme.colorScheme.onSurface
     }
 
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick
+    ) {
         Row(modifier = Modifier.padding(16.dp)) {
             Box(
                 modifier = Modifier
@@ -188,11 +231,11 @@ fun InventoryCard(item: InventoryItemUi) {
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(item.name, style = MaterialTheme.typography.titleMedium)
-                Text("Cantidad: ${item.quantity}", color = stockColor)
-                Text("Precio: ${item.getFormattedPrice()}")
-                Text("Categoría: ${item.category}")
+                Text("Quantity: ${item.quantity}", color = stockColor)
+                Text("Price: ${item.getFormattedPrice()}")
+                Text("Category: ${item.category}")
                 if (item.isExpiringSoon()) {
-                    Text("⚠️ Expira pronto", color = Color.Red)
+                    Text("⚠️ Expiring soon", color = Color.Red)
                 }
             }
         }
@@ -202,18 +245,7 @@ fun InventoryCard(item: InventoryItemUi) {
 @Preview(showBackground = true)
 @Composable
 fun InventoryScreenPreview() {
-    val items = listOf(
-        InventoryItemUi("1", "Leche Entera", 5, 1.25, "Lácteos"),
-        InventoryItemUi("2", "Arroz", 0, 0.85, "Granos"),
-        InventoryItemUi("3", "Huevos", 2, 0.25, "Proteínas")
-    )
     InventoryScreen(
-        navController = rememberNavController(),
-        state = InventoryUiState(
-            items = items,
-            filteredItems = items
-        ),
-        onSearchChanged = {},
-        onTabSelected = {}
+        navController = rememberNavController()
     )
 }

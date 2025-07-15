@@ -6,17 +6,8 @@ import com.example.store.data.local.dao.SupplierDao
 import com.example.store.data.local.dao.OrderDao
 import com.example.store.data.local.dao.OrderItemDao
 import com.example.store.data.local.dao.OrderWithOrderItems
-import com.example.store.data.local.dao.UserPreferenceDao
-import com.example.store.data.local.dao.WarehouseDao
-import com.example.store.data.local.dao.StockAtWarehouseDao // New import
-import com.example.store.data.local.entity.CustomerEntity
-import com.example.store.data.local.entity.ProductEntity
-import com.example.store.data.local.entity.SupplierEntity
-import com.example.store.data.local.entity.OrderEntity
-import com.example.store.data.local.entity.OrderItemEntity
-import com.example.store.data.local.entity.UserPreferenceEntity
-import com.example.store.data.local.entity.WarehouseEntity
-import com.example.store.data.local.entity.StockAtWarehouseEntity
+import com.example.store.data.local.dao.*
+import com.example.store.data.local.entity.*
 import com.example.store.data.local.AppDatabase
 import com.google.firebase.firestore.FirebaseFirestore // Firebase Firestore
 import com.google.firebase.firestore.ktx.firestore
@@ -34,9 +25,9 @@ class AppRepositoryImpl(
     private val orderDao: OrderDao,
     private val orderItemDao: OrderItemDao,
     private val userPreferenceDao: UserPreferenceDao,
-    private val warehouseDao: WarehouseDao,
-    private val stockAtWarehouseDao: StockAtWarehouseDao,
-    private val firestore: FirebaseFirestore // Add Firestore instance
+    private val locationDao: LocationDao, // Changed
+    private val productLocationDao: ProductLocationDao, // Changed
+    private val firestore: FirebaseFirestore
 ) : AppRepository {
 
     // Product Methods
@@ -117,38 +108,41 @@ class AppRepositoryImpl(
         userPreferenceDao.deleteAllPreferences()
     }
 
-    // Warehouse Methods
-    override fun getAllWarehouses(): Flow<List<WarehouseEntity>> = warehouseDao.getAllWarehouses()
-    override fun getWarehouseById(warehouseId: String): Flow<WarehouseEntity?> = warehouseDao.getWarehouseById(warehouseId)
-    override suspend fun insertWarehouse(warehouse: WarehouseEntity) = warehouseDao.insertWarehouse(warehouse)
-    override suspend fun updateWarehouse(warehouse: WarehouseEntity) = warehouseDao.updateWarehouse(warehouse)
-    override suspend fun deleteWarehouse(warehouse: WarehouseEntity) = warehouseDao.deleteWarehouse(warehouse)
-    override suspend fun deleteAllWarehouses() = warehouseDao.deleteAllWarehouses()
+    // Location Methods
+    override fun getAllLocations(): Flow<List<LocationEntity>> = locationDao.getAllLocations()
+    override fun getLocationById(locationId: String): Flow<LocationEntity?> = locationDao.getLocationById(locationId)
+    override suspend fun insertLocation(location: LocationEntity) = locationDao.insertLocation(location)
+    override suspend fun updateLocation(location: LocationEntity) = locationDao.updateLocation(location)
+    override suspend fun deleteLocation(location: LocationEntity) = locationDao.deleteLocation(location)
+    override suspend fun deleteAllLocations() = locationDao.deleteAllLocations()
 
-    // StockAtWarehouse Methods
-    override fun getStockForProductInWarehouse(productId: String, warehouseId: String): Flow<StockAtWarehouseEntity?> =
-        stockAtWarehouseDao.getStockForProductInWarehouse(productId, warehouseId)
+    // ProductLocation Methods
+    override fun getLocationsForProduct(productId: String): Flow<List<ProductLocationEntity>> =
+        productLocationDao.getLocationsForProduct(productId)
 
-    override fun getAllStockForProduct(productId: String): Flow<List<StockAtWarehouseEntity>> =
-        stockAtWarehouseDao.getAllStockForProduct(productId)
+    override fun getProductsAtLocation(locationId: String): Flow<List<ProductLocationEntity>> =
+        productLocationDao.getProductsAtLocation(locationId)
 
-    override fun getAllStockInWarehouse(warehouseId: String): Flow<List<StockAtWarehouseEntity>> =
-        stockAtWarehouseDao.getAllStockInWarehouse(warehouseId)
+    override fun getTotalStockForProduct(productId: String): Flow<Int?> =
+        productLocationDao.getTotalStockForProduct(productId)
 
-    override fun getTotalStockQuantityForProduct(productId: String): Flow<Int?> =
-        stockAtWarehouseDao.getTotalStockQuantityForProduct(productId)
+    override suspend fun addStockToLocation(productId: String, locationId: String, aisle: String?, shelf: String?, level: String?, amount: Int) =
+        appDatabase.addStockToLocation(productId, locationId, aisle, shelf, level, amount)
 
-    override suspend fun insertStockAtWarehouse(stock: StockAtWarehouseEntity) =
-        stockAtWarehouseDao.insertStock(stock)
+    override suspend fun transferStock(productId: String, fromLocationId: String, fromAisle: String?, fromShelf: String?, fromLevel: String?, toLocationId: String, toAisle: String?, toShelf: String?, toLevel: String?, amount: Int) =
+        appDatabase.transferStock(productId, fromLocationId, fromAisle, fromShelf, fromLevel, toLocationId, toAisle, toShelf, toLevel, amount)
 
-    override suspend fun updateStockAtWarehouse(stock: StockAtWarehouseEntity) =
-        stockAtWarehouseDao.updateStock(stock)
+    override suspend fun insertProductLocation(productLocation: ProductLocationEntity) =
+        productLocationDao.insertProductLocation(productLocation)
 
-    override suspend fun deleteStockAtWarehouse(stock: StockAtWarehouseEntity) =
-        stockAtWarehouseDao.deleteStock(stock)
+    override suspend fun updateProductLocation(productLocation: ProductLocationEntity) =
+        productLocationDao.updateProductLocation(productLocation)
 
-    override suspend fun deleteAllStockAtWarehouse() =
-        stockAtWarehouseDao.deleteAllStock()
+    override suspend fun deleteProductLocation(productLocation: ProductLocationEntity) =
+        productLocationDao.deleteProductLocation(productLocation)
+
+    override suspend fun deleteAllProductLocations() =
+        productLocationDao.deleteAll()
 
     // Firestore Sync Methods
     override suspend fun syncProductToFirestore(product: ProductEntity): Result<Unit> {

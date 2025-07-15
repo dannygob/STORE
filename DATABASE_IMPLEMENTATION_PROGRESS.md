@@ -60,30 +60,33 @@ This document tracks the progress of implementing the local Room database and fu
         *   [X] Stage 5b.6: Update Progress File & Submit - *Completed*
 *   [X] **Phase 5: Advanced Room Features & Refinements** - *COMPLETED*
     *   (This line is a summary, actual list of stages for phase 5 is above)
-*   **Phase 6: Firebase Integration - Firestore (Parallel or Sequential)** - *In Progress*
-    *   **Phase 6a: Initial Firebase Setup & Product Sync Test** - *COMPLETED*
-        *   [X] Stage 6a.1: Update Progress File & Review Firebase Project Setup - *Completed*
-        *   [X] Stage 6a.2: Verify `google-services.json` & Add Firebase SDKs - *Completed*
-        *   [X] Stage 6a.3: Implement One-Way Sync for `ProductEntity` (Room -> Firestore) - *Completed*
-        *   [X] Stage 6a.4: Basic Firestore Read Operation (Firestore -> App) - *Completed*
-        *   [X] Stage 6a.5: Update Progress File & Submit - *Completed*
-    *   **Pending Firestore Sync Tasks (Future Sub-Phases of Phase 6):**
-        *   Sync other entities (Customers, Orders, etc.) with Firestore.
-        *   Implement bi-directional sync strategies and conflict resolution.
-    *   (Further sub-phases for other entities and bi-directional sync to be defined)
-*   **Phase 7: Firebase Integration - Authentication** - *In Progress*
-    *   [X] Stage 7.1: Update Progress File for Phase 7 Start - *Completed*
-        *   [X] Stage 7.2: Add Firebase Authentication SDK - *Completed*
-        *   [X] Stage 7.3: Basic Email/Password Sign-Up UI (Placeholder) - *Completed (Existing UI sufficient)*
-        *   [X] Stage 7.4: Implement Email/Password Sign-Up Logic - *Completed*
-        *   [X] Stage 7.5: Implement Email/Password Sign-In Logic - *Completed*
-        *   [X] Stage 7.6: Implement Sign-Out Logic - *Completed*
-    *   [ ] Stage 7.7: Observe Auth State Changes
-    *   [ ] Stage 7.8: Update Firestore Security Rules (Conceptual)
-    *   [ ] Stage 7.9: Test Authentication Flow (Conceptual & via UI)
-    *   [ ] Stage 7.10: Update Progress File & Submit
-*   **Phase 8: Firebase Integration - Cloud Storage (Optional, for images etc.)**
-    *   (Details to be defined)
+
+*   **Phase 6: Finalize Local Warehouse Data Model** - *In Progress*
+    *   [ ] Stage 6.1: Refactor `WarehouseEntity` to `LocationEntity`
+    *   [ ] Stage 6.2: Refactor `StockAtWarehouseEntity` to `ProductLocationEntity` and add location details (aisle, shelf, level)
+    *   [ ] Stage 6.3: Implement `ProductLocationDao` Queries
+    *   [ ] Stage 6.4: Implement `ProductLocationDao` Transactions for stock movements
+    *   [ ] Stage 6.5: Update Repositories to expose new DAO methods
+    *   [ ] Stage 6.6: Handle Database Migration for entity changes
+
+*   **Phase 7: Implement Core Business Logic (Use Cases)** - *Pending*
+    *   [ ] Stage 7.1: Define `LocationUseCase`s (Create, Get)
+    *   [ ] Stage 7.2: Define `ProductLocationUseCase`s (Assign, Move, Get)
+    *   [ ] Stage 7.3: Define `InventoryManagementUseCase` (`GeneratePickListUseCase`)
+
+*   **Phase 8: Presentation Layer - Warehouse & Stock UI** - *Pending*
+    *   (Details to be defined based on the implementation of Phases 6 & 7)
+
+*   **Phase 9: Firebase Integration - Firestore Sync** - *Pending*
+    *   This phase will now include syncing `LocationEntity` and `ProductLocationEntity`.
+    *   (Previously Phase 6)
+
+*   **Phase 10: Firebase Integration - Authentication** - *COMPLETED*
+    *   (This is the already completed Phase 7, re-numbered for clarity)
+    *   [X] All stages from previous Phase 7 are complete.
+
+*   **Phase 11: Firebase Integration - Cloud Storage** - *Pending*
+    *   (Previously Phase 8)
 
 ## Current Status
 

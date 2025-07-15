@@ -97,13 +97,16 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private fun onRegisterClicked(email: String, password: String, role: UserRole) {
+    private fun onRegisterClicked(email: String, password: String, role: UserRole) { // Role is received but not passed to repo
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-            val result = authRepository.register(email, password, role)
+            // Call register without the role, as per AuthRepository interface
+            val result = authRepository.register(email, password)
+            // TODO: Implement separate step to save user role to Firestore if registration is successful
+            // For example: if (result.isSuccess) { userService.setUserRole(firebaseAuth.currentUser.uid, role) }
             _uiState.update {
                 if (result.isSuccess) {
-                    it.copy(isLoading = false, errorMessage = "Usuario registrado correctamente.")
+                    it.copy(isLoading = false, errorMessage = "Usuario registrado correctamente. El rol se asignará por separado.")
                 } else {
                     it.copy(
                         isLoading = false,

@@ -2,8 +2,10 @@ package com.example.store.presentation.orders
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.store.presentation.orders.model.CartItem // Uncommented
-import com.example.store.presentation.orders.model.ProductUi // Uncommented
+import com.example.store.data.local.entity.OrderEntity
+import com.example.store.data.local.entity.OrderItemEntity
+import com.example.store.presentation.orders.model.CartItem
+import com.example.store.presentation.orders.model.ProductUi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,7 +25,14 @@ data class OrdersUiState(
     val lastOrderId: Int = 0,
 )
 
-class OrdersViewModel : ViewModel() {
+import com.example.store.data.repository.AppRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+
+@HiltViewModel
+class OrdersViewModel @Inject constructor(
+    private val appRepository: AppRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(OrdersUiState())
     val uiState: StateFlow<OrdersUiState> = _uiState.asStateFlow()
@@ -124,25 +133,44 @@ class OrdersViewModel : ViewModel() {
     }
 
     fun confirmOrder() {
-        _uiState.update { currentState ->
-            val customerName = currentState.selectedCustomer
-            if (customerName.isNullOrBlank()) {
-                return@update currentState.copy(userMessage = "Please select or register a customer.")
+        viewModelScope.launch {
+            val currentState = _uiState.value
+            val customerId = currentState.selectedCustomer // Assuming this is the customer ID for now
+            if (customerId.isNullOrBlank()) {
+                _uiState.update { it.copy(userMessage = "Please select a customer.") }
+                return@launch
             }
 
-            val newOrderId = currentState.lastOrderId + 1
-            val orderCode = generateOrderCode(customerName, newOrderId)
-
-            // Placeholder for saving the order
-            println("Order Confirmed: $orderCode, Customer: $customerName, Items: ${currentState.cartItems}")
-
-            currentState.copy(
-                cartItems = emptyList(),
-                selectedCustomer = null,
-                showConfirmation = false,
-                userMessage = "Order $orderCode generated successfully!",
-                lastOrderId = newOrderId
+            val newOrderId = UUID.randomUUID().toString()
+            val order = OrderEntity(
+                orderId = newOrderId,
+                customerId = customerId,
+                date = System.currentTimeMillis(),
+                total = currentState.cartItems.sumOf { it.product.price * it.quantity }
             )
+
+            val orderItems = currentState.cartItems.map { cartItem ->
+                OrderItemEntity(
+                    orderId = newOrderId,
+                    productId = cartItem.product.id,
+                    quantity = cartItem.quantity,
+                    unitPrice = cartItem.product.price
+                )
+            }
+
+            try {
+                appRepository.insertOrderWithItems(order, orderItems)
+                _uiState.update {
+                    it.copy(
+                        cartItems = emptyList(),
+                        selectedCustomer = null,
+                        showConfirmation = false,
+                        userMessage = "Order #$newOrderId generated successfully!"
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(userMessage = "Error saving order: ${e.message}") }
+            }
         }
     }
 

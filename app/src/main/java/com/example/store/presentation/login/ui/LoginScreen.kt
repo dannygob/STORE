@@ -23,7 +23,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.getValue // Ensure this is present
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.store.domain.model.UserRole
 import com.example.store.presentation.login.viewmodel.LoginEvent
+import com.example.store.presentation.login.viewmodel.LoginUiState // Explicit import
 import com.example.store.presentation.login.viewmodel.LoginViewModel
 
 @Composable

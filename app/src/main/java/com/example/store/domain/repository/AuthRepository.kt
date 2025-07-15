@@ -1,14 +1,17 @@
 package com.example.store.domain.repository
 
 import com.example.store.domain.model.LoginResult
+// UserRole removed from register method, but keeping import if LoginResult still uses it.
 import com.example.store.domain.model.UserRole
-import com.google.firebase.auth.FirebaseUser // Moved import
-import kotlinx.coroutines.flow.Flow // Moved import
+import com.google.firebase.auth.FirebaseUser
+import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
     suspend fun login(email: String, password: String): Result<LoginResult>
-    suspend fun register(email: String, password: String, role: UserRole): Result<Unit>
+    // role: UserRole removed as Firebase Auth doesn't handle it directly.
+    // This should be handled by a separate call to save user details (e.g., to Firestore).
+    suspend fun register(email: String, password: String): Result<Unit>
     suspend fun recoverPassword(email: String): Result<Unit>
-    suspend fun signOut(): Result<Unit>
-    fun getAuthState(): Flow<FirebaseUser?>
+    suspend fun signOut(): Result<Unit> // Assuming signOut can also potentially fail or needs async result
+    fun getAuthStateFlow(): Flow<FirebaseUser?> // Renamed for clarity and consistency
 }
