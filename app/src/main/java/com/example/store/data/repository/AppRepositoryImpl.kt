@@ -17,6 +17,9 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.channels.awaitClose // New import
 
 // In a real app, DAOs would likely be injected (e.g., using Hilt)
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+
 class AppRepositoryImpl(
     private val appDatabase: AppDatabase,
     private val productDao: ProductDao,
@@ -25,9 +28,10 @@ class AppRepositoryImpl(
     private val orderDao: OrderDao,
     private val orderItemDao: OrderItemDao,
     private val userPreferenceDao: UserPreferenceDao,
-    private val locationDao: LocationDao, // Changed
-    private val productLocationDao: ProductLocationDao, // Changed
-    private val firestore: FirebaseFirestore
+    private val locationDao: LocationDao,
+    private val productLocationDao: ProductLocationDao,
+    private val firestore: FirebaseFirestore,
+    private val applicationScope: CoroutineScope
 ) : AppRepository {
 
     // Product Methods
@@ -111,10 +115,63 @@ class AppRepositoryImpl(
     // Location Methods
     override fun getAllLocations(): Flow<List<LocationEntity>> = locationDao.getAllLocations()
     override fun getLocationById(locationId: String): Flow<LocationEntity?> = locationDao.getLocationById(locationId)
-    override suspend fun insertLocation(location: LocationEntity) = locationDao.insertLocation(location)
-    override suspend fun updateLocation(location: LocationEntity) = locationDao.updateLocation(location)
-    override suspend fun deleteLocation(location: LocationEntity) = locationDao.deleteLocation(location)
-    override suspend fun deleteAllLocations() = locationDao.deleteAllLocations()
+    override suspend fun insertLocation(location: LocationEntity) {
+        locationDao.insertLocation(location)
+        syncLocationToFirestore(location)
+    }
+    override suspend fun updateLocation(location: LocationEntity) {
+        locationDao.updateLocation(location)
+        syncLocationToFirestore(location)
+    }
+    override suspend fun deleteLocation(location: LocationEntity) {
+        locationDao.deleteLocation(location)
+        firestore.collection("locations").document(location.locationId).delete().await()
+    }
+    override suspend fun deleteAllLocations() = locationDao.deleteAllLocations() // Note: This only deletes locally. A batch delete would be needed for Firestore.
+
+    override suspend fun syncLocationToFirestore(location: LocationEntity): Result<Unit> {
+        return try {
+            firestore.collection("locations").document(location.locationId)
+                .set(location)
+                .await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override fun listenForRemoteProductLocationChanges() {
+        firestore.collection("product_locations")
+            .addSnapshotListener { snapshots, e ->
+                if (e != null) {
+                    return@addSnapshotListener
+                }
+
+                for (doc in snapshots!!.documentChanges) {
+                    val productLocation = doc.document.toObject(ProductLocationEntity::class.java)
+                    applicationScope.launch {
+                        productLocationDao.insertProductLocation(productLocation)
+                    }
+                }
+            }
+    }
+
+    override fun listenForRemoteLocationChanges() {
+        firestore.collection("locations")
+            .addSnapshotListener { snapshots, e ->
+                if (e != null) {
+                    // Handle error
+                    return@addSnapshotListener
+                }
+
+                for (doc in snapshots!!.documentChanges) {
+                    val location = doc.document.toObject(LocationEntity::class.java)
+                    applicationScope.launch {
+                        locationDao.insertLocation(location) // Using insert with OnConflictStrategy.REPLACE
+                    }
+                }
+            }
+    }
 
     // ProductLocation Methods
     override fun getLocationsForProduct(productId: String): Flow<List<ProductLocationEntity>> =
@@ -132,17 +189,49 @@ class AppRepositoryImpl(
     override suspend fun transferStock(productId: String, fromLocationId: String, fromAisle: String?, fromShelf: String?, fromLevel: String?, toLocationId: String, toAisle: String?, toShelf: String?, toLevel: String?, amount: Int) =
         appDatabase.transferStock(productId, fromLocationId, fromAisle, fromShelf, fromLevel, toLocationId, toAisle, toShelf, toLevel, amount)
 
-    override suspend fun insertProductLocation(productLocation: ProductLocationEntity) =
+    override suspend fun addStockToLocation(productId: String, locationId: String, aisle: String?, shelf: String?, level: String?, amount: Int) {
+        appDatabase.addStockToLocation(productId, locationId, aisle, shelf, level, amount)
+        // This is a simplified sync. A more robust implementation would get the updated entity
+        // from the transaction and sync that single entity.
+        // For now, we'll fetch all locations for the product and sync them.
+        val locations = productLocationDao.getLocationsForProduct(productId).first()
+        locations.forEach { syncProductLocationToFirestore(it) }
+    }
+
+    override suspend fun transferStock(productId: String, fromLocationId: String, fromAisle: String?, fromShelf: String?, fromLevel: String?, toLocationId: String, toAisle: String?, toShelf: String?, toLevel: String?, amount: Int) {
+        appDatabase.transferStock(productId, fromLocationId, fromAisle, fromShelf, fromLevel, toLocationId, toAisle, toShelf, toLevel, amount)
+        // Similar to addStock, syncing all locations for simplicity.
+        val locations = productLocationDao.getLocationsForProduct(productId).first()
+        locations.forEach { syncProductLocationToFirestore(it) }
+    }
+
+    override suspend fun insertProductLocation(productLocation: ProductLocationEntity) {
         productLocationDao.insertProductLocation(productLocation)
+        syncProductLocationToFirestore(productLocation)
+    }
 
-    override suspend fun updateProductLocation(productLocation: ProductLocationEntity) =
+    override suspend fun updateProductLocation(productLocation: ProductLocationEntity) {
         productLocationDao.updateProductLocation(productLocation)
+        syncProductLocationToFirestore(productLocation)
+    }
 
-    override suspend fun deleteProductLocation(productLocation: ProductLocationEntity) =
+    override suspend fun deleteProductLocation(productLocation: ProductLocationEntity) {
         productLocationDao.deleteProductLocation(productLocation)
+        firestore.collection("product_locations").document(productLocation.productLocationId).delete().await()
+    }
 
-    override suspend fun deleteAllProductLocations() =
-        productLocationDao.deleteAll()
+    override suspend fun deleteAllProductLocations() = productLocationDao.deleteAll() // Local only
+
+    override suspend fun syncProductLocationToFirestore(productLocation: ProductLocationEntity): Result<Unit> {
+        return try {
+            firestore.collection("product_locations").document(productLocation.productLocationId)
+                .set(productLocation)
+                .await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 
     // Firestore Sync Methods
     override suspend fun syncProductToFirestore(product: ProductEntity): Result<Unit> {

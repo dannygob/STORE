@@ -61,21 +61,24 @@ This document tracks the progress of implementing the local Room database and fu
 *   [X] **Phase 5: Advanced Room Features & Refinements** - *COMPLETED*
     *   (This line is a summary, actual list of stages for phase 5 is above)
 
-*   **Phase 6: Finalize Local Warehouse Data Model** - *In Progress*
-    *   [ ] Stage 6.1: Refactor `WarehouseEntity` to `LocationEntity`
-    *   [ ] Stage 6.2: Refactor `StockAtWarehouseEntity` to `ProductLocationEntity` and add location details (aisle, shelf, level)
-    *   [ ] Stage 6.3: Implement `ProductLocationDao` Queries
-    *   [ ] Stage 6.4: Implement `ProductLocationDao` Transactions for stock movements
-    *   [ ] Stage 6.5: Update Repositories to expose new DAO methods
-    *   [ ] Stage 6.6: Handle Database Migration for entity changes
+*   [X] **Phase 6: Finalize Local Warehouse Data Model** - *COMPLETED*
+    *   [X] Stage 6.1: Refactor `WarehouseEntity` to `LocationEntity`
+    *   [X] Stage 6.2: Refactor `StockAtWarehouseEntity` to `ProductLocationEntity` and add location details (aisle, shelf, level)
+    *   [X] Stage 6.3: Implement `ProductLocationDao` Queries
+    *   [X] Stage 6.4: Implement `ProductLocationDao` Transactions for stock movements
+    *   [X] Stage 6.5: Update Repositories to expose new DAO methods
+    *   [X] Stage 6.6: Handle Database Migration for entity changes
 
-*   **Phase 7: Implement Core Business Logic (Use Cases)** - *Pending*
-    *   [ ] Stage 7.1: Define `LocationUseCase`s (Create, Get)
-    *   [ ] Stage 7.2: Define `ProductLocationUseCase`s (Assign, Move, Get)
-    *   [ ] Stage 7.3: Define `InventoryManagementUseCase` (`GeneratePickListUseCase`)
+*   [X] **Phase 7: Implement Core Business Logic (Use Cases)** - *COMPLETED*
+    *   [X] Stage 7.1: Define `LocationUseCase`s (Create, Get, Update)
+    *   [X] Stage 7.2: Define `ProductLocationUseCase`s (Assign, Move, Get)
+    *   [X] Stage 7.3: Define `InventoryManagementUseCase` (`GeneratePickListUseCase`)
 
-*   **Phase 8: Presentation Layer - Warehouse & Stock UI** - *Pending*
-    *   (Details to be defined based on the implementation of Phases 6 & 7)
+*   [X] **Phase 8: Presentation Layer - Warehouse & Stock UI** - *COMPLETED*
+    *   [X] Stage 8.1: Implement Location Management UI (List, Add/Edit)
+    *   [X] Stage 8.2: Implement Location-specific product view
+    *   [X] Stage 8.3: Implement Product-specific location view
+    *   [X] Stage 8.4: Implement Order Picking UI
 
 *   **Phase 9: Firebase Integration - Firestore Sync** - *Pending*
     *   This phase will now include syncing `LocationEntity` and `ProductLocationEntity`.

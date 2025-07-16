@@ -74,6 +74,8 @@ interface AppRepository {
     suspend fun updateLocation(location: LocationEntity)
     suspend fun deleteLocation(location: LocationEntity)
     suspend fun deleteAllLocations()
+    suspend fun syncLocationToFirestore(location: LocationEntity): Result<Unit>
+    fun listenForRemoteLocationChanges()
 
     // ProductLocation Methods
     fun getLocationsForProduct(productId: String): Flow<List<ProductLocationEntity>>
@@ -85,6 +87,8 @@ interface AppRepository {
     suspend fun updateProductLocation(productLocation: ProductLocationEntity)
     suspend fun deleteProductLocation(productLocation: ProductLocationEntity)
     suspend fun deleteAllProductLocations()
+    suspend fun syncProductLocationToFirestore(productLocation: ProductLocationEntity): Result<Unit>
+    fun listenForRemoteProductLocationChanges()
 
     // Firestore Sync Methods
     suspend fun syncProductToFirestore(product: ProductEntity): Result<Unit> // Using Result for success/failure
