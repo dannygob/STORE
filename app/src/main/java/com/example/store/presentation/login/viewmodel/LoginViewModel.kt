@@ -53,6 +53,15 @@ class LoginViewModel @Inject constructor(
             is LoginEvent.RecoverPassword -> {
                 onRecoverPassword(event.email)
             }
+            LoginEvent.CheckInitialAuthState -> {
+                checkInitialAuthState()
+            }
+        }
+    }
+
+    private fun checkInitialAuthState() {
+        if (authRepository.getCurrentUser() != null) {
+            _uiState.update { it.copy(isSuccess = true) }
         }
     }
 

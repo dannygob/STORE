@@ -80,4 +80,8 @@ class AuthRepositoryImpl @Inject constructor(
         firebaseAuth.addAuthStateListener(authStateListener)
         awaitClose { firebaseAuth.removeAuthStateListener(authStateListener) }
     }
+
+    override fun getCurrentUser(): com.google.firebase.auth.FirebaseUser? {
+        return firebaseAuth.currentUser
+    }
 }

@@ -8,4 +8,5 @@ sealed class LoginEvent {
     object Submit : LoginEvent()
     data class Register(val email: String, val password: String, val role: UserRole) : LoginEvent()
     data class RecoverPassword(val email: String) : LoginEvent()
+    object CheckInitialAuthState : LoginEvent()
 }

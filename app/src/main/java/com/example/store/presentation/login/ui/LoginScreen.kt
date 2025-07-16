@@ -50,6 +50,11 @@ fun LoginScreen(
     val focusManager = LocalFocusManager.current
     var passwordVisible by remember { mutableStateOf(false) }
 
+    // Check initial auth state when the screen is first composed
+    LaunchedEffect(Unit) {
+        viewModel.onEvent(LoginEvent.CheckInitialAuthState)
+    }
+
     // Navegar al dashboard en caso de login exitoso
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) {

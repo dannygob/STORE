@@ -12,6 +12,7 @@ interface AuthRepository {
     // This should be handled by a separate call to save user details (e.g., to Firestore).
     suspend fun register(email: String, password: String): Result<Unit>
     suspend fun recoverPassword(email: String): Result<Unit>
-    suspend fun signOut(): Result<Unit> // Assuming signOut can also potentially fail or needs async result
-    fun getAuthStateFlow(): Flow<FirebaseUser?> // Renamed for clarity and consistency
+    suspend fun signOut(): Result<Unit>
+    fun getAuthStateFlow(): Flow<FirebaseUser?>
+    fun getCurrentUser(): FirebaseUser?
 }
