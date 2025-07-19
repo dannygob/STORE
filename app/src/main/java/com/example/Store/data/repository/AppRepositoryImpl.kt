@@ -26,13 +26,13 @@ class AppRepositoryImpl @Inject constructor(
     override fun searchProductsByName(query: String): Flow<List<ProductEntity>> =
         productDao.searchProductsByName(query)
 
-    override suspend fun insertProduct(product: ProductEntity) = productDao.insertProduct(product)
+    override suspend fun insertProduct(product: ProductEntity) = productDao.insert(product)
     override suspend fun insertAllProducts(products: List<ProductEntity>) =
         productDao.insertAll(products)
 
-    override suspend fun updateProduct(product: ProductEntity) = productDao.updateProduct(product)
-    override suspend fun deleteProduct(product: ProductEntity) = productDao.deleteProduct(product)
-    override suspend fun deleteAllProducts() = productDao.deleteAll()
+    override suspend fun updateProduct(product: ProductEntity) = productDao.update(product)
+    override suspend fun deleteProduct(product: ProductEntity) = productDao.delete(product)
+    override suspend fun deleteAllProducts() = productDao.deleteAllProducts()
 
     // Customer methods
     override fun getAllCustomers(): Flow<List<CustomerEntity>> = customerDao.getAllCustomers()
@@ -43,15 +43,15 @@ class AppRepositoryImpl @Inject constructor(
         customerDao.getCustomerByEmail(email)
 
     override suspend fun insertCustomer(customer: CustomerEntity) =
-        customerDao.insertCustomer(customer)
+        customerDao.insert(customer)
 
     override suspend fun updateCustomer(customer: CustomerEntity) =
-        customerDao.updateCustomer(customer)
+        customerDao.update(customer)
 
     override suspend fun deleteCustomer(customer: CustomerEntity) =
-        customerDao.deleteCustomer(customer)
+        customerDao.delete(customer)
 
-    override suspend fun deleteAllCustomers() = customerDao.deleteAll()
+    override suspend fun deleteAllCustomers() = customerDao.deleteAllCustomers()
 
     // Supplier methods
     override fun getAllSuppliers(): Flow<List<SupplierEntity>> = supplierDao.getAllSuppliers()
@@ -59,15 +59,15 @@ class AppRepositoryImpl @Inject constructor(
         supplierDao.getSupplierById(supplierId)
 
     override suspend fun insertSupplier(supplier: SupplierEntity) =
-        supplierDao.insertSupplier(supplier)
+        supplierDao.insert(supplier)
 
     override suspend fun updateSupplier(supplier: SupplierEntity) =
-        supplierDao.updateSupplier(supplier)
+        supplierDao.update(supplier)
 
     override suspend fun deleteSupplier(supplier: SupplierEntity) =
-        supplierDao.deleteSupplier(supplier)
+        supplierDao.delete(supplier)
 
-    override suspend fun deleteAllSuppliers() = supplierDao.deleteAll()
+    override suspend fun deleteAllSuppliers() = supplierDao.deleteAllSuppliers()
 
     // Order methods
     override fun getAllOrders(): Flow<List<OrderEntity>> = orderDao.getAllOrders()
