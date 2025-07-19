@@ -84,41 +84,41 @@ class AppRepositoryImpl @Inject constructor(
 
     // OrderItem methods
     override fun getOrderItemsForOrder(orderId: String): Flow<List<OrderItemEntity>> =
-        orderItemDao.getItemsForOrder(orderId)
+        orderDao.getOrderItemsForOrder(orderId)
 
     override suspend fun insertOrderItem(orderItem: OrderItemEntity) =
-        orderItemDao.insertOrderItem(orderItem)
+        orderDao.insertOrderItem(orderItem)
 
     override suspend fun insertAllOrderItems(orderItems: List<OrderItemEntity>) =
-        orderItemDao.insertAll(orderItems)
+        orderDao.insertAllOrderItems(orderItems)
 
     override suspend fun updateOrderItem(orderItem: OrderItemEntity) =
-        orderItemDao.updateOrderItem(orderItem)
+        orderDao.updateOrderItem(orderItem)
 
     override suspend fun deleteOrderItem(orderItem: OrderItemEntity) =
-        orderItemDao.deleteOrderItem(orderItem)
+        orderDao.deleteOrderItem(orderItem)
 
     override suspend fun deleteAllOrderItemsForOrder(orderId: String) =
-        orderItemDao.deleteAllForOrder(orderId)
+        orderDao.deleteAllOrderItemsForOrder(orderId)
 
     override fun getOrderWithOrderItems(orderId: String): Flow<OrderWithOrderItems?> =
-        orderItemDao.getOrderWithItems(orderId)
+        orderDao.getOrderWithOrderItems(orderId)
 
     override fun getAllOrdersWithOrderItems(): Flow<List<OrderWithOrderItems>> =
-        orderItemDao.getAllOrdersWithItems()
+        orderDao.getAllOrdersWithOrderItems()
 
     override suspend fun insertOrderWithItems(order: OrderEntity, items: List<OrderItemEntity>) {
         orderDao.insertOrder(order)
-        orderItemDao.insertAll(items)
+        orderDao.insertAllOrderItems(items)
     }
 
     // Preferences
     override fun getPreference(key: String): Flow<String?> = preferenceDao.get(key)
     override suspend fun savePreference(key: String, value: String) =
-        preferenceDao.save(UserPreferenceEntity(key, value))
+        preferenceDao.save(PreferenceEntity(key, value))
 
     override suspend fun deletePreference(key: String) = preferenceDao.delete(key)
-    override suspend fun deleteAllPreferences() = preferenceDao.clearAll()
+    override suspend fun deleteAllPreferences() = preferenceDao.deleteAll()
 
     // Warehouse
     override fun getAllWarehouses(): Flow<List<WarehouseEntity>> = warehouseDao.getAllWarehouses()
@@ -137,7 +137,7 @@ class AppRepositoryImpl @Inject constructor(
     override suspend fun deleteAllWarehouses() = warehouseDao.deleteAll()
 
     // Location
-    override fun getAllLocations(): Flow<List<LocationEntity>> = locationDao.getAllLocations()
+    override fun getAllLocations(): Flow<List<LocationEntity>> = locationDao.getLocations()
     override fun getLocationById(locationId: String): Flow<LocationEntity?> =
         locationDao.getLocationById(locationId)
 
@@ -150,7 +150,7 @@ class AppRepositoryImpl @Inject constructor(
     override suspend fun deleteLocation(location: LocationEntity) =
         locationDao.deleteLocation(location)
 
-    override suspend fun deleteAllLocations() = locationDao.deleteAll()
+    override suspend fun deleteAllLocations() = locationDao.deleteAllLocations()
 
     // ProductLocation (Inventory)
     override fun getLocationsForProduct(productId: String): Flow<List<ProductLocationEntity>> =
