@@ -1,11 +1,13 @@
 package com.example.Store.data.repository
 
+
 import com.example.Store.data.local.dao.OrderWithOrderItems
 import com.example.Store.data.local.entity.CustomerEntity
+import com.example.Store.data.local.entity.LocationEntity
 import com.example.Store.data.local.entity.OrderEntity
 import com.example.Store.data.local.entity.OrderItemEntity
 import com.example.Store.data.local.entity.ProductEntity
-import com.example.Store.data.local.entity.StockAtWarehouseEntity
+import com.example.Store.data.local.entity.ProductLocationEntity
 import com.example.Store.data.local.entity.SupplierEntity
 import com.example.Store.data.local.entity.WarehouseEntity
 import kotlinx.coroutines.flow.Flow
@@ -20,7 +22,7 @@ interface AppRepository {
     suspend fun deleteProduct(product: ProductEntity)
     suspend fun insertAllProducts(products: List<ProductEntity>)
     suspend fun deleteAllProducts()
-    fun searchProductsByName(query: String): Flow<List<ProductEntity>> // New method
+    fun searchProductsByName(query: String): Flow<List<ProductEntity>>
 
     // Customer Methods
     fun getAllCustomers(): Flow<List<CustomerEntity>>
@@ -43,7 +45,7 @@ interface AppRepository {
     fun getAllOrders(): Flow<List<OrderEntity>>
     fun getOrderById(orderId: String): Flow<OrderEntity?>
     fun getOrdersByCustomerId(customerId: String): Flow<List<OrderEntity>>
-    fun getOrdersByDateRange(startDate: Long, endDate: Long): Flow<List<OrderEntity>> // New method
+    fun getOrdersByDateRange(startDate: Long, endDate: Long): Flow<List<OrderEntity>>
     suspend fun insertOrder(order: OrderEntity)
     suspend fun updateOrder(order: OrderEntity)
     suspend fun deleteOrder(order: OrderEntity)
@@ -75,17 +77,47 @@ interface AppRepository {
     suspend fun deleteWarehouse(warehouse: WarehouseEntity)
     suspend fun deleteAllWarehouses()
 
-    // StockAtWarehouse Methods
-    fun getStockForProductInWarehouse(productId: String, warehouseId: String): Flow<StockAtWarehouseEntity?>
-    fun getAllStockForProduct(productId: String): Flow<List<StockAtWarehouseEntity>>
-    fun getAllStockInWarehouse(warehouseId: String): Flow<List<StockAtWarehouseEntity>>
-    fun getTotalStockQuantityForProduct(productId: String): Flow<Int?>
-    suspend fun insertStockAtWarehouse(stock: StockAtWarehouseEntity)
-    suspend fun updateStockAtWarehouse(stock: StockAtWarehouseEntity)
-    suspend fun deleteStockAtWarehouse(stock: StockAtWarehouseEntity)
-    suspend fun deleteAllStockAtWarehouse()
+    // Location Methods
+    fun getAllLocations(): Flow<List<LocationEntity>>
+    fun getLocationById(locationId: String): Flow<LocationEntity?>
+    suspend fun insertLocation(location: LocationEntity)
+    suspend fun updateLocation(location: LocationEntity)
+    suspend fun deleteLocation(location: LocationEntity)
+    suspend fun deleteAllLocations()
+
+    // ProductLocation Methods (nuevo sistema unificado de inventario)
+    fun getLocationsForProduct(productId: String): Flow<List<ProductLocationEntity>>
+    fun getProductsAtLocation(locationId: String): Flow<List<ProductLocationEntity>>
+    fun getTotalStockForProduct(productId: String): Flow<Int?>
+
+    suspend fun addStockToLocation(
+        productId: String,
+        locationId: String,
+        aisle: String?,
+        shelf: String?,
+        level: String?,
+        amount: Int
+    )
+
+    suspend fun transferStock(
+        productId: String,
+        fromLocationId: String,
+        fromAisle: String?,
+        fromShelf: String?,
+        fromLevel: String?,
+        toLocationId: String,
+        toAisle: String?,
+        toShelf: String?,
+        toLevel: String?,
+        amount: Int
+    )
+
+    suspend fun insertProductLocation(productLocation: ProductLocationEntity)
+    suspend fun updateProductLocation(productLocation: ProductLocationEntity)
+    suspend fun deleteProductLocation(productLocation: ProductLocationEntity)
+    suspend fun deleteAllProductLocations()
 
     // Firestore Sync Methods
-    suspend fun syncProductToFirestore(product: ProductEntity): Result<Unit> // Using Result for success/failure
-    fun getProductFromFirestore(productId: String): Flow<Result<ProductEntity?>> // Using Flow and Result
+    suspend fun syncProductToFirestore(product: ProductEntity): Result<Unit>
+    fun getProductFromFirestore(productId: String): Flow<Result<ProductEntity?>>
 }
