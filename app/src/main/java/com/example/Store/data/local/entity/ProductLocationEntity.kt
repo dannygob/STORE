@@ -1,14 +1,12 @@
 package com.example.Store.data.local.entity
 
-
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import java.util.UUID
 
 @Entity(
-    tableName = "product_locations", // Renamed table
+    tableName = "product_locations",
     foreignKeys = [
         ForeignKey(
             entity = ProductEntity::class,
@@ -17,25 +15,41 @@ import java.util.UUID
             onDelete = ForeignKey.CASCADE
         ),
         ForeignKey(
-            entity = LocationEntity::class, // Updated FK entity
-            parentColumns = ["locationId"], // Updated FK parent column
-            childColumns = ["locationId"], // Updated FK child column
+            entity = LocationEntity::class,
+            parentColumns = ["locationId"],
+            childColumns = ["locationId"],
             onDelete = ForeignKey.CASCADE
         )
     ],
-    // A product can be in multiple spots in the same location, so the unique key is on the exact spot.
     indices = [
         Index(value = ["productId", "locationId", "aisle", "shelf", "level"], unique = true),
-        Index(value = ["locationId"]) // Index for querying by location
+        Index(value = ["locationId"])
     ]
 )
-data class ProductLocationEntity( // Renamed class
-    @PrimaryKey val productLocationId: String = UUID.randomUUID().toString(), // Renamed PK
+data class ProductLocationEntity(
+    @PrimaryKey val productLocationId: String = generateId(),
     val productId: String,
-    val locationId: String, // Renamed field
+    val locationId: String,
     val quantity: Int,
-    // New fields for specific location tracking
     val aisle: String?,
     val shelf: String?,
-    val level: String?
-)
+    val level: String?,
+) {
+    companion object {
+        fun generateId(
+            productId: String = "",
+            locationId: String = "",
+            aisle: String? = null,
+            shelf: String? = null,
+            level: String? = null,
+        ): String {
+            return listOf(
+                productId,
+                locationId,
+                aisle ?: "_",
+                shelf ?: "_",
+                level ?: "_"
+            ).joinToString("_")
+        }
+    }
+}

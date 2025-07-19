@@ -8,6 +8,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.Store.presentation.orders.OrderListViewModel
@@ -39,7 +40,14 @@ fun OrderListScreen(
                     trailingContent = {
                         Text(dateFormatter.format(Date(order.date)))
                     },
-                    modifier = Modifier.clickable { onOrderClick(order.orderId) }
+                    modifier = Modifier.clickable { onOrderClick(order.orderId) },
+                    headlineContent = TODO(),
+                    overlineContent = TODO(),
+                    supportingContent = TODO(),
+                    leadingContent = TODO(),
+                    colors = TODO(),
+                    tonalElevation = TODO(),
+                    shadowElevation = TODO()
                 )
             }
         }

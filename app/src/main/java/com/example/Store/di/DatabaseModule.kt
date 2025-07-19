@@ -5,10 +5,10 @@ import com.example.Store.data.local.AppDatabase
 import com.example.Store.data.local.dao.CustomerDao
 import com.example.Store.data.local.dao.OrderDao
 import com.example.Store.data.local.dao.OrderItemDao
+import com.example.Store.data.local.dao.PreferenceDao
 import com.example.Store.data.local.dao.ProductDao
 import com.example.Store.data.local.dao.StockAtWarehouseDao
 import com.example.Store.data.local.dao.SupplierDao
-import com.example.Store.data.local.dao.UserPreferenceDao
 import com.example.Store.data.local.dao.WarehouseDao
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
@@ -62,8 +62,8 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideUserPreferenceDao(appDatabase: AppDatabase): UserPreferenceDao {
-        return appDatabase.userPreferenceDao()
+    fun providePreferenceDao(appDatabase: AppDatabase): PreferenceDao {
+        return appDatabase.preferenceDao()
     }
 
     @Provides

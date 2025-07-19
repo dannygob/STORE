@@ -50,7 +50,16 @@ fun LocationProductsScreen(
                                 val level = productLocation.level ?: "N/A"
                                 Text("Location: Aisle $aisle, Shelf $shelf, Level $level")
                             }
-                        }
+                        },
+                        headlineContent = TODO(),
+                        modifier = TODO(),
+                        overlineContent = TODO(),
+                        supportingContent = TODO(),
+                        leadingContent = TODO(),
+                        trailingContent = TODO(),
+                        colors = TODO(),
+                        tonalElevation = TODO(),
+                        shadowElevation = TODO()
                     )
                 }
             }

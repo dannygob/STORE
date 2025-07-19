@@ -1,98 +1,209 @@
 package com.example.Store.data.repository
 
+import com.example.Store.data.local.dao.*
 import com.example.Store.data.local.entity.*
-
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-interface AppRepository {
+class AppRepositoryImpl @Inject constructor(
+    private val productDao: ProductDao,
+    private val customerDao: CustomerDao,
+    private val supplierDao: SupplierDao,
+    private val orderDao: OrderDao,
+    private val orderItemDao: OrderItemDao,
+    private val warehouseDao: WarehouseDao,
+    private val locationDao: LocationDao,
+    private val productLocationDao: ProductLocationDao,
+    private val preferenceDao: PreferenceDao,
+    private val firestoreService: FirestoreService, // si usas Firestore
+) : AppRepository {
 
-    // Product operations
-    fun getAllProducts(): Flow<List<ProductEntity>>
-    fun getProductById(productId: String): Flow<ProductEntity?>
-    fun searchProductsByName(query: String): Flow<List<ProductEntity>>
-    suspend fun insertProduct(product: ProductEntity)
-    suspend fun insertAllProducts(products: List<ProductEntity>)
-    suspend fun updateProduct(product: ProductEntity)
-    suspend fun deleteProduct(product: ProductEntity)
-    suspend fun deleteAllProducts()
+    // Product methods
+    override fun getAllProducts(): Flow<List<ProductEntity>> = productDao.getAllProducts()
+    override fun getProductById(productId: String): Flow<ProductEntity?> =
+        productDao.getProductById(productId)
 
-    // Customer operations
-    fun getAllCustomers(): Flow<List<CustomerEntity>>
-    fun getCustomerById(customerId: String): Flow<CustomerEntity?>
-    fun getCustomerByEmail(email: String): Flow<CustomerEntity?>
-    suspend fun insertCustomer(customer: CustomerEntity)
-    suspend fun updateCustomer(customer: CustomerEntity)
-    suspend fun deleteCustomer(customer: CustomerEntity)
-    suspend fun deleteAllCustomers()
+    override fun searchProductsByName(query: String): Flow<List<ProductEntity>> =
+        productDao.searchProductsByName(query)
 
-    // Supplier operations
-    fun getAllSuppliers(): Flow<List<SupplierEntity>>
-    fun getSupplierById(supplierId: String): Flow<SupplierEntity?>
-    suspend fun insertSupplier(supplier: SupplierEntity)
-    suspend fun updateSupplier(supplier: SupplierEntity)
-    suspend fun deleteSupplier(supplier: SupplierEntity)
-    suspend fun deleteAllSuppliers()
+    override suspend fun insertProduct(product: ProductEntity) = productDao.insertProduct(product)
+    override suspend fun insertAllProducts(products: List<ProductEntity>) =
+        productDao.insertAll(products)
 
-    // Order operations
-    fun getAllOrders(): Flow<List<OrderEntity>>
-    fun getOrderById(orderId: String): Flow<OrderEntity?>
-    fun getOrdersByCustomerId(customerId: String): Flow<List<OrderEntity>>
-    fun getOrdersByDateRange(startDate: Long, endDate: Long): Flow<List<OrderEntity>>
-    suspend fun insertOrder(order: OrderEntity)
-    suspend fun updateOrder(order: OrderEntity)
-    suspend fun deleteOrder(order: OrderEntity)
+    override suspend fun updateProduct(product: ProductEntity) = productDao.updateProduct(product)
+    override suspend fun deleteProduct(product: ProductEntity) = productDao.deleteProduct(product)
+    override suspend fun deleteAllProducts() = productDao.deleteAll()
 
-    // Order item operations
-    fun getOrderItemsForOrder(orderId: String): Flow<List<OrderItemEntity>>
-    suspend fun insertOrderItem(orderItem: OrderItemEntity)
-    suspend fun insertAllOrderItems(orderItems: List<OrderItemEntity>)
-    suspend fun updateOrderItem(orderItem: OrderItemEntity)
-    suspend fun deleteOrderItem(orderItem: OrderItemEntity)
-    suspend fun deleteAllOrderItemsForOrder(orderId: String)
-    fun getOrderWithOrderItems(orderId: String): Flow<OrderWithOrderItems?>
-    fun getAllOrdersWithOrderItems(): Flow<List<OrderWithOrderItems>>
-    suspend fun insertOrderWithItems(order: OrderEntity, items: List<OrderItemEntity>)
+    // Customer methods
+    override fun getAllCustomers(): Flow<List<CustomerEntity>> = customerDao.getAllCustomers()
+    override fun getCustomerById(customerId: String): Flow<CustomerEntity?> =
+        customerDao.getCustomerById(customerId)
 
-    // User preferences
-    fun getPreference(key: String): Flow<String?>
-    suspend fun savePreference(key: String, value: String)
-    suspend fun deletePreference(key: String)
-    suspend fun deleteAllPreferences()
+    override fun getCustomerByEmail(email: String): Flow<CustomerEntity?> =
+        customerDao.getCustomerByEmail(email)
 
-    // Warehouse operations
-    fun getAllWarehouses(): Flow<List<WarehouseEntity>>
-    fun getWarehouseById(warehouseId: String): Flow<WarehouseEntity?>
-    suspend fun insertWarehouse(warehouse: WarehouseEntity)
-    suspend fun updateWarehouse(warehouse: WarehouseEntity)
-    suspend fun deleteWarehouse(warehouse: WarehouseEntity)
-    suspend fun deleteAllWarehouses()
+    override suspend fun insertCustomer(customer: CustomerEntity) =
+        customerDao.insertCustomer(customer)
 
-    // Location operations
-    fun getAllLocations(): Flow<List<LocationEntity>>
-    fun getLocationById(locationId: String): Flow<LocationEntity?>
-    suspend fun insertLocation(location: LocationEntity)
-    suspend fun updateLocation(location: LocationEntity)
-    suspend fun deleteLocation(location: LocationEntity)
-    suspend fun deleteAllLocations()
+    override suspend fun updateCustomer(customer: CustomerEntity) =
+        customerDao.updateCustomer(customer)
 
-    // ProductLocation operations (nuevo modelo unificado de stock)
-    fun getLocationsForProduct(productId: String): Flow<List<ProductLocationEntity>>
-    fun getTotalStockForProduct(productId: String): Flow<Int?>
-    suspend fun insertProductLocation(productLocation: ProductLocationEntity)
-    suspend fun updateProductLocation(productLocation: ProductLocationEntity)
-    suspend fun deleteProductLocation(productLocation: ProductLocationEntity)
-    suspend fun deleteAllProductLocations()
+    override suspend fun deleteCustomer(customer: CustomerEntity) =
+        customerDao.deleteCustomer(customer)
 
-    suspend fun addStockToLocation(
+    override suspend fun deleteAllCustomers() = customerDao.deleteAll()
+
+    // Supplier methods
+    override fun getAllSuppliers(): Flow<List<SupplierEntity>> = supplierDao.getAllSuppliers()
+    override fun getSupplierById(supplierId: String): Flow<SupplierEntity?> =
+        supplierDao.getSupplierById(supplierId)
+
+    override suspend fun insertSupplier(supplier: SupplierEntity) =
+        supplierDao.insertSupplier(supplier)
+
+    override suspend fun updateSupplier(supplier: SupplierEntity) =
+        supplierDao.updateSupplier(supplier)
+
+    override suspend fun deleteSupplier(supplier: SupplierEntity) =
+        supplierDao.deleteSupplier(supplier)
+
+    override suspend fun deleteAllSuppliers() = supplierDao.deleteAll()
+
+    // Order methods
+    override fun getAllOrders(): Flow<List<OrderEntity>> = orderDao.getAllOrders()
+    override fun getOrderById(orderId: String): Flow<OrderEntity?> = orderDao.getOrderById(orderId)
+    override fun getOrdersByCustomerId(customerId: String): Flow<List<OrderEntity>> =
+        orderDao.getOrdersByCustomerId(customerId)
+
+    override fun getOrdersByDateRange(startDate: Long, endDate: Long): Flow<List<OrderEntity>> =
+        orderDao.getOrdersByDateRange(startDate, endDate)
+
+    override suspend fun insertOrder(order: OrderEntity) = orderDao.insertOrder(order)
+    override suspend fun updateOrder(order: OrderEntity) = orderDao.updateOrder(order)
+    override suspend fun deleteOrder(order: OrderEntity) = orderDao.deleteOrder(order)
+
+    // OrderItem methods
+    override fun getOrderItemsForOrder(orderId: String): Flow<List<OrderItemEntity>> =
+        orderItemDao.getItemsForOrder(orderId)
+
+    override suspend fun insertOrderItem(orderItem: OrderItemEntity) =
+        orderItemDao.insertOrderItem(orderItem)
+
+    override suspend fun insertAllOrderItems(orderItems: List<OrderItemEntity>) =
+        orderItemDao.insertAll(orderItems)
+
+    override suspend fun updateOrderItem(orderItem: OrderItemEntity) =
+        orderItemDao.updateOrderItem(orderItem)
+
+    override suspend fun deleteOrderItem(orderItem: OrderItemEntity) =
+        orderItemDao.deleteOrderItem(orderItem)
+
+    override suspend fun deleteAllOrderItemsForOrder(orderId: String) =
+        orderItemDao.deleteAllForOrder(orderId)
+
+    override fun getOrderWithOrderItems(orderId: String): Flow<OrderWithOrderItems?> =
+        orderItemDao.getOrderWithItems(orderId)
+
+    override fun getAllOrdersWithOrderItems(): Flow<List<OrderWithOrderItems>> =
+        orderItemDao.getAllOrdersWithItems()
+
+    override suspend fun insertOrderWithItems(order: OrderEntity, items: List<OrderItemEntity>) {
+        orderDao.insertOrder(order)
+        orderItemDao.insertAll(items)
+    }
+
+    // Preferences
+    override fun getPreference(key: String): Flow<String?> = preferenceDao.get(key)
+    override suspend fun savePreference(key: String, value: String) =
+        preferenceDao.save(UserPreferenceEntity(key, value))
+
+    override suspend fun deletePreference(key: String) = preferenceDao.delete(key)
+    override suspend fun deleteAllPreferences() = preferenceDao.clearAll()
+
+    // Warehouse
+    override fun getAllWarehouses(): Flow<List<WarehouseEntity>> = warehouseDao.getAllWarehouses()
+    override fun getWarehouseById(warehouseId: String): Flow<WarehouseEntity?> =
+        warehouseDao.getWarehouseById(warehouseId)
+
+    override suspend fun insertWarehouse(warehouse: WarehouseEntity) =
+        warehouseDao.insertWarehouse(warehouse)
+
+    override suspend fun updateWarehouse(warehouse: WarehouseEntity) =
+        warehouseDao.updateWarehouse(warehouse)
+
+    override suspend fun deleteWarehouse(warehouse: WarehouseEntity) =
+        warehouseDao.deleteWarehouse(warehouse)
+
+    override suspend fun deleteAllWarehouses() = warehouseDao.deleteAll()
+
+    // Location
+    override fun getAllLocations(): Flow<List<LocationEntity>> = locationDao.getAllLocations()
+    override fun getLocationById(locationId: String): Flow<LocationEntity?> =
+        locationDao.getLocationById(locationId)
+
+    override suspend fun insertLocation(location: LocationEntity) =
+        locationDao.insertLocation(location)
+
+    override suspend fun updateLocation(location: LocationEntity) =
+        locationDao.updateLocation(location)
+
+    override suspend fun deleteLocation(location: LocationEntity) =
+        locationDao.deleteLocation(location)
+
+    override suspend fun deleteAllLocations() = locationDao.deleteAll()
+
+    // ProductLocation (Inventory)
+    override fun getLocationsForProduct(productId: String): Flow<List<ProductLocationEntity>> =
+        productLocationDao.getLocationsForProduct(productId)
+
+    override fun getProductsAtLocation(locationId: String): Flow<List<ProductLocationEntity>> =
+        productLocationDao.getProductsAtLocation(locationId)
+
+    override fun getTotalStockForProduct(productId: String): Flow<Int?> =
+        productLocationDao.getTotalStockForProduct(productId)
+
+    override suspend fun insertProductLocation(productLocation: ProductLocationEntity) =
+        productLocationDao.insertProductLocation(productLocation)
+
+    override suspend fun updateProductLocation(productLocation: ProductLocationEntity) =
+        productLocationDao.updateProductLocation(productLocation)
+
+    override suspend fun deleteProductLocation(productLocation: ProductLocationEntity) =
+        productLocationDao.deleteProductLocation(productLocation)
+
+    override suspend fun deleteAllProductLocations() = productLocationDao.deleteAll()
+
+    override suspend fun addStockToLocation(
         productId: String,
         locationId: String,
         aisle: String?,
         shelf: String?,
         level: String?,
-        amount: Int
-    )
+        amount: Int,
+    ) {
+        val existing =
+            productLocationDao.findProductLocation(productId, locationId, aisle, shelf, level)
+        if (existing != null) {
+            val updatedQuantity = (existing.quantity ?: 0) + amount
+            productLocationDao.updateQuantityForProductLocation(
+                existing.productLocationId,
+                updatedQuantity
+            )
+        } else {
+            val newLocation = ProductLocationEntity(
+                productLocationId = "${productId}_${locationId}_${aisle}_${shelf}_${level}",
+                productId = productId,
+                locationId = locationId,
+                aisle = aisle,
+                shelf = shelf,
+                level = level,
+                quantity = amount
+            )
+            productLocationDao.insertProductLocation(newLocation)
+        }
+    }
 
-    suspend fun transferStock(
+    override suspend fun transferStock(
         productId: String,
         fromLocationId: String,
         fromAisle: String?,
@@ -102,9 +213,16 @@ interface AppRepository {
         toAisle: String?,
         toShelf: String?,
         toLevel: String?,
-        amount: Int
-    )
+        amount: Int,
+    ) {
+        addStockToLocation(productId, toLocationId, toAisle, toShelf, toLevel, amount)
+        addStockToLocation(productId, fromLocationId, fromAisle, fromShelf, fromLevel, -amount)
+    }
 
     // Firestore sync
-    suspend fun syncProductToFirestore(product: ProductEntity): Result<Unit>
+    override suspend fun syncProductToFirestore(product: ProductEntity): Result<Unit> =
+        firestoreService.syncProduct(product)
+
+    override fun getProductFromFirestore(productId: String): Flow<Result<ProductEntity?>> =
+        firestoreService.getProduct(productId)
 }

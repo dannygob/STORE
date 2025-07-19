@@ -19,9 +19,10 @@ firebaseAuthKtx = "23.2.1"
 googleServicesPlugin = "4.4.3"
 ksp = "2.0.0-1.0.21"
 glance = "1.0.0"
-hilt = "2.56.2"
+hilt = "2.57"
 hiltNavigationCompose = "1.2.0"
 uiTestJunit4 = "1.8.3"
+roomRuntimeAndroid = "2.7.2"
 
 
 
@@ -68,6 +69,7 @@ hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-comp
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutinesPlayServices" }
 ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
+androidx-room-runtime-android = { group = "androidx.room", name = "room-runtime-android", version.ref = "roomRuntimeAndroid" }
 
 
 

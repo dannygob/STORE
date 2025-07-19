@@ -4,13 +4,15 @@ package com.example.Store.presentation.orders.ui
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.store.presentation.orders.OrderListViewModel
+import com.example.Store.presentation.orders.OrderListViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -38,7 +40,14 @@ fun OrderListScreen(
                     trailingContent = {
                         Text(dateFormatter.format(Date(order.date)))
                     },
-                    modifier = Modifier.clickable { onOrderClick(order.orderId) }
+                    modifier = Modifier.clickable { onOrderClick(order.orderId) },
+                    headlineContent = TODO(),
+                    overlineContent = TODO(),
+                    supportingContent = TODO(),
+                    leadingContent = TODO(),
+                    colors = TODO(),
+                    tonalElevation = TODO(),
+                    shadowElevation = TODO()
                 )
             }
         }

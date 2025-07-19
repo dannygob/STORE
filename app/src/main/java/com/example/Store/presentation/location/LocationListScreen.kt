@@ -37,7 +37,15 @@ fun LocationListScreen(
                 ListItem(
                     headlineText = { Text(location.name) },
                     supportingText = { Text(location.address ?: "No address") },
-                    modifier = Modifier.clickable { onLocationClick(location.locationId) }
+                    modifier = Modifier.clickable { onLocationClick(location.locationId) },
+                    headlineContent = TODO(),
+                    overlineContent = TODO(),
+                    supportingContent = TODO(),
+                    leadingContent = TODO(),
+                    trailingContent = TODO(),
+                    colors = TODO(),
+                    tonalElevation = TODO(),
+                    shadowElevation = TODO()
                 )
             }
         }

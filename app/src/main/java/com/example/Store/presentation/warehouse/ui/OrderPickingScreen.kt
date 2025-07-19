@@ -8,7 +8,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.store.domain.usecase.inventory.PickListItem
+import com.example.Store.domain.usecase.inventory.PickListItem
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

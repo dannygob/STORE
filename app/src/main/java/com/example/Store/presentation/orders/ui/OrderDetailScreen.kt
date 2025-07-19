@@ -11,7 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.store.presentation.orders.OrderDetailViewModel
+import com.example.Store.presentation.orders.OrderDetailViewModel
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,7 +61,16 @@ fun OrderDetailScreen(
                         items(uiState.orderWithItems!!.orderItems) { item ->
                             ListItem(
                                 headlineText = { Text("Product ID: ${item.productId}") },
-                                supportingText = { Text("Quantity: ${item.quantity} | Price: ${item.unitPrice}") }
+                                supportingText = { Text("Quantity: ${item.quantity} | Price: ${item.unitPrice}") },
+                                headlineContent = TODO(),
+                                modifier = TODO(),
+                                overlineContent = TODO(),
+                                supportingContent = TODO(),
+                                leadingContent = TODO(),
+                                trailingContent = TODO(),
+                                colors = TODO(),
+                                tonalElevation = TODO(),
+                                shadowElevation = TODO()
                             )
                         }
                     }

@@ -81,6 +81,7 @@ dependencies {
     // Room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.runtime.android)
     ksp(libs.androidx.room.compiler) // ✅ Usar KSP, no kapt
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler) // Use ksp instead of kapt for annotation processing
