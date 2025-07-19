@@ -35,17 +35,9 @@ fun LocationListScreen(
         LazyColumn(modifier = Modifier.padding(paddingValues)) {
             items(locations) { location ->
                 ListItem(
-                    headlineText = { Text(location.name) },
-                    supportingText = { Text(location.address ?: "No address") },
-                    modifier = Modifier.clickable { onLocationClick(location.locationId) },
-                    headlineContent = TODO(),
-                    overlineContent = TODO(),
-                    supportingContent = TODO(),
-                    leadingContent = TODO(),
-                    trailingContent = TODO(),
-                    colors = TODO(),
-                    tonalElevation = TODO(),
-                    shadowElevation = TODO()
+                    headlineContent = { Text(location.name) },
+                    supportingContent = { Text(location.address ?: "No address") },
+                    modifier = Modifier.clickable { onLocationClick(location.locationId) }
                 )
             }
         }

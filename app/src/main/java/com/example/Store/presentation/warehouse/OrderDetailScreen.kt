@@ -59,17 +59,8 @@ fun OrderDetailScreen(
                     LazyColumn {
                         items(uiState.orderWithItems!!.orderItems) { item ->
                             ListItem(
-                                headlineText = { Text("Product ID: ${item.productId}") },
-                                supportingText = { Text("Quantity: ${item.quantity} | Price: ${item.unitPrice}") },
-                                headlineContent = TODO(),
-                                modifier = TODO(),
-                                overlineContent = TODO(),
-                                supportingContent = TODO(),
-                                leadingContent = TODO(),
-                                trailingContent = TODO(),
-                                colors = TODO(),
-                                tonalElevation = TODO(),
-                                shadowElevation = TODO()
+                                headlineContent = { Text("Product ID: ${item.productId}") },
+                                supportingContent = { Text("Quantity: ${item.quantity} | Price: ${item.unitPrice}") }
                             )
                         }
                     }

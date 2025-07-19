@@ -41,8 +41,8 @@ fun LocationProductsScreen(
             } else {
                 items(uiState.products) { productLocation ->
                     ListItem(
-                        headlineText = { Text("Product ID: ${productLocation.productId}") },
-                        supportingText = {
+                        headlineContent = { Text("Product ID: ${productLocation.productId}") },
+                        supportingContent = {
                             Column {
                                 Text("Quantity: ${productLocation.quantity}")
                                 val aisle = productLocation.aisle ?: "N/A"
@@ -50,16 +50,7 @@ fun LocationProductsScreen(
                                 val level = productLocation.level ?: "N/A"
                                 Text("Location: Aisle $aisle, Shelf $shelf, Level $level")
                             }
-                        },
-                        headlineContent = TODO(),
-                        modifier = TODO(),
-                        overlineContent = TODO(),
-                        supportingContent = TODO(),
-                        leadingContent = TODO(),
-                        trailingContent = TODO(),
-                        colors = TODO(),
-                        tonalElevation = TODO(),
-                        shadowElevation = TODO()
+                        }
                     )
                 }
             }
