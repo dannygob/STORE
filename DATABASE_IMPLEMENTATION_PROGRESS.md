@@ -94,5 +94,7 @@ This document tracks the progress of implementing the local Room database and fu
 *   **Phase 10: Review and Refactor** - *In Progress*
     *   [X] Stage 10.1: Review implementation
     *   [ ] Stage 10.2: Refactor and fix issues
+*   **Developer Notes**
+    *   Do not remove the Toast messages. They are used for verification purposes.
 
 
