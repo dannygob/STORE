@@ -3,9 +3,8 @@ package com.example.Store.data.repository
 import com.example.Store.data.local.dao.*
 import com.example.Store.data.local.entity.*
 import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
 
-class AppRepositoryImpl @Inject constructor(
+class AppRepositoryImpl(
     private val productDao: ProductDao,
     private val customerDao: CustomerDao,
     private val supplierDao: SupplierDao,
@@ -16,6 +15,7 @@ class AppRepositoryImpl @Inject constructor(
     private val productLocationDao: ProductLocationDao,
     private val preferenceDao: PreferenceDao,
     private val firestoreService: FirestoreService, // si usas Firestore
+    private val externalScope: CoroutineScope,
 ) : AppRepository {
 
     // Product methods
@@ -225,4 +225,30 @@ class AppRepositoryImpl @Inject constructor(
 
     override fun getProductFromFirestore(productId: String): Flow<Result<ProductEntity?>> =
         firestoreService.getProduct(productId)
+
+    override suspend fun syncLocationToFirestore(location: LocationEntity): Result<Unit> =
+        firestoreService.syncLocation(location)
+
+    override suspend fun syncProductLocationToFirestore(productLocation: ProductLocationEntity): Result<Unit> =
+        firestoreService.syncProductLocation(productLocation)
+
+    override fun listenForLocationChanges() {
+        externalScope.launch {
+            firestoreService.listenForLocationChanges().collect { result ->
+                result.onSuccess { locations ->
+                    locationDao.insertAll(locations)
+                }
+            }
+        }
+    }
+
+    override fun listenForProductLocationChanges() {
+        externalScope.launch {
+            firestoreService.listenForProductLocationChanges().collect { result ->
+                result.onSuccess { productLocations ->
+                    productLocationDao.insertAll(productLocations)
+                }
+            }
+        }
+    }
 }

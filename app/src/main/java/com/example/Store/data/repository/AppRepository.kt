@@ -120,4 +120,10 @@ interface AppRepository {
     // Firestore Sync Methods
     suspend fun syncProductToFirestore(product: ProductEntity): Result<Unit>
     fun getProductFromFirestore(productId: String): Flow<Result<ProductEntity?>>
+
+    suspend fun syncLocationToFirestore(location: LocationEntity): Result<Unit>
+    suspend fun syncProductLocationToFirestore(productLocation: ProductLocationEntity): Result<Unit>
+
+    fun listenForLocationChanges()
+    fun listenForProductLocationChanges()
 }

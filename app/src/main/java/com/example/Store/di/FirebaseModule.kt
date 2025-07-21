@@ -1,20 +1,44 @@
 package com.example.Store.di
 
 
+import com.example.Store.data.repository.FirestoreService
+import com.example.Store.data.repository.FirestoreServiceImpl
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object FirebaseModule {
+abstract class FirebaseModule {
 
-    @Provides
-    @Singleton
-    fun provideFirebaseAuth(): FirebaseAuth {
-        return FirebaseAuth.getInstance()
+    @Binds
+    abstract fun bindFirestoreService(impl: FirestoreServiceImpl): FirestoreService
+
+    companion object {
+        @Provides
+        @Singleton
+        fun provideFirebaseAuth(): FirebaseAuth {
+            return FirebaseAuth.getInstance()
+        }
+
+        @Provides
+        @Singleton
+        fun provideFirestore(): FirebaseFirestore {
+            return FirebaseFirestore.getInstance()
+        }
+
+        @Provides
+        @Singleton
+        fun provideCoroutineScope(): CoroutineScope {
+            return CoroutineScope(SupervisorJob() + Dispatchers.Default)
+        }
     }
 }
