@@ -1,4 +1,4 @@
-package com.example.store.presentation.orders.ui
+package com.example.Store.presentation.warehouse
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -60,16 +60,7 @@ fun OrderDetailScreen(
                         items(uiState.orderWithItems!!.orderItems) { item ->
                             ListItem(
                                 headlineText = { Text("Product ID: ${item.productId}") },
-                                supportingText = { Text("Quantity: ${item.quantity} | Price: ${item.unitPrice}") },
-                                headlineContent = TODO(),
-                                modifier = TODO(),
-                                overlineContent = TODO(),
-                                supportingContent = TODO(),
-                                leadingContent = TODO(),
-                                trailingContent = TODO(),
-                                colors = TODO(),
-                                tonalElevation = TODO(),
-                                shadowElevation = TODO()
+                                supportingText = { Text("Quantity: ${item.quantity} | Price: ${item.unitPrice}") }
                             )
                         }
                     }
