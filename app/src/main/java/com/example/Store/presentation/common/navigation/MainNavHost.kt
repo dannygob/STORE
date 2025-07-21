@@ -30,6 +30,13 @@ sealed class Route(val route: String) {
     object Orders : Route("orders")
     object Scanner : Route("scanner")
     object Expenses : Route("expenses")
+    object Warehouse : Route("warehouse")
+    object OrderDetail : Route("orderDetail/{orderId}") {
+        fun createRoute(orderId: String) = "orderDetail/$orderId"
+    }
+    object OrderPicking : Route("orderPicking/{orderId}") {
+        fun createRoute(orderId: String) = "orderPicking/$orderId"
+    }
 }
 
 @Composable
@@ -107,6 +114,22 @@ fun MainNavHost(navController: NavHostController) {
 
         composable(Route.Expenses.route) {
             ExpensesScreen(navController = navController)
+        }
+
+        composable(Route.Warehouse.route) {
+            WarehouseScreen(navController = navController)
+        }
+
+        composable(Route.OrderDetail.route) {
+            OrderDetailScreen(
+                onGoToPickList = { orderId ->
+                    navController.navigate(Route.OrderPicking.createRoute(orderId))
+                }
+            )
+        }
+
+        composable(Route.OrderPicking.route) {
+            OrderPickingScreen()
         }
     }
 }
