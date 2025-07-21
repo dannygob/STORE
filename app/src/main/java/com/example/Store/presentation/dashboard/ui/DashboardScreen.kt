@@ -785,6 +785,10 @@ private fun getMenuItems(context: Context, navController: NavController) = listO
     MenuItem(Icons.Filled.Payment, "Expenses") {
         Toast.makeText(context, "Expenses clicked", Toast.LENGTH_SHORT).show()
         navController.navigate(ScreenRoutes.EXPENSES) {}
+    },
+    MenuItem(Icons.Filled.LocalShipping, "Warehouse") {
+        Toast.makeText(context, "Warehouse clicked", Toast.LENGTH_SHORT).show()
+        navController.navigate(Route.Warehouse.route) {}
     }
 )
 

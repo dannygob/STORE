@@ -51,21 +51,21 @@ class ProductStockManagementViewModel @Inject constructor(
         }
     }
 
-    fun transferStock(fromLocationId: String, toLocationId: String, amount: Int) {
-        // This is a simplified transfer. A real implementation would need to specify
-        // the exact aisle/shelf/level for both source and destination.
+    fun transferStock(
+        fromLocationId: String, fromAisle: String?, fromShelf: String?, fromLevel: String?,
+        toLocationId: String, toAisle: String?, toShelf: String?, toLevel: String?,
+        amount: Int
+    ) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             try {
-                // Placeholder for a more complex transfer logic
-                // moveProductStockUseCase(productId, fromLocationId, null,null,null, toLocationId, null,null,null, amount)
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        isSuccess = true,
-                        error = "Transfer not fully implemented"
-                    )
-                }
+                moveProductStockUseCase(
+                    productId,
+                    fromLocationId, fromAisle, fromShelf, fromLevel,
+                    toLocationId, toAisle, toShelf, toLevel,
+                    amount
+                )
+                _uiState.update { it.copy(isLoading = false, isSuccess = true) }
             } catch (e: Exception) {
                 _uiState.update { it.copy(isLoading = false, error = e.message) }
             }
