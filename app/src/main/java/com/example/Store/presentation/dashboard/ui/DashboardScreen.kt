@@ -219,7 +219,8 @@ fun DashboardScreen(
 
             DropdownMenusSection(
                 sections = dropdownSections,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
+                navController = navController
             )
 
             if (showNotificationsPanel) {
@@ -672,6 +673,7 @@ private fun DashboardCard(
 private fun DropdownMenusSection(
     sections: List<DropdownSection>,
     modifier: Modifier = Modifier,
+    navController: NavController
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -681,7 +683,8 @@ private fun DropdownMenusSection(
             DropdownMenuComponent(
                 icon = section.icon,
                 label = section.label,
-                options = section.options
+                options = section.options,
+                navController = navController
             )
         }
     }
@@ -692,6 +695,7 @@ private fun DropdownMenuComponent(
     icon: ImageVector,
     label: String,
     options: List<String>,
+    navController: NavController
 ) {
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
@@ -736,7 +740,11 @@ private fun DropdownMenuComponent(
                 DropdownMenuItem(
                     text = { Text(option) },
                     onClick = {
-                        Toast.makeText(context, "$option clicked", Toast.LENGTH_SHORT).show()
+                        when (option) {
+                            "View Orders" -> navController.navigate(Route.Warehouse.route)
+                            "Manage Stock" -> navController.navigate(Route.Inventory.route)
+                            else -> Toast.makeText(context, "$option clicked", Toast.LENGTH_SHORT).show()
+                        }
                         expanded = false
                     }
                 )
@@ -807,6 +815,11 @@ private fun getDropdownSections(context: Context) = listOf(
         Icons.Filled.Person,
         "People",
         listOf("Add Customer", "Add Supplier")
+    ),
+    DropdownSection(
+        Icons.Filled.LocalShipping,
+        "Warehouse",
+        listOf("View Orders", "Manage Stock")
     )
 )
 
