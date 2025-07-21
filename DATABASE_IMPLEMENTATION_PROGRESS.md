@@ -84,5 +84,12 @@ This document tracks the progress of implementing the local Room database and fu
     *   [ ] Stage 7.10: Update Progress File & Submit
 *   **Phase 8: Firebase Integration - Cloud Storage (Optional, for images etc.)**
     *   (Details to be defined)
+*   **Phase 9: Warehouse UI** - *In Progress*
+    *   [X] Stage 9.1: Create `WarehouseViewModel`
+    *   [X] Stage 9.2: Move `OrderDetailScreen` to warehouse package
+    *   [X] Stage 9.3: Fix `TODO()`s in `OrderDetailScreen`
+    *   [X] Stage 9.4: Create `PickListViewModel`
+    *   [ ] Stage 9.5: Implement warehouse logic in `WarehouseViewModel`
+    *   [ ] Stage 9.6: Implement picking logic in `PickListViewModel`
 
 
