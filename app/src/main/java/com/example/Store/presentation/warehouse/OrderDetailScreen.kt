@@ -8,6 +8,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.Store.presentation.orders.OrderDetailViewModel
@@ -20,6 +21,7 @@ fun OrderDetailScreen(
     onGoToPickList: (String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -48,7 +50,10 @@ fun OrderDetailScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    Button(onClick = { onGoToPickList(order.orderId) }) {
+                    Button(onClick = {
+                        Toast.makeText(context, "Go to Pick List clicked", Toast.LENGTH_SHORT).show()
+                        onGoToPickList(order.orderId)
+                    }) {
                         Text("Go to Pick List")
                     }
 

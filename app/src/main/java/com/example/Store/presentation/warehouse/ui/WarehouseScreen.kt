@@ -10,6 +10,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -23,6 +24,7 @@ fun WarehouseScreen(
     viewModel: WarehouseViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -53,6 +55,7 @@ fun WarehouseScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
+                                    Toast.makeText(context, "Order ${orderWithItems.order.orderId} clicked", Toast.LENGTH_SHORT).show()
                                     navController.navigate(Route.OrderDetail.createRoute(orderWithItems.order.orderId))
                                 }
                         ) {
