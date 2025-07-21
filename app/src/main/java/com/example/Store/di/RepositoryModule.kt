@@ -22,11 +22,35 @@ abstract class RepositoryModule {
         impl: AuthRepositoryImpl,
     ): AuthRepository
 
-    @Binds
+    @Provides
     @Singleton
-    abstract fun bindAppRepository(
-        impl: AppRepositoryImpl,
-    ): AppRepository
+    fun provideAppRepository(
+        productDao: ProductDao,
+        customerDao: CustomerDao,
+        supplierDao: SupplierDao,
+        orderDao: OrderDao,
+        orderItemDao: OrderItemDao,
+        warehouseDao: WarehouseDao,
+        locationDao: LocationDao,
+        productLocationDao: ProductLocationDao,
+        preferenceDao: PreferenceDao,
+        firestoreService: FirestoreService,
+        externalScope: CoroutineScope,
+    ): AppRepository {
+        return AppRepositoryImpl(
+            productDao,
+            customerDao,
+            supplierDao,
+            orderDao,
+            orderItemDao,
+            warehouseDao,
+            locationDao,
+            productLocationDao,
+            preferenceDao,
+            firestoreService,
+            externalScope,
+        )
+    }
 
     @Binds
     @Singleton
