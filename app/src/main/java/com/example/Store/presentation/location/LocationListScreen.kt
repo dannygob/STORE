@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -21,13 +22,17 @@ fun LocationListScreen(
     onLocationClick: (String) -> Unit
 ) {
     val locations by viewModel.locations.collectAsState()
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
             TopAppBar(title = { Text("Warehouse Locations") })
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onAddLocationClick) {
+            FloatingActionButton(onClick = {
+                Toast.makeText(context, "Add Location clicked", Toast.LENGTH_SHORT).show()
+                onAddLocationClick()
+            }) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Add Location")
             }
         }
@@ -37,15 +42,10 @@ fun LocationListScreen(
                 ListItem(
                     headlineText = { Text(location.name) },
                     supportingText = { Text(location.address ?: "No address") },
-                    modifier = Modifier.clickable { onLocationClick(location.locationId) },
-                    headlineContent = TODO(),
-                    overlineContent = TODO(),
-                    supportingContent = TODO(),
-                    leadingContent = TODO(),
-                    trailingContent = TODO(),
-                    colors = TODO(),
-                    tonalElevation = TODO(),
-                    shadowElevation = TODO()
+                    modifier = Modifier.clickable {
+                        Toast.makeText(context, "Location ${location.locationId} clicked", Toast.LENGTH_SHORT).show()
+                        onLocationClick(location.locationId)
+                    }
                 )
             }
         }

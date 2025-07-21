@@ -21,6 +21,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 
@@ -31,6 +32,7 @@ fun AddEditLocationScreen(
     onSaveFinished: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(uiState.isSaveSuccess) {
         if (uiState.isSaveSuccess) {
@@ -82,7 +84,10 @@ fun AddEditLocationScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = { viewModel.saveLocation() },
+                onClick = {
+                    Toast.makeText(context, "Save Location clicked", Toast.LENGTH_SHORT).show()
+                    viewModel.saveLocation()
+                          },
                 enabled = !uiState.isLoading,
                 modifier = Modifier.fillMaxWidth()
             ) {
