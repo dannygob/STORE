@@ -100,5 +100,20 @@ This document tracks the progress of implementing the local Room database and fu
     *   The database schema version is managed by the `version` parameter in the `@Database` annotation in the `AppDatabase` class.
     *   When the schema is updated, a new migration must be created and added to the `AppDatabase` builder.
     *   Before applying a major schema change, it is recommended to back up the local data to a file. This can be done by copying the database file from the device to a safe location.
+*   **Phase 11: Error and State Management** - *COMPLETED*
+    *   [X] Stage 11.1: Create `Resource<T>` class
+    *   [X] Stage 11.2: Refactor ViewModels and Repository to use `Resource<T>`
+*   **Phase 12: Two-Way Sync with Firestore** - *COMPLETED*
+    *   [X] Stage 12.1: Add `lastUpdated` field to `LocationEntity` and `ProductLocationEntity`
+    *   [X] Stage 12.2: Create migration to add `lastUpdated` column
+    *   [X] Stage 12.3: Implement two-way sync in `AppRepositoryImpl`
+*   **Phase 13: Firestore Security Rules** - *COMPLETED*
+    *   [X] Stage 13.1: Create `firestore.rules` file
+*   **Phase 14: Session Persistence (Auth)** - *COMPLETED*
+    *   [X] Stage 14.1: Add session persistence documentation to `README.md`
+*   **Phase 15: Offline-first or connectivity strategy** - *COMPLETED*
+    *   [X] Stage 15.1: Refactor `AuthRepositoryImpl` to use local database as single source of truth when offline
+*   **Phase 16: Accessibility** - *COMPLETED*
+    *   [X] Stage 16.1: Review contrasts and sizes for accessibility
 
 
