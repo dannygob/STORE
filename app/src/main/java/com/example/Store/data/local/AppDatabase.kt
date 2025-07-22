@@ -40,7 +40,7 @@ import com.example.Store.data.local.entity.WarehouseEntity
         ProductLocationEntity::class,
         StockAtWarehouseEntity::class // ✅ Añadido para compatibilidad
     ],
-    version = 6,
+    version = 7,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -109,6 +109,13 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_6_7: Migration = object : Migration(6, 7) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE locations ADD COLUMN lastUpdated INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE product_locations ADD COLUMN lastUpdated INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -116,7 +123,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "store_app_database"
                 )
-                    .addMigrations(MIGRATION_5_6)
+                    .addMigrations(MIGRATION_5_6, MIGRATION_6_7)
                     .fallbackToDestructiveMigration(false) // ⚠️ Para desarrollo únicamente
                     .build()
                 INSTANCE = instance

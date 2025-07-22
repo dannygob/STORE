@@ -96,5 +96,9 @@ This document tracks the progress of implementing the local Room database and fu
     *   [ ] Stage 10.2: Refactor and fix issues
 *   **Developer Notes**
     *   Do not remove the Toast messages. They are used for verification purposes.
+*   **Schema Versioning and Backup**
+    *   The database schema version is managed by the `version` parameter in the `@Database` annotation in the `AppDatabase` class.
+    *   When the schema is updated, a new migration must be created and added to the `AppDatabase` builder.
+    *   Before applying a major schema change, it is recommended to back up the local data to a file. This can be done by copying the database file from the device to a safe location.
 
 

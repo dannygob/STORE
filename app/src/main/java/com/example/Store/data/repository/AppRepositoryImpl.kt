@@ -19,87 +19,336 @@ class AppRepositoryImpl(
 ) : AppRepository {
 
     // Product methods
-    override fun getAllProducts(): Flow<List<ProductEntity>> = productDao.getAllProducts()
-    override fun getProductById(productId: String): Flow<ProductEntity?> =
-        productDao.getProductById(productId)
+    override fun getAllProducts(): Flow<Resource<List<ProductEntity>>> = flow {
+        emit(Resource.Loading())
+        try {
+            productDao.getAllProducts().collect { emit(Resource.Success(it)) }
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override fun searchProductsByName(query: String): Flow<List<ProductEntity>> =
-        productDao.searchProductsByName(query)
+    override fun getProductById(productId: String): Flow<Resource<ProductEntity?>> = flow {
+        emit(Resource.Loading())
+        try {
+            productDao.getProductById(productId).collect { emit(Resource.Success(it)) }
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override suspend fun insertProduct(product: ProductEntity) = productDao.insert(product)
-    override suspend fun insertAllProducts(products: List<ProductEntity>) =
-        productDao.insertAll(products)
+    override fun searchProductsByName(query: String): Flow<Resource<List<ProductEntity>>> = flow {
+        emit(Resource.Loading())
+        try {
+            productDao.searchProductsByName(query).collect { emit(Resource.Success(it)) }
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override suspend fun updateProduct(product: ProductEntity) = productDao.update(product)
-    override suspend fun deleteProduct(product: ProductEntity) = productDao.delete(product)
-    override suspend fun deleteAllProducts() = productDao.deleteAllProducts()
+    override fun insertProduct(product: ProductEntity): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            productDao.insert(product)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
+
+    override fun insertAllProducts(products: List<ProductEntity>): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            productDao.insertAll(products)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
+
+    override fun updateProduct(product: ProductEntity): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            productDao.update(product)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
+
+    override fun deleteProduct(product: ProductEntity): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            productDao.delete(product)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
+
+    override fun deleteAllProducts(): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            productDao.deleteAllProducts()
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
     // Customer methods
-    override fun getAllCustomers(): Flow<List<CustomerEntity>> = customerDao.getAllCustomers()
-    override fun getCustomerById(customerId: String): Flow<CustomerEntity?> =
-        customerDao.getCustomerById(customerId)
+    override fun getAllCustomers(): Flow<Resource<List<CustomerEntity>>> = flow {
+        emit(Resource.Loading())
+        try {
+            customerDao.getAllCustomers().collect { emit(Resource.Success(it)) }
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override fun getCustomerByEmail(email: String): Flow<CustomerEntity?> =
-        customerDao.getCustomerByEmail(email)
+    override fun getCustomerById(customerId: String): Flow<Resource<CustomerEntity?>> = flow {
+        emit(Resource.Loading())
+        try {
+            customerDao.getCustomerById(customerId).collect { emit(Resource.Success(it)) }
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override suspend fun insertCustomer(customer: CustomerEntity) =
-        customerDao.insert(customer)
+    override fun getCustomerByEmail(email: String): Flow<Resource<CustomerEntity?>> = flow {
+        emit(Resource.Loading())
+        try {
+            customerDao.getCustomerByEmail(email).collect { emit(Resource.Success(it)) }
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override suspend fun updateCustomer(customer: CustomerEntity) =
-        customerDao.update(customer)
+    override fun insertCustomer(customer: CustomerEntity): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            customerDao.insert(customer)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override suspend fun deleteCustomer(customer: CustomerEntity) =
-        customerDao.delete(customer)
+    override fun updateCustomer(customer: CustomerEntity): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            customerDao.update(customer)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override suspend fun deleteAllCustomers() = customerDao.deleteAllCustomers()
+    override fun deleteCustomer(customer: CustomerEntity): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            customerDao.delete(customer)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
+
+    override fun deleteAllCustomers(): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            customerDao.deleteAllCustomers()
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
     // Supplier methods
-    override fun getAllSuppliers(): Flow<List<SupplierEntity>> = supplierDao.getAllSuppliers()
-    override fun getSupplierById(supplierId: String): Flow<SupplierEntity?> =
-        supplierDao.getSupplierById(supplierId)
+    override fun getAllSuppliers(): Flow<Resource<List<SupplierEntity>>> = flow {
+        emit(Resource.Loading())
+        try {
+            supplierDao.getAllSuppliers().collect { emit(Resource.Success(it)) }
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override suspend fun insertSupplier(supplier: SupplierEntity) =
-        supplierDao.insert(supplier)
+    override fun getSupplierById(supplierId: String): Flow<Resource<SupplierEntity?>> = flow {
+        emit(Resource.Loading())
+        try {
+            supplierDao.getSupplierById(supplierId).collect { emit(Resource.Success(it)) }
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override suspend fun updateSupplier(supplier: SupplierEntity) =
-        supplierDao.update(supplier)
+    override fun insertSupplier(supplier: SupplierEntity): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            supplierDao.insert(supplier)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override suspend fun deleteSupplier(supplier: SupplierEntity) =
-        supplierDao.delete(supplier)
+    override fun updateSupplier(supplier: SupplierEntity): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            supplierDao.update(supplier)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override suspend fun deleteAllSuppliers() = supplierDao.deleteAllSuppliers()
+    override fun deleteSupplier(supplier: SupplierEntity): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            supplierDao.delete(supplier)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
+
+    override fun deleteAllSuppliers(): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            supplierDao.deleteAllSuppliers()
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
     // Order methods
-    override fun getAllOrders(): Flow<List<OrderEntity>> = orderDao.getAllOrders()
-    override fun getOrderById(orderId: String): Flow<OrderEntity?> = orderDao.getOrderById(orderId)
-    override fun getOrdersByCustomerId(customerId: String): Flow<List<OrderEntity>> =
-        orderDao.getOrdersByCustomerId(customerId)
+    override fun getAllOrders(): Flow<Resource<List<OrderEntity>>> = flow {
+        emit(Resource.Loading())
+        try {
+            orderDao.getAllOrders().collect { emit(Resource.Success(it)) }
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override fun getOrdersByDateRange(startDate: Long, endDate: Long): Flow<List<OrderEntity>> =
-        orderDao.getOrdersByDateRange(startDate, endDate)
+    override fun getOrderById(orderId: String): Flow<Resource<OrderEntity?>> = flow {
+        emit(Resource.Loading())
+        try {
+            orderDao.getOrderById(orderId).collect { emit(Resource.Success(it)) }
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override suspend fun insertOrder(order: OrderEntity) = orderDao.insertOrder(order)
-    override suspend fun updateOrder(order: OrderEntity) = orderDao.updateOrder(order)
-    override suspend fun deleteOrder(order: OrderEntity) = orderDao.deleteOrder(order)
+    override fun getOrdersByCustomerId(customerId: String): Flow<Resource<List<OrderEntity>>> = flow {
+        emit(Resource.Loading())
+        try {
+            orderDao.getOrdersByCustomerId(customerId).collect { emit(Resource.Success(it)) }
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
+
+    override fun getOrdersByDateRange(startDate: Long, endDate: Long): Flow<Resource<List<OrderEntity>>> = flow {
+        emit(Resource.Loading())
+        try {
+            orderDao.getOrdersByDateRange(startDate, endDate).collect { emit(Resource.Success(it)) }
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
+
+    override fun insertOrder(order: OrderEntity): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            orderDao.insertOrder(order)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
+
+    override fun updateOrder(order: OrderEntity): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            orderDao.updateOrder(order)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
+
+    override fun deleteOrder(order: OrderEntity): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            orderDao.deleteOrder(order)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
     // OrderItem methods
-    override fun getOrderItemsForOrder(orderId: String): Flow<List<OrderItemEntity>> =
-        orderItemDao.getItemsForOrder(orderId)
+    override fun getOrderItemsForOrder(orderId: String): Flow<Resource<List<OrderItemEntity>>> = flow {
+        emit(Resource.Loading())
+        try {
+            orderItemDao.getItemsForOrder(orderId).collect { emit(Resource.Success(it)) }
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override suspend fun insertOrderItem(orderItem: OrderItemEntity) =
-        orderItemDao.insertOrderItem(orderItem)
+    override fun insertOrderItem(orderItem: OrderItemEntity): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            orderItemDao.insertOrderItem(orderItem)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override suspend fun insertAllOrderItems(orderItems: List<OrderItemEntity>) =
-        orderItemDao.insertAll(orderItems)
+    override fun insertAllOrderItems(orderItems: List<OrderItemEntity>): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            orderItemDao.insertAll(orderItems)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override suspend fun updateOrderItem(orderItem: OrderItemEntity) =
-        orderItemDao.updateOrderItem(orderItem)
+    override fun updateOrderItem(orderItem: OrderItemEntity): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            orderItemDao.updateOrderItem(orderItem)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override suspend fun deleteOrderItem(orderItem: OrderItemEntity) =
-        orderItemDao.deleteOrderItem(orderItem)
+    override fun deleteOrderItem(orderItem: OrderItemEntity): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            orderItemDao.deleteOrderItem(orderItem)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override suspend fun deleteAllOrderItemsForOrder(orderId: String) =
-        orderItemDao.deleteAllForOrder(orderId)
+    override fun deleteAllOrderItemsForOrder(orderId: String): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            orderItemDao.deleteAllForOrder(orderId)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
     override fun getOrderWithOrderItems(orderId: String): Flow<OrderWithOrderItems?> =
         orderItemDao.getOrderWithItems(orderId)
@@ -120,89 +369,228 @@ class AppRepositoryImpl(
     override suspend fun deleteAllPreferences() = preferenceDao.clearAll()
 
     // Warehouse
-    override fun getAllWarehouses(): Flow<List<WarehouseEntity>> = warehouseDao.getAllWarehouses()
-    override fun getWarehouseById(warehouseId: String): Flow<WarehouseEntity?> =
-        warehouseDao.getWarehouseById(warehouseId)
+    override fun getAllWarehouses(): Flow<Resource<List<WarehouseEntity>>> = flow {
+        emit(Resource.Loading())
+        try {
+            warehouseDao.getAllWarehouses().collect { emit(Resource.Success(it)) }
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override suspend fun insertWarehouse(warehouse: WarehouseEntity) =
-        warehouseDao.insertWarehouse(warehouse)
+    override fun getWarehouseById(warehouseId: String): Flow<Resource<WarehouseEntity?>> = flow {
+        emit(Resource.Loading())
+        try {
+            warehouseDao.getWarehouseById(warehouseId).collect { emit(Resource.Success(it)) }
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override suspend fun updateWarehouse(warehouse: WarehouseEntity) =
-        warehouseDao.updateWarehouse(warehouse)
+    override fun insertWarehouse(warehouse: WarehouseEntity): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            warehouseDao.insertWarehouse(warehouse)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override suspend fun deleteWarehouse(warehouse: WarehouseEntity) =
-        warehouseDao.deleteWarehouse(warehouse)
+    override fun updateWarehouse(warehouse: WarehouseEntity): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            warehouseDao.updateWarehouse(warehouse)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override suspend fun deleteAllWarehouses() = warehouseDao.deleteAll()
+    override fun deleteWarehouse(warehouse: WarehouseEntity): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            warehouseDao.deleteWarehouse(warehouse)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
+
+    override fun deleteAllWarehouses(): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            warehouseDao.deleteAll()
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
     // Location
-    override fun getAllLocations(): Flow<List<LocationEntity>> = locationDao.getAllLocations()
-    override fun getLocationById(locationId: String): Flow<LocationEntity?> =
-        locationDao.getLocationById(locationId)
+    override fun getAllLocations(): Flow<Resource<List<LocationEntity>>> = flow {
+        emit(Resource.Loading())
+        try {
+            locationDao.getAllLocations().collect { emit(Resource.Success(it)) }
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override suspend fun insertLocation(location: LocationEntity) =
-        locationDao.insertLocation(location)
+    override fun getLocationById(locationId: String): Flow<Resource<LocationEntity?>> = flow {
+        emit(Resource.Loading())
+        try {
+            locationDao.getLocationById(locationId).collect { emit(Resource.Success(it)) }
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override suspend fun updateLocation(location: LocationEntity) =
-        locationDao.updateLocation(location)
+    override fun insertLocation(location: LocationEntity): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            locationDao.insertLocation(location)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override suspend fun deleteLocation(location: LocationEntity) =
-        locationDao.deleteLocation(location)
+    override fun updateLocation(location: LocationEntity): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            locationDao.updateLocation(location)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override suspend fun deleteAllLocations() = locationDao.deleteAll()
+    override fun deleteLocation(location: LocationEntity): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            locationDao.deleteLocation(location)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
+
+    override fun deleteAllLocations(): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            locationDao.deleteAll()
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
     // ProductLocation (Inventory)
-    override fun getLocationsForProduct(productId: String): Flow<List<ProductLocationEntity>> =
-        productLocationDao.getLocationsForProduct(productId)
+    override fun getLocationsForProduct(productId: String): Flow<Resource<List<ProductLocationEntity>>> = flow {
+        emit(Resource.Loading())
+        try {
+            productLocationDao.getLocationsForProduct(productId).collect { emit(Resource.Success(it)) }
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override fun getProductsAtLocation(locationId: String): Flow<List<ProductLocationEntity>> =
-        productLocationDao.getProductsAtLocation(locationId)
+    override fun getProductsAtLocation(locationId: String): Flow<Resource<List<ProductLocationEntity>>> = flow {
+        emit(Resource.Loading())
+        try {
+            productLocationDao.getProductsAtLocation(locationId).collect { emit(Resource.Success(it)) }
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override fun getTotalStockForProduct(productId: String): Flow<Int?> =
-        productLocationDao.getTotalStockForProduct(productId)
+    override fun getTotalStockForProduct(productId: String): Flow<Resource<Int?>> = flow {
+        emit(Resource.Loading())
+        try {
+            productLocationDao.getTotalStockForProduct(productId).collect { emit(Resource.Success(it)) }
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override suspend fun insertProductLocation(productLocation: ProductLocationEntity) =
-        productLocationDao.insertProductLocation(productLocation)
+    override fun insertProductLocation(productLocation: ProductLocationEntity): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            productLocationDao.insertProductLocation(productLocation)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override suspend fun updateProductLocation(productLocation: ProductLocationEntity) =
-        productLocationDao.updateProductLocation(productLocation)
+    override fun updateProductLocation(productLocation: ProductLocationEntity): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            productLocationDao.updateProductLocation(productLocation)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override suspend fun deleteProductLocation(productLocation: ProductLocationEntity) =
-        productLocationDao.deleteProductLocation(productLocation)
+    override fun deleteProductLocation(productLocation: ProductLocationEntity): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            productLocationDao.deleteProductLocation(productLocation)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override suspend fun deleteAllProductLocations() = productLocationDao.deleteAll()
+    override fun deleteAllProductLocations(): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            productLocationDao.deleteAll()
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
+    }
 
-    override suspend fun addStockToLocation(
+    override fun addStockToLocation(
         productId: String,
         locationId: String,
         aisle: String?,
         shelf: String?,
         level: String?,
         amount: Int,
-    ) {
-        val existing =
-            productLocationDao.findProductLocation(productId, locationId, aisle, shelf, level)
-        if (existing != null) {
-            val updatedQuantity = (existing.quantity ?: 0) + amount
-            productLocationDao.updateQuantityForProductLocation(
-                existing.productLocationId,
-                updatedQuantity
-            )
-        } else {
-            val newLocation = ProductLocationEntity(
-                productLocationId = "${productId}_${locationId}_${aisle}_${shelf}_${level}",
-                productId = productId,
-                locationId = locationId,
-                aisle = aisle,
-                shelf = shelf,
-                level = level,
-                quantity = amount
-            )
-            productLocationDao.insertProductLocation(newLocation)
+    ): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            val existing =
+                productLocationDao.findProductLocation(productId, locationId, aisle, shelf, level)
+            if (existing != null) {
+                val updatedQuantity = (existing.quantity ?: 0) + amount
+                productLocationDao.updateQuantityForProductLocation(
+                    existing.productLocationId,
+                    updatedQuantity
+                )
+            } else {
+                val newLocation = ProductLocationEntity(
+                    productLocationId = "${productId}_${locationId}_${aisle}_${shelf}_${level}",
+                    productId = productId,
+                    locationId = locationId,
+                    aisle = aisle,
+                    shelf = shelf,
+                    level = level,
+                    quantity = amount
+                )
+                productLocationDao.insertProductLocation(newLocation)
+            }
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
         }
     }
 
-    override suspend fun transferStock(
+    override fun transferStock(
         productId: String,
         fromLocationId: String,
         fromAisle: String?,
@@ -213,9 +601,15 @@ class AppRepositoryImpl(
         toShelf: String?,
         toLevel: String?,
         amount: Int,
-    ) {
-        addStockToLocation(productId, toLocationId, toAisle, toShelf, toLevel, amount)
-        addStockToLocation(productId, fromLocationId, fromAisle, fromShelf, fromLevel, -amount)
+    ): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            addStockToLocation(productId, toLocationId, toAisle, toShelf, toLevel, amount)
+            addStockToLocation(productId, fromLocationId, fromAisle, fromShelf, fromLevel, -amount)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Error desconocido"))
+        }
     }
 
     // Firestore sync
@@ -234,8 +628,8 @@ class AppRepositoryImpl(
     override fun listenForLocationChanges() {
         externalScope.launch {
             firestoreService.listenForLocationChanges().collect { result ->
-                result.onSuccess { locations ->
-                    locationDao.insertAll(locations)
+                if (result is Resource.Success) {
+                    result.data?.let { locationDao.insertAll(it) }
                 }
             }
         }
@@ -244,8 +638,8 @@ class AppRepositoryImpl(
     override fun listenForProductLocationChanges() {
         externalScope.launch {
             firestoreService.listenForProductLocationChanges().collect { result ->
-                result.onSuccess { productLocations ->
-                    productLocationDao.insertAll(productLocations)
+                if (result is Resource.Success) {
+                    result.data?.let { productLocationDao.insertAll(it) }
                 }
             }
         }

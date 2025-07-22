@@ -28,7 +28,7 @@ data class DashboardUiState(
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authViewModel: AuthViewModel
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DashboardUiState())
@@ -39,13 +39,21 @@ class DashboardViewModel @Inject constructor(
 
     init {
         loadNotifications()
+        observeAuthState()
+    }
+
+    private fun observeAuthState() {
+        viewModelScope.launch {
+            authViewModel.authState.collect { resource ->
+                if (resource is Resource.Success && resource.data == null) {
+                    _navigateToLogin.emit(Unit)
+                }
+            }
+        }
     }
 
     fun signOut() {
-        viewModelScope.launch {
-            authRepository.signOut()
-            _navigateToLogin.emit(Unit)
-        }
+        authViewModel.signOut()
     }
 
     fun loadNotifications() {

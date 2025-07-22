@@ -3,84 +3,89 @@ package com.example.Store.data.repository
 import com.example.Store.data.local.entity.LocationEntity
 import com.example.Store.data.local.entity.ProductEntity
 import com.example.Store.data.local.entity.ProductLocationEntity
+import com.example.Store.util.Resource
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class FirestoreServiceImpl @Inject constructor(
     private val firestore: FirebaseFirestore
 ) : FirestoreService {
 
-    override suspend fun syncProduct(product: ProductEntity): Result<Unit> {
-        return try {
+    override fun syncProduct(product: ProductEntity): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
             firestore.collection("products").document(product.productId).set(product).await()
-            Result.success(Unit)
+            emit(Resource.Success(Unit))
         } catch (e: Exception) {
-            Result.failure(e)
+            emit(Resource.Error(e.message ?: "Error desconocido"))
         }
     }
 
-    override fun getProduct(productId: String): Flow<Result<ProductEntity?>> = callbackFlow {
+    override fun getProduct(productId: String): Flow<Resource<ProductEntity?>> = callbackFlow {
         val subscription = firestore.collection("products").document(productId)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
-                    trySend(Result.failure(e))
+                    trySend(Resource.Error(e.message ?: "Error desconocido"))
                     return@addSnapshotListener
                 }
                 if (snapshot != null && snapshot.exists()) {
-                    trySend(Result.success(snapshot.toObject(ProductEntity::class.java)))
+                    trySend(Resource.Success(snapshot.toObject(ProductEntity::class.java)))
                 } else {
-                    trySend(Result.success(null))
+                    trySend(Resource.Success(null))
                 }
             }
         awaitClose { subscription.remove() }
     }
 
-    override suspend fun syncLocation(location: LocationEntity): Result<Unit> {
-        return try {
+    override fun syncLocation(location: LocationEntity): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
             firestore.collection("locations").document(location.locationId).set(location).await()
-            Result.success(Unit)
+            emit(Resource.Success(Unit))
         } catch (e: Exception) {
-            Result.failure(e)
+            emit(Resource.Error(e.message ?: "Error desconocido"))
         }
     }
 
-    override suspend fun syncProductLocation(productLocation: ProductLocationEntity): Result<Unit> {
-        return try {
+    override fun syncProductLocation(productLocation: ProductLocationEntity): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
             firestore.collection("product_locations").document(productLocation.productLocationId).set(productLocation).await()
-            Result.success(Unit)
+            emit(Resource.Success(Unit))
         } catch (e: Exception) {
-            Result.failure(e)
+            emit(Resource.Error(e.message ?: "Error desconocido"))
         }
     }
 
-    override fun listenForLocationChanges(): Flow<Result<List<LocationEntity>>> = callbackFlow {
+    override fun listenForLocationChanges(): Flow<Resource<List<LocationEntity>>> = callbackFlow {
         val subscription = firestore.collection("locations")
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
-                    trySend(Result.failure(e))
+                    trySend(Resource.Error(e.message ?: "Error desconocido"))
                     return@addSnapshotListener
                 }
                 if (snapshot != null) {
                     val locations = snapshot.toObjects(LocationEntity::class.java)
-                    trySend(Result.success(locations))
+                    trySend(Resource.Success(locations))
                 }
             }
         awaitClose { subscription.remove() }
     }
 
-    override fun listenForProductLocationChanges(): Flow<Result<List<ProductLocationEntity>>> = callbackFlow {
+    override fun listenForProductLocationChanges(): Flow<Resource<List<ProductLocationEntity>>> = callbackFlow {
         val subscription = firestore.collection("product_locations")
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
-                    trySend(Result.failure(e))
+                    trySend(Resource.Error(e.message ?: "Error desconocido"))
                     return@addSnapshotListener
                 }
                 if (snapshot != null) {
                     val productLocations = snapshot.toObjects(ProductLocationEntity::class.java)
-                    trySend(Result.success(productLocations))
+                    trySend(Resource.Success(productLocations))
                 }
             }
         awaitClose { subscription.remove() }

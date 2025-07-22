@@ -15,48 +15,48 @@ import kotlinx.coroutines.flow.Flow
 interface AppRepository {
 
     // Product Methods
-    fun getAllProducts(): Flow<List<ProductEntity>>
-    fun getProductById(productId: String): Flow<ProductEntity?>
-    suspend fun insertProduct(product: ProductEntity)
-    suspend fun updateProduct(product: ProductEntity)
-    suspend fun deleteProduct(product: ProductEntity)
-    suspend fun insertAllProducts(products: List<ProductEntity>)
-    suspend fun deleteAllProducts()
-    fun searchProductsByName(query: String): Flow<List<ProductEntity>>
+    fun getAllProducts(): Flow<Resource<List<ProductEntity>>>
+    fun getProductById(productId: String): Flow<Resource<ProductEntity?>>
+    fun insertProduct(product: ProductEntity): Flow<Resource<Unit>>
+    fun updateProduct(product: ProductEntity): Flow<Resource<Unit>>
+    fun deleteProduct(product: ProductEntity): Flow<Resource<Unit>>
+    fun insertAllProducts(products: List<ProductEntity>): Flow<Resource<Unit>>
+    fun deleteAllProducts(): Flow<Resource<Unit>>
+    fun searchProductsByName(query: String): Flow<Resource<List<ProductEntity>>>
 
     // Customer Methods
-    fun getAllCustomers(): Flow<List<CustomerEntity>>
-    fun getCustomerById(customerId: String): Flow<CustomerEntity?>
-    fun getCustomerByEmail(email: String): Flow<CustomerEntity?>
-    suspend fun insertCustomer(customer: CustomerEntity)
-    suspend fun updateCustomer(customer: CustomerEntity)
-    suspend fun deleteCustomer(customer: CustomerEntity)
-    suspend fun deleteAllCustomers()
+    fun getAllCustomers(): Flow<Resource<List<CustomerEntity>>>
+    fun getCustomerById(customerId: String): Flow<Resource<CustomerEntity?>>
+    fun getCustomerByEmail(email: String): Flow<Resource<CustomerEntity?>>
+    fun insertCustomer(customer: CustomerEntity): Flow<Resource<Unit>>
+    fun updateCustomer(customer: CustomerEntity): Flow<Resource<Unit>>
+    fun deleteCustomer(customer: CustomerEntity): Flow<Resource<Unit>>
+    fun deleteAllCustomers(): Flow<Resource<Unit>>
 
     // Supplier Methods
-    fun getAllSuppliers(): Flow<List<SupplierEntity>>
-    fun getSupplierById(supplierId: String): Flow<SupplierEntity?>
-    suspend fun insertSupplier(supplier: SupplierEntity)
-    suspend fun updateSupplier(supplier: SupplierEntity)
-    suspend fun deleteSupplier(supplier: SupplierEntity)
-    suspend fun deleteAllSuppliers()
+    fun getAllSuppliers(): Flow<Resource<List<SupplierEntity>>>
+    fun getSupplierById(supplierId: String): Flow<Resource<SupplierEntity?>>
+    fun insertSupplier(supplier: SupplierEntity): Flow<Resource<Unit>>
+    fun updateSupplier(supplier: SupplierEntity): Flow<Resource<Unit>>
+    fun deleteSupplier(supplier: SupplierEntity): Flow<Resource<Unit>>
+    fun deleteAllSuppliers(): Flow<Resource<Unit>>
 
     // Order Methods
-    fun getAllOrders(): Flow<List<OrderEntity>>
-    fun getOrderById(orderId: String): Flow<OrderEntity?>
-    fun getOrdersByCustomerId(customerId: String): Flow<List<OrderEntity>>
-    fun getOrdersByDateRange(startDate: Long, endDate: Long): Flow<List<OrderEntity>>
-    suspend fun insertOrder(order: OrderEntity)
-    suspend fun updateOrder(order: OrderEntity)
-    suspend fun deleteOrder(order: OrderEntity)
+    fun getAllOrders(): Flow<Resource<List<OrderEntity>>>
+    fun getOrderById(orderId: String): Flow<Resource<OrderEntity?>>
+    fun getOrdersByCustomerId(customerId: String): Flow<Resource<List<OrderEntity>>>
+    fun getOrdersByDateRange(startDate: Long, endDate: Long): Flow<Resource<List<OrderEntity>>>
+    fun insertOrder(order: OrderEntity): Flow<Resource<Unit>>
+    fun updateOrder(order: OrderEntity): Flow<Resource<Unit>>
+    fun deleteOrder(order: OrderEntity): Flow<Resource<Unit>>
 
     // OrderItem Methods
-    fun getOrderItemsForOrder(orderId: String): Flow<List<OrderItemEntity>>
-    suspend fun insertOrderItem(orderItem: OrderItemEntity)
-    suspend fun insertAllOrderItems(orderItems: List<OrderItemEntity>)
-    suspend fun updateOrderItem(orderItem: OrderItemEntity)
-    suspend fun deleteOrderItem(orderItem: OrderItemEntity)
-    suspend fun deleteAllOrderItemsForOrder(orderId: String)
+    fun getOrderItemsForOrder(orderId: String): Flow<Resource<List<OrderItemEntity>>>
+    fun insertOrderItem(orderItem: OrderItemEntity): Flow<Resource<Unit>>
+    fun insertAllOrderItems(orderItems: List<OrderItemEntity>): Flow<Resource<Unit>>
+    fun updateOrderItem(orderItem: OrderItemEntity): Flow<Resource<Unit>>
+    fun deleteOrderItem(orderItem: OrderItemEntity): Flow<Resource<Unit>>
+    fun deleteAllOrderItemsForOrder(orderId: String): Flow<Resource<Unit>>
 
     // Combined Operations
     fun getOrderWithOrderItems(orderId: String): Flow<OrderWithOrderItems?>
@@ -70,36 +70,36 @@ interface AppRepository {
     suspend fun deleteAllPreferences()
 
     // Warehouse Methods
-    fun getAllWarehouses(): Flow<List<WarehouseEntity>>
-    fun getWarehouseById(warehouseId: String): Flow<WarehouseEntity?>
-    suspend fun insertWarehouse(warehouse: WarehouseEntity)
-    suspend fun updateWarehouse(warehouse: WarehouseEntity)
-    suspend fun deleteWarehouse(warehouse: WarehouseEntity)
-    suspend fun deleteAllWarehouses()
+    fun getAllWarehouses(): Flow<Resource<List<WarehouseEntity>>>
+    fun getWarehouseById(warehouseId: String): Flow<Resource<WarehouseEntity?>>
+    fun insertWarehouse(warehouse: WarehouseEntity): Flow<Resource<Unit>>
+    fun updateWarehouse(warehouse: WarehouseEntity): Flow<Resource<Unit>>
+    fun deleteWarehouse(warehouse: WarehouseEntity): Flow<Resource<Unit>>
+    fun deleteAllWarehouses(): Flow<Resource<Unit>>
 
     // Location Methods
-    fun getAllLocations(): Flow<List<LocationEntity>>
-    fun getLocationById(locationId: String): Flow<LocationEntity?>
-    suspend fun insertLocation(location: LocationEntity)
-    suspend fun updateLocation(location: LocationEntity)
-    suspend fun deleteLocation(location: LocationEntity)
-    suspend fun deleteAllLocations()
+    fun getAllLocations(): Flow<Resource<List<LocationEntity>>>
+    fun getLocationById(locationId: String): Flow<Resource<LocationEntity?>>
+    fun insertLocation(location: LocationEntity): Flow<Resource<Unit>>
+    fun updateLocation(location: LocationEntity): Flow<Resource<Unit>>
+    fun deleteLocation(location: LocationEntity): Flow<Resource<Unit>>
+    fun deleteAllLocations(): Flow<Resource<Unit>>
 
     // ProductLocation Methods (nuevo sistema unificado de inventario)
-    fun getLocationsForProduct(productId: String): Flow<List<ProductLocationEntity>>
-    fun getProductsAtLocation(locationId: String): Flow<List<ProductLocationEntity>>
-    fun getTotalStockForProduct(productId: String): Flow<Int?>
+    fun getLocationsForProduct(productId: String): Flow<Resource<List<ProductLocationEntity>>>
+    fun getProductsAtLocation(locationId: String): Flow<Resource<List<ProductLocationEntity>>>
+    fun getTotalStockForProduct(productId: String): Flow<Resource<Int?>>
 
-    suspend fun addStockToLocation(
+    fun addStockToLocation(
         productId: String,
         locationId: String,
         aisle: String?,
         shelf: String?,
         level: String?,
         amount: Int
-    )
+    ): Flow<Resource<Unit>>
 
-    suspend fun transferStock(
+    fun transferStock(
         productId: String,
         fromLocationId: String,
         fromAisle: String?,
@@ -110,12 +110,12 @@ interface AppRepository {
         toShelf: String?,
         toLevel: String?,
         amount: Int
-    )
+    ): Flow<Resource<Unit>>
 
-    suspend fun insertProductLocation(productLocation: ProductLocationEntity)
-    suspend fun updateProductLocation(productLocation: ProductLocationEntity)
-    suspend fun deleteProductLocation(productLocation: ProductLocationEntity)
-    suspend fun deleteAllProductLocations()
+    fun insertProductLocation(productLocation: ProductLocationEntity): Flow<Resource<Unit>>
+    fun updateProductLocation(productLocation: ProductLocationEntity): Flow<Resource<Unit>>
+    fun deleteProductLocation(productLocation: ProductLocationEntity): Flow<Resource<Unit>>
+    fun deleteAllProductLocations(): Flow<Resource<Unit>>
 
     // Firestore Sync Methods
     suspend fun syncProductToFirestore(product: ProductEntity): Result<Unit>

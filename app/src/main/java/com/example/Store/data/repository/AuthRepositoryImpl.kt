@@ -5,6 +5,7 @@ import com.example.Store.domain.model.LoginResult
 import com.example.Store.domain.model.UserRole
 import com.example.Store.domain.repository.AuthRepository
 import com.example.Store.util.NetworkChecker
+import com.example.Store.util.Resource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.channels.awaitClose
@@ -12,6 +13,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -26,58 +28,62 @@ class AuthRepositoryImpl @Inject constructor(
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    override suspend fun login(email: String, password: String): Result<LoginResult> {
+    override fun login(email: String, password: String): Flow<Resource<LoginResult>> = flow {
+        emit(Resource.Loading())
         delay(1000)
 
-        return if (networkChecker.isConnected()) {
+        if (networkChecker.isConnected()) {
             try {
                 val authResult = auth.signInWithEmailAndPassword(email, password).await()
                 authResult.user ?: throw Exception("Usuario no encontrado en Firebase")
                 val isAdmin = email.contains("admin", ignoreCase = true)
                 val role = if (isAdmin) UserRole.ADMIN else UserRole.USER
-                Result.success(LoginResult(role))
+                emit(Resource.Success(LoginResult(role)))
             } catch (e: Exception) {
-                Result.failure(e)
+                emit(Resource.Error(e.message ?: "Error desconocido"))
             }
         } else {
-            val stored = users[email]
-            when {
-                stored == null -> Result.failure(Exception("Usuario no encontrado (sin conexión)"))
-                stored.first != password -> Result.failure(Exception("Contraseña incorrecta"))
-                else -> Result.success(LoginResult(stored.second))
+            // Offline login
+            val user = users[email]
+            if (user != null && user.first == password) {
+                emit(Resource.Success(LoginResult(user.second)))
+            } else {
+                emit(Resource.Error("Invalid credentials"))
             }
         }
     }
 
-    override suspend fun register(email: String, password: String, role: UserRole): Result<Unit> {
+    override fun register(email: String, password: String, role: UserRole): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
         delay(500)
 
-        return if (networkChecker.isConnected()) {
+        if (networkChecker.isConnected()) {
             try {
                 auth.createUserWithEmailAndPassword(email, password).await()
-                Result.success(Unit)
+                emit(Resource.Success(Unit))
             } catch (e: Exception) {
-                Result.failure(e)
+                emit(Resource.Error(e.message ?: "Error al registrar"))
             }
         } else {
             if (users.containsKey(email)) {
-                Result.failure(Exception("El usuario ya está registrado (sin conexión)"))
+                emit(Resource.Error("El usuario ya está registrado (sin conexión)"))
             } else {
                 users[email] = Pair(password, role)
-                Result.success(Unit)
+                emit(Resource.Success(Unit))
             }
         }
     }
 
-    override suspend fun recoverPassword(email: String): Result<Unit> {
+    override fun recoverPassword(email: String): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
         delay(500)
 
-        return if (networkChecker.isConnected()) {
+        if (networkChecker.isConnected()) {
             try {
                 auth.sendPasswordResetEmail(email).await()
-                Result.success(Unit)
+                emit(Resource.Success(Unit))
             } catch (e: Exception) {
-                Result.failure(e)
+                emit(Resource.Error(e.message ?: "No se pudo recuperar la contraseña"))
             }
         } else {
             if (users.containsKey(email)) {
@@ -85,9 +91,9 @@ class AuthRepositoryImpl @Inject constructor(
                     "AuthRepository",
                     "🔐 Enviando recuperación a $email (modo sin conexión simulado)"
                 )
-                Result.success(Unit)
+                emit(Resource.Success(Unit))
             } else {
-                Result.failure(Exception("Correo electrónico no encontrado"))
+                emit(Resource.Error("Correo electrónico no encontrado"))
             }
         }
     }

@@ -75,23 +75,17 @@ class LoginViewModel @Inject constructor(
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-
-            val result = loginUseCase(email, password)
-            if (result.isSuccess) {
-                val loginResult = result.getOrNull()
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        isSuccess = true,
-                        role = loginResult?.role
-                    )
-                }
-            } else {
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = result.exceptionOrNull()?.message ?: "Error desconocido"
-                    )
+            loginUseCase(email, password).collect { result ->
+                _uiState.value = when (result) {
+                    is Resource.Success -> {
+                        LoginUiState(isSuccess = true, role = result.data?.role)
+                    }
+                    is Resource.Error -> {
+                        LoginUiState(errorMessage = result.message)
+                    }
+                    is Resource.Loading -> {
+                        LoginUiState(isLoading = true)
+                    }
                 }
             }
         }
@@ -100,15 +94,17 @@ class LoginViewModel @Inject constructor(
     private fun onRegisterClicked(email: String, password: String, role: UserRole) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-            val result = authRepository.register(email, password, role)
-            _uiState.update {
-                if (result.isSuccess) {
-                    it.copy(isLoading = false, errorMessage = "Usuario registrado correctamente.")
-                } else {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = result.exceptionOrNull()?.message ?: "Error al registrar"
-                    )
+            authRepository.register(email, password, role).collect { result ->
+                _uiState.value = when (result) {
+                    is Resource.Success -> {
+                        LoginUiState(errorMessage = "Usuario registrado correctamente.")
+                    }
+                    is Resource.Error -> {
+                        LoginUiState(errorMessage = result.message)
+                    }
+                    is Resource.Loading -> {
+                        LoginUiState(isLoading = true)
+                    }
                 }
             }
         }
@@ -117,16 +113,17 @@ class LoginViewModel @Inject constructor(
     private fun onRecoverPassword(email: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-            val result = authRepository.recoverPassword(email)
-            _uiState.update {
-                if (result.isSuccess) {
-                    it.copy(isLoading = false, errorMessage = "Se envió un correo de recuperación.")
-                } else {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = result.exceptionOrNull()?.message
-                            ?: "No se pudo recuperar contraseña"
-                    )
+            authRepository.recoverPassword(email).collect { result ->
+                _uiState.value = when (result) {
+                    is Resource.Success -> {
+                        LoginUiState(errorMessage = "Se envió un correo de recuperación.")
+                    }
+                    is Resource.Error -> {
+                        LoginUiState(errorMessage = result.message)
+                    }
+                    is Resource.Loading -> {
+                        LoginUiState(isLoading = true)
+                    }
                 }
             }
         }

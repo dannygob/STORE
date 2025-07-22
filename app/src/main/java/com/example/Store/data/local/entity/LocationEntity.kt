@@ -12,5 +12,6 @@ data class LocationEntity( // Renamed class
     val address: String?,
     // Capacity and notes are generic enough to remain
     val capacity: Double?,
-    val notes: String? = null
+    val notes: String? = null,
+    val lastUpdated: Long = System.currentTimeMillis()
 )

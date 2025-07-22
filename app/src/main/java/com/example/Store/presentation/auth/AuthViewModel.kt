@@ -17,21 +17,20 @@ class AuthViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    val currentUser: StateFlow<FirebaseUser?> = authRepository.getAuthStateFlow()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = null // Or try to get initial user synchronously if possible, though Firebase usually recommends listeners
-        )
+    private val _authState = MutableStateFlow<Resource<FirebaseUser?>>(Resource.Loading())
+    val authState: StateFlow<Resource<FirebaseUser?>> = _authState
 
-    val isAuthenticated: StateFlow<Boolean> = currentUser.map { it != null }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = false // Assuming not authenticated initially
-        )
+    init {
+        viewModelScope.launch {
+            authRepository.getAuthState().collect { user ->
+                _authState.value = Resource.Success(user)
+            }
+        }
+    }
 
-    suspend fun signOut() {
-        authRepository.signOut()
+    fun signOut() {
+        viewModelScope.launch {
+            authRepository.signOut()
+        }
     }
 }

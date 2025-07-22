@@ -34,6 +34,7 @@ data class ProductLocationEntity(
     val aisle: String?,
     val shelf: String?,
     val level: String?,
+    val lastUpdated: Long = System.currentTimeMillis()
 ) {
     companion object {
         fun generateId(
