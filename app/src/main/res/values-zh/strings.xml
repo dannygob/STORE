@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">商店</string>
+    <string name="store_dashboard">商店仪表板</string>
+    <string name="notifications">通知</string>
+    <string name="sign_out">登出</string>
+    <string name="version">版本 1.0</string>
+    <string name="loading_notifications">正在加载通知…</string>
+    <string name="no_new_notifications">没有新通知。</string>
+    <string name="mark_all_as_read">全部标记为已读</string>
+    <string name="dismiss_all">全部忽略</string>
+    <string name="inventory">库存</string>
+    <string name="purchases">采购</string>
+    <string name="sales">销售</string>
+    <string name="orders">订单</string>
+    <string name="scanner">扫描仪</string>
+    <string name="expenses">费用</string>
+    <string name="warehouse">仓库</string>
+    <string name="create_order">创建订单</string>
+    <string name="order_status">订单状态</string>
+    <string name="shipping_notification">发货通知</string>
+    <string name="products">产品</string>
+    <string name="add_product">添加产品</string>
+    <string name="product_return">产品退货</string>
+    <string name="people">人员</string>
+    <string name="add_customer">添加客户</string>
+    <string name="add_supplier">添加供应商</string>
+    <string name="view_orders">查看订单</string>
+    <string name="manage_stock">管理库存</string>
+    <string name="charts_area_coming_soon">图表区域 - 即将推出</string>
+    <string name="order_alerts">订单提醒</string>
+    <string name="low_stock_expiration"><![CDATA[低库存和过期]]></string>
+    <string name="sales_statistics">销售统计</string>
+    <string name="admin_balance">管理员余额</string>
+    <string name="expenses_services"><![CDATA[费用和服务]]></string>
+    <string name="other_expenses">其他费用</string>
+    <string name="customer_insights">客户洞察</string>
+    <string name="system_health">系统健康</string>
+    <string name="upcoming_tasks">即将到来的任务</string>
+    <string name="general_reminders">一般提醒</string>
+    <string name="login">登录</string>
+    <string name="email">电子邮件</string>
+    <string name="password">密码</string>
+    <string name="forgot_your_password">忘记密码？</string>
+    <string name="register">注册</string>
+</resources>

@@ -32,10 +32,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.Store.R
 import com.example.Store.domain.model.UserRole
 import com.example.Store.presentation.login.viewmodel.LoginEvent
 import com.example.Store.presentation.login.viewmodel.LoginViewModel
@@ -70,7 +72,7 @@ fun LoginScreen(
             ) {
                 Text(
 
-                    text = "Login",
+                    text = stringResource(id = R.string.login),
 
                     style = MaterialTheme.typography.headlineMedium
                 )
@@ -79,7 +81,7 @@ fun LoginScreen(
                 OutlinedTextField(
                     value = state.email,
                     onValueChange = { viewModel.onEvent(LoginEvent.EmailChanged(it)) },
-                    label = { Text("Email") },
+                    label = { Text(stringResource(id = R.string.email)) },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Email,
                         imeAction = ImeAction.Next
@@ -98,7 +100,7 @@ fun LoginScreen(
                 OutlinedTextField(
                     value = state.password,
                     onValueChange = { viewModel.onEvent(LoginEvent.PasswordChanged(it)) },
-                    label = { Text("Password") },
+                    label = { Text(stringResource(id = R.string.password)) },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Password,
                         imeAction = ImeAction.Done
@@ -130,7 +132,7 @@ fun LoginScreen(
                     modifier = Modifier.fillMaxWidth(),
                     enabled = !state.isLoading
                 ) {
-                    Text("Login")
+                    Text(stringResource(id = R.string.login))
                 }
 
                 // Botón de recuperación de contraseña
@@ -142,7 +144,7 @@ fun LoginScreen(
                     modifier = Modifier.align(Alignment.End)
                 ) {
 
-                    Text("Forgot your password?")
+                    Text(stringResource(id = R.string.forgot_your_password))
 
                 }
 
@@ -161,7 +163,7 @@ fun LoginScreen(
                     modifier = Modifier.fillMaxWidth(),
                     enabled = !state.isLoading
                 ) {
-                    Text("Register")
+                    Text(stringResource(id = R.string.register))
                 }
 
                 // Mensaje de error global

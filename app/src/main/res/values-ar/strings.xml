@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">متجر</string>
+    <string name="store_dashboard">لوحة تحكم المتجر</string>
+    <string name="notifications">الإشعارات</string>
+    <string name="sign_out">تسجيل الخروج</string>
+    <string name="version">الإصدار 1.0</string>
+    <string name="loading_notifications">جاري تحميل الإشعارات…</string>
+    <string name="no_new_notifications">لا توجد إشعارات جديدة.</string>
+    <string name="mark_all_as_read">تحديد الكل كمقروء</string>
+    <string name="dismiss_all">تجاهل الكل</string>
+    <string name="inventory">المخزون</string>
+    <string name="purchases">المشتريات</string>
+    <string name="sales">المبيعات</string>
+    <string name="orders">الطلبات</string>
+    <string name="scanner">الماسح الضوئي</string>
+    <string name="expenses">المصاريف</string>
+    <string name="warehouse">المستودع</string>
+    <string name="create_order">إنشاء طلب</string>
+    <string name="order_status">حالة الطلب</string>
+    <string name="shipping_notification">إشعار الشحن</string>
+    <string name="products">المنتجات</string>
+    <string name="add_product">إضافة منتج</string>
+    <string name="product_return">إرجاع المنتج</string>
+    <string name="people">الأشخاص</string>
+    <string name="add_customer">إضافة عميل</string>
+    <string name="add_supplier">إضافة مورد</string>
+    <string name="view_orders">عرض الطلبات</string>
+    <string name="manage_stock">إدارة المخزون</string>
+    <string name="charts_area_coming_soon">منطقة المخططات - قريباً</string>
+    <string name="order_alerts">تنبيهات الطلبات</string>
+    <string name="low_stock_expiration"><![CDATA[المخزون المنخفض وانتهاء الصلاحية]]></string>
+    <string name="sales_statistics">إحصائيات المبيعات</string>
+    <string name="admin_balance">رصيد المسؤول</string>
+    <string name="expenses_services"><![CDATA[المصاريف والخدمات]]></string>
+    <string name="other_expenses">مصاريف أخرى</string>
+    <string name="customer_insights">رؤى العملاء</string>
+    <string name="system_health">صحة النظام</string>
+    <string name="upcoming_tasks">المهام القادمة</string>
+    <string name="general_reminders">تذكيرات عامة</string>
+    <string name="login">تسجيل الدخول</string>
+    <string name="email">البريد الإلكتروني</string>
+    <string name="password">كلمة المرور</string>
+    <string name="forgot_your_password">هل نسيت كلمة المرور؟</string>
+    <string name="register">تسجيل</string>
+</resources>

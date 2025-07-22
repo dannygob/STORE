@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Tienda</string>
+    <string name="store_dashboard">Tablero de la Tienda</string>
+    <string name="notifications">Notificaciones</string>
+    <string name="sign_out">Cerrar Sesión</string>
+    <string name="version">Versión 1.0</string>
+    <string name="loading_notifications">Cargando notificaciones…</string>
+    <string name="no_new_notifications">No hay notificaciones nuevas.</string>
+    <string name="mark_all_as_read">Marcar todo como leído</string>
+    <string name="dismiss_all">Descartar todo</string>
+    <string name="inventory">Inventario</string>
+    <string name="purchases">Compras</string>
+    <string name="sales">Ventas</string>
+    <string name="orders">Pedidos</string>
+    <string name="scanner">Escáner</string>
+    <string name="expenses">Gastos</string>
+    <string name="warehouse">Almacén</string>
+    <string name="create_order">Crear Pedido</string>
+    <string name="order_status">Estado del Pedido</string>
+    <string name="shipping_notification">Notificación de Envío</string>
+    <string name="products">Productos</string>
+    <string name="add_product">Añadir Producto</string>
+    <string name="product_return">Devolución de Producto</string>
+    <string name="people">Gente</string>
+    <string name="add_customer">Añadir Cliente</string>
+    <string name="add_supplier">Añadir Proveedor</string>
+    <string name="view_orders">Ver Pedidos</string>
+    <string name="manage_stock">Gestionar Stock</string>
+    <string name="charts_area_coming_soon">Área de Gráficos - Próximamente</string>
+    <string name="order_alerts">Alertas de Pedidos</string>
+    <string name="low_stock_expiration"><![CDATA[Stock Bajo y Caducidad]]></string>
+    <string name="sales_statistics">Estadísticas de Ventas</string>
+    <string name="admin_balance">Saldo del Administrador</string>
+    <string name="expenses_services"><![CDATA[Gastos y Servicios]]></string>
+    <string name="other_expenses">Otros Gastos</string>
+    <string name="customer_insights">Información del Cliente</string>
+    <string name="system_health">Salud del Sistema</string>
+    <string name="upcoming_tasks">Tareas Pendientes</string>
+    <string name="general_reminders">Recordatorios Generales</string>
+    <string name="login">Iniciar Sesión</string>
+    <string name="email">Correo Electrónico</string>
+    <string name="password">Contraseña</string>
+    <string name="forgot_your_password">¿Olvidaste tu contraseña?</string>
+    <string name="register">Registrarse</string>
+</resources>

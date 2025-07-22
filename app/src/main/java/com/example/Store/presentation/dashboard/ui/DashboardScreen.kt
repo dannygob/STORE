@@ -68,6 +68,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -75,6 +76,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.Store.R
 import com.example.Store.presentation.common.navigation.Route
 import com.example.Store.presentation.common.navigation.ScreenRoutes
 import com.example.Store.presentation.dashboard.DashboardViewModel
@@ -141,7 +143,7 @@ fun DashboardScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "Store Dashboard",
+                        stringResource(id = R.string.store_dashboard),
                         style = MaterialTheme.typography.headlineSmall
                     )
                 },
@@ -156,14 +158,14 @@ fun DashboardScreen(
                         IconButton(onClick = { showNotificationsPanel = !showNotificationsPanel }) {
                             Icon(
                                 imageVector = if (uiState.unreadNotificationCount > 0) Icons.Filled.Notifications else Icons.Outlined.NotificationsNone,
-                                contentDescription = "Notifications"
+                                contentDescription = stringResource(id = R.string.notifications)
                             )
                         }
                     }
                     IconButton(onClick = { viewModel.signOut() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.Logout,
-                            contentDescription = "Sign Out"
+                            contentDescription = stringResource(id = R.string.sign_out)
                         )
                     }
                 },
@@ -181,7 +183,7 @@ fun DashboardScreen(
                 // Move version to the right
                 Spacer(Modifier.weight(1f))
                 Text(
-                    text = "Version 1.0",
+                    text = stringResource(id = R.string.version),
                     modifier = Modifier.padding(horizontal = 16.dp),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
@@ -234,17 +236,17 @@ fun DashboardScreen(
                     ) {
                         if (uiState.isLoadingNotifications) {
                             DropdownMenuItem(
-                                text = { Text("Loading notifications...") },
+                                text = { Text(stringResource(id = R.string.loading_notifications)) },
                                 onClick = {}
                             )
                         } else if (uiState.notifications.isEmpty()) {
                             DropdownMenuItem(
-                                text = { Text("No new notifications.") },
+                                text = { Text(stringResource(id = R.string.no_new_notifications)) },
                                 onClick = {}
                             )
                         } else {
                             Text(
-                                "Notifications",
+                                stringResource(id = R.string.notifications),
                                 style = MaterialTheme.typography.titleSmall,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                             )
@@ -270,11 +272,11 @@ fun DashboardScreen(
                                         Row(verticalAlignment = Alignment.CenterVertically) {
                                             Icon(
                                                 Icons.Filled.DoneAll,
-                                                contentDescription = "Mark all read",
+                                                contentDescription = stringResource(id = R.string.mark_all_as_read),
                                                 modifier = Modifier.size(18.dp)
                                             )
                                             Spacer(modifier = Modifier.width(8.dp))
-                                            Text("Mark all as read")
+                                            Text(stringResource(id = R.string.mark_all_as_read))
                                         }
                                     },
                                     onClick = { viewModel.markAllAsRead() }
@@ -285,11 +287,11 @@ fun DashboardScreen(
                                     Row(verticalAlignment = Alignment.CenterVertically) {
                                         Icon(
                                             Icons.Filled.DeleteSweep,
-                                            contentDescription = "Dismiss all",
+                                            contentDescription = stringResource(id = R.string.dismiss_all),
                                             modifier = Modifier.size(18.dp)
                                         )
                                         Spacer(modifier = Modifier.width(8.dp))
-                                        Text("Dismiss all")
+                                        Text(stringResource(id = R.string.dismiss_all))
                                     }
                                 },
                                 onClick = { viewModel.dismissAllNotifications() }
@@ -754,47 +756,47 @@ private fun DropdownMenuComponent(
 }
 
 private fun getDashboardItems(context: Context) = listOf(
-    DashboardData("Order Alerts", listOf("Order #101 - Pending", "Order #102 - Payment Due")),
-    DashboardData("Low Stock & Expiration", listOf()),
+    DashboardData(context.getString(R.string.order_alerts), listOf("Order #101 - Pending", "Order #102 - Payment Due")),
+    DashboardData(context.getString(R.string.low_stock_expiration), listOf()),
     DashboardData(
-        "Sales Statistics",
+        context.getString(R.string.sales_statistics),
         listOf("Today's Sales: $1,234.56", "Top Product: Super Widget")
     ),
-    DashboardData("Admin Balance", listOf("Main Account: $15,000.00", "Pending: $1,200.00")),
-    DashboardData("Expenses & Services", listOf("Rent: Due in 5 days", "Electricity: Paid")),
-    DashboardData("Other Expenses", listOf("Maintenance: $300", "Supplies: $150")),
-    DashboardData("Customer Insights", listOf("New Customers: 5", "Top Spender: J. Doe")),
-    DashboardData("System Health", listOf("Backup: OK", "API Latency: 120ms")),
-    DashboardData("Upcoming Tasks", listOf("Call Supplier X", "Staff Meeting @ 3pm")),
-    DashboardData("General Reminders", listOf("Bank Holiday Monday", "Submit Tax Forms"))
+    DashboardData(context.getString(R.string.admin_balance), listOf("Main Account: $15,000.00", "Pending: $1,200.00")),
+    DashboardData(context.getString(R.string.expenses_services), listOf("Rent: Due in 5 days", "Electricity: Paid")),
+    DashboardData(context.getString(R.string.other_expenses), listOf("Maintenance: $300", "Supplies: $150")),
+    DashboardData(context.getString(R.string.customer_insights), listOf("New Customers: 5", "Top Spender: J. Doe")),
+    DashboardData(context.getString(R.string.system_health), listOf("Backup: OK", "API Latency: 120ms")),
+    DashboardData(context.getString(R.string.upcoming_tasks), listOf("Call Supplier X", "Staff Meeting @ 3pm")),
+    DashboardData(context.getString(R.string.general_reminders), listOf("Bank Holiday Monday", "Submit Tax Forms"))
 )
 
 private fun getMenuItems(context: Context, navController: NavController) = listOf(
-    MenuItem(Icons.Filled.Inventory, "Inventory") {
+    MenuItem(Icons.Filled.Inventory, context.getString(R.string.inventory)) {
         Toast.makeText(context, "Inventory clicked", Toast.LENGTH_SHORT).show()
         navController.navigate(ScreenRoutes.INVENTORY) {}
     },
-    MenuItem(Icons.Filled.ShoppingCart, "Purchases") {
+    MenuItem(Icons.Filled.ShoppingCart, context.getString(R.string.purchases)) {
         Toast.makeText(context, "Purchases clicked", Toast.LENGTH_SHORT).show()
         navController.navigate(ScreenRoutes.PURCHASES) {}
     },
-    MenuItem(Icons.Filled.Sell, "Sales") {
+    MenuItem(Icons.Filled.Sell, context.getString(R.string.sales)) {
         Toast.makeText(context, "Sales clicked", Toast.LENGTH_SHORT).show()
         navController.navigate(ScreenRoutes.SALES) {}
     },
-    MenuItem(Icons.Filled.LocalShipping, "Orders") {
+    MenuItem(Icons.Filled.LocalShipping, context.getString(R.string.orders)) {
         Toast.makeText(context, "Orders clicked", Toast.LENGTH_SHORT).show()
         navController.navigate(ScreenRoutes.ORDERS) {}
     },
-    MenuItem(Icons.Filled.QrCodeScanner, "Scanner") {
+    MenuItem(Icons.Filled.QrCodeScanner, context.getString(R.string.scanner)) {
         Toast.makeText(context, "Scanner clicked", Toast.LENGTH_SHORT).show()
         navController.navigate(ScreenRoutes.SCANNER) {}
     },
-    MenuItem(Icons.Filled.Payment, "Expenses") {
+    MenuItem(Icons.Filled.Payment, context.getString(R.string.expenses)) {
         Toast.makeText(context, "Expenses clicked", Toast.LENGTH_SHORT).show()
         navController.navigate(ScreenRoutes.EXPENSES) {}
     },
-    MenuItem(Icons.Filled.LocalShipping, "Warehouse") {
+    MenuItem(Icons.Filled.LocalShipping, context.getString(R.string.warehouse)) {
         Toast.makeText(context, "Warehouse clicked", Toast.LENGTH_SHORT).show()
         navController.navigate(Route.Warehouse.route) {}
     }
@@ -803,23 +805,36 @@ private fun getMenuItems(context: Context, navController: NavController) = listO
 private fun getDropdownSections(context: Context) = listOf(
     DropdownSection(
         Icons.Filled.LocalShipping,
-        "Orders",
-        listOf("Create Order", "Order Status", "Shipping Notification")
+        context.getString(R.string.orders),
+        listOf(
+            context.getString(R.string.create_order),
+            context.getString(R.string.order_status),
+            context.getString(R.string.shipping_notification)
+        )
     ),
     DropdownSection(
         Icons.Filled.Add,
-        "Products",
-        listOf("Add Product", "Product Return")
+        context.getString(R.string.products),
+        listOf(
+            context.getString(R.string.add_product),
+            context.getString(R.string.product_return)
+        )
     ),
     DropdownSection(
         Icons.Filled.Person,
-        "People",
-        listOf("Add Customer", "Add Supplier")
+        context.getString(R.string.people),
+        listOf(
+            context.getString(R.string.add_customer),
+            context.getString(R.string.add_supplier)
+        )
     ),
     DropdownSection(
         Icons.Filled.LocalShipping,
-        "Warehouse",
-        listOf("View Orders", "Manage Stock")
+        context.getString(R.string.warehouse),
+        listOf(
+            context.getString(R.string.view_orders),
+            context.getString(R.string.manage_stock)
+        )
     )
 )
 
@@ -841,7 +856,7 @@ private fun ChartsSectionPlaceholder(modifier: Modifier = Modifier) {
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "Charts Area - Coming Soon",
+                text = stringResource(id = R.string.charts_area_coming_soon),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
