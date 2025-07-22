@@ -342,7 +342,7 @@ fun ProductCard(
     ) {
         Column {
             Image(
-                painter = painterResource(id = R.drawable.placeholder_image_product),
+                painter = painterResource(id = R.drawable.ic_placeholder_image), // Placeholder image
                 contentDescription = product.name,
                 modifier = Modifier
                     .height(100.dp)

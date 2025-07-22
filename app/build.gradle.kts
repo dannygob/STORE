@@ -89,7 +89,6 @@ dependencies {
     implementation(libs.kotlinx.coroutines.play.services) // Or the latest version
 
 
-
     // Glance (App Widgets)
     implementation(libs.androidx.glance.appwidget)
 

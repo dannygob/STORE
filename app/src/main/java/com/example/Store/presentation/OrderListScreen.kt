@@ -1,4 +1,4 @@
-package com.example.store.presentation.orders.ui
+package com.example.Store.presentation
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
@@ -35,10 +35,10 @@ fun OrderListScreen(
                 ListItem(
                     headlineText = { Text("Order #${order.orderId}") },
                     supportingText = {
-                        Text("Customer: ${order.customerId} - Total: ${order.total}")
+                        Text("Customer: ${order.customerId} - Total: ${order.orderDate}")
                     },
                     trailingContent = {
-                        Text(dateFormatter.format(Date(order.date)))
+                        Text(dateFormatter.format(Date(order.orderDate)))
                     },
                     modifier = Modifier.clickable { onOrderClick(order.orderId) },
                     headlineContent = TODO(),

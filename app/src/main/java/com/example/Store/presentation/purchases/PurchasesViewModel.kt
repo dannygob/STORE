@@ -12,7 +12,13 @@ import kotlinx.coroutines.launch
 data class PurchasesUiState(
     val purchases: List<PurchaseItemUi> = emptyList(),
     val isLoading: Boolean = false,
-    val userMessage: String? = null
+    val userMessage: String? = null,
+    val inventory: List<PurchaseItemUi> = emptyList(),
+    val cart: List<PurchaseItemUi> = emptyList(), // Placeholder for cart items
+    val customerSearchQuery: String = "",
+    val newCustomerName: String = "",
+    val customers: List<String> = emptyList(),
+    val selectedCustomer: String? = null,
 )
 
 class PurchasesViewModel : ViewModel() {

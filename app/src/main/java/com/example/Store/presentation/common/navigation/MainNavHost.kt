@@ -18,6 +18,9 @@ import com.example.Store.presentation.purchases.ui.PurchasesScreen
 import com.example.Store.presentation.sales.ui.SalesScreen
 import com.example.Store.presentation.scanner.ui.ScannerScreen
 import com.example.Store.presentation.splash.ui.SplashScreen
+import com.example.Store.presentation.warehouse.OrderDetailScreen
+import com.example.Store.presentation.warehouse.ui.OrderPickingScreen
+import com.example.Store.presentation.warehouse.ui.WarehouseScreen
 
 sealed class Route(val route: String) {
     object Splash : Route("splash")

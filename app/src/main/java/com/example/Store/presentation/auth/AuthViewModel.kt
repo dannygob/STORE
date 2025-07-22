@@ -17,7 +17,7 @@ class AuthViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    val currentUser: StateFlow<FirebaseUser?> = authRepository.getAuthStateFlow()
+    val currentUser: StateFlow<FirebaseUser?> = authRepository.getAuthState()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),

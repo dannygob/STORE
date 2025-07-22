@@ -2,7 +2,9 @@ package com.example.Store.data.repository
 
 import com.example.Store.data.local.dao.*
 import com.example.Store.data.local.entity.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
 class AppRepositoryImpl(
     private val productDao: ProductDao,
@@ -84,13 +86,13 @@ class AppRepositoryImpl(
 
     // OrderItem methods
     override fun getOrderItemsForOrder(orderId: String): Flow<List<OrderItemEntity>> =
-        orderItemDao.getItemsForOrder(orderId)
+        orderItemDao.getOrderItemsForOrder(orderId)
 
     override suspend fun insertOrderItem(orderItem: OrderItemEntity) =
         orderItemDao.insertOrderItem(orderItem)
 
     override suspend fun insertAllOrderItems(orderItems: List<OrderItemEntity>) =
-        orderItemDao.insertAll(orderItems)
+        orderItemDao.insertAllOrderItems(orderItems)
 
     override suspend fun updateOrderItem(orderItem: OrderItemEntity) =
         orderItemDao.updateOrderItem(orderItem)
@@ -99,13 +101,13 @@ class AppRepositoryImpl(
         orderItemDao.deleteOrderItem(orderItem)
 
     override suspend fun deleteAllOrderItemsForOrder(orderId: String) =
-        orderItemDao.deleteAllForOrder(orderId)
+        orderItemDao.deleteAllOrderItemsForOrder(orderId)
 
     override fun getOrderWithOrderItems(orderId: String): Flow<OrderWithOrderItems?> =
-        orderItemDao.getOrderWithItems(orderId)
+        orderItemDao.getOrderWithOrderItems(orderId)
 
     override fun getAllOrdersWithOrderItems(): Flow<List<OrderWithOrderItems>> =
-        orderItemDao.getAllOrdersWithItems()
+        orderItemDao.getAllOrdersWithOrderItems()
 
     override suspend fun insertOrderWithItems(order: OrderEntity, items: List<OrderItemEntity>) {
         orderDao.insertOrderWithItems(order, items)
@@ -133,7 +135,7 @@ class AppRepositoryImpl(
     override suspend fun deleteWarehouse(warehouse: WarehouseEntity) =
         warehouseDao.deleteWarehouse(warehouse)
 
-    override suspend fun deleteAllWarehouses() = warehouseDao.deleteAll()
+    override suspend fun deleteAllWarehouses() = warehouseDao.deleteAllWarehouses()
 
     // Location
     override fun getAllLocations(): Flow<List<LocationEntity>> = locationDao.getAllLocations()
@@ -226,7 +228,7 @@ class AppRepositoryImpl(
         firestoreService.getProduct(productId)
 
     override suspend fun syncLocationToFirestore(location: LocationEntity): Result<Unit> =
-        firestoreService.syncLocation(location)
+        firestoreService.syncLocationToFirestore(location)
 
     override suspend fun syncProductLocationToFirestore(productLocation: ProductLocationEntity): Result<Unit> =
         firestoreService.syncProductLocation(productLocation)

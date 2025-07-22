@@ -1,26 +1,27 @@
 package com.example.Store.di
 
+import com.example.Store.data.local.dao.CustomerDao
+import com.example.Store.data.local.dao.LocationDao
+import com.example.Store.data.local.dao.OrderDao
+import com.example.Store.data.local.dao.OrderItemDao
+import com.example.Store.data.local.dao.PreferenceDao
+import com.example.Store.data.local.dao.ProductDao
+import com.example.Store.data.local.dao.ProductLocationDao
+import com.example.Store.data.local.dao.SupplierDao
+import com.example.Store.data.local.dao.WarehouseDao
 import com.example.Store.data.repository.AppRepository
 import com.example.Store.data.repository.AppRepositoryImpl
-import com.example.Store.data.repository.AuthRepositoryImpl
 import com.example.Store.data.repository.FirestoreService
-import com.example.Store.data.repository.FirestoreServiceImpl
-import com.example.Store.domain.repository.AuthRepository
-import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class RepositoryModule {
-
-    @Binds
-    @Singleton
-    abstract fun bindAuthRepository(
-        impl: AuthRepositoryImpl,
-    ): AuthRepository
+class RepositoryModule {
 
     @Provides
     @Singleton
@@ -51,10 +52,4 @@ abstract class RepositoryModule {
             externalScope,
         )
     }
-
-    @Binds
-    @Singleton
-    abstract fun bindFirestoreService(
-        impl: FirestoreServiceImpl,
-    ): FirestoreService
 }

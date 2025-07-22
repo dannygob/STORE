@@ -1,5 +1,6 @@
 package com.example.Store.presentation.warehouse
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
@@ -46,7 +47,7 @@ fun OrderDetailScreen(
                 ) {
                     Text("Order ID: ${order.orderId}", style = MaterialTheme.typography.titleLarge)
                     Text("Customer ID: ${order.customerId}")
-                    Text("Total: ${order.total}")
+                    Text("Total: ${order.totalAmount}")
 
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -64,8 +65,8 @@ fun OrderDetailScreen(
                     LazyColumn {
                         items(uiState.orderWithItems!!.orderItems) { item ->
                             ListItem(
-                                headlineText = { Text("Product ID: ${item.productId}") },
-                                supportingText = { Text("Quantity: ${item.quantity} | Price: ${item.unitPrice}") }
+                                headlineContent = { Text("Product ID: ${item.productId}") },
+                                supportingContent = { Text("Quantity: ${item.quantity} | Price: ${item.unitPrice}") }
                             )
                         }
                     }

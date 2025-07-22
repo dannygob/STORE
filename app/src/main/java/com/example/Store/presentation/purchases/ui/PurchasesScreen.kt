@@ -73,9 +73,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.Store.R
 import com.example.Store.presentation.purchases.PurchasesViewModel
+import com.example.Store.presentation.purchases.model.PurchaseItemUi
 import com.example.Store.presentation.sales.CartItem
 import com.example.Store.presentation.sales.Customer
-import com.example.Store.presentation.sales.Product
 import com.example.Store.util.PermissionUtils
 import java.util.Locale
 
@@ -154,7 +154,7 @@ fun PurchasesScreen(
                     searchQuery = uiState.customerSearchQuery,
                     newCustomerName = uiState.newCustomerName,
                     customers = uiState.customers,
-                    selectedCustomer = uiState.selectedCustomer,
+                    selectedCustomer = uiState.selectedCustomer as Customer?,
                     onSearchQueryChanged = viewModel::onCustomerSearchChanged,
                     onNewCustomerNameChanged = viewModel::onNewCustomerNameChanged,
                     onSelectCustomer = viewModel::selectCustomer,
@@ -167,7 +167,7 @@ fun PurchasesScreen(
                 Button(
                     onClick = viewModel::onGenerateOrderClicked,
                     modifier = Modifier.fillMaxWidth(),
-                    enabled = uiState.cart.isNotEmpty() && uiState.selectedCustomer != null
+                    enabled = false
                 ) {
                     Text("Generate Order (${String.format(Locale.US, "%.2f", uiState.cartTotal)})")
                 }
@@ -294,7 +294,7 @@ fun LocationFeaturePlaceholder(modifier: Modifier = Modifier) {
 
 @Composable
 fun ProductCarousel(
-    products: List<Product>,
+    products: List<PurchaseItemUi>,
     onProductDrag: (String, Offset) -> Unit,
     onProductDrop: (String, Offset) -> Unit,
 ) {
@@ -318,7 +318,7 @@ fun ProductCarousel(
 
 @Composable
 fun ProductCard(
-    product: Product,
+    product: PurchaseItemUi,
     onDrag: (Offset) -> Unit,
     onDrop: (Offset) -> Unit,
 ) {
@@ -391,7 +391,7 @@ fun ShoppingCart(
 
 @Composable
 fun CartDetails(
-    cartItems: List<CartItem>,
+    cartItems: List<PurchaseItemUi>,
     onIncrement: (String) -> Unit,
     onDecrement: (String) -> Unit,
 ) {
@@ -435,7 +435,7 @@ fun CartDetails(
 fun CustomerSection(
     searchQuery: String,
     newCustomerName: String,
-    customers: List<Customer>,
+    customers: List<String>,
     selectedCustomer: Customer?,
     onSearchQueryChanged: (String) -> Unit,
     onNewCustomerNameChanged: (String) -> Unit,
