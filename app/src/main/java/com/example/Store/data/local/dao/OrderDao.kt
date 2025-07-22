@@ -38,4 +38,8 @@ interface OrderDao {
 
     @Query("DELETE FROM orders")
     suspend fun deleteAllOrders()
+
+    @Transaction
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrderWithItems(order: OrderEntity, items: List<OrderItemEntity>)
 }

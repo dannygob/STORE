@@ -108,8 +108,7 @@ class AppRepositoryImpl(
         orderItemDao.getAllOrdersWithItems()
 
     override suspend fun insertOrderWithItems(order: OrderEntity, items: List<OrderItemEntity>) {
-        orderDao.insertOrder(order)
-        orderItemDao.insertAll(items)
+        orderDao.insertOrderWithItems(order, items)
     }
 
     // Preferences
