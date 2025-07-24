@@ -13,9 +13,7 @@ import com.example.Store.data.local.dao.OrderItemDao
 import com.example.Store.data.local.dao.PreferenceDao
 import com.example.Store.data.local.dao.ProductDao
 import com.example.Store.data.local.dao.ProductLocationDao
-import com.example.Store.data.local.dao.StockAtWarehouseDao
 import com.example.Store.data.local.dao.SupplierDao
-import com.example.Store.data.local.dao.WarehouseDao
 import com.example.Store.data.local.entity.CustomerEntity
 import com.example.Store.data.local.entity.LocationEntity
 import com.example.Store.data.local.entity.OrderEntity
@@ -25,7 +23,6 @@ import com.example.Store.data.local.entity.ProductEntity
 import com.example.Store.data.local.entity.ProductLocationEntity
 import com.example.Store.data.local.entity.StockAtWarehouseEntity
 import com.example.Store.data.local.entity.SupplierEntity
-import com.example.Store.data.local.entity.WarehouseEntity
 
 @Database(
     entities = [
@@ -35,7 +32,6 @@ import com.example.Store.data.local.entity.WarehouseEntity
         OrderEntity::class,
         OrderItemEntity::class,
         PreferenceEntity::class,
-        WarehouseEntity::class,
         LocationEntity::class,
         ProductLocationEntity::class,
         StockAtWarehouseEntity::class // ✅ Añadido para compatibilidad
@@ -52,12 +48,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun orderDao(): OrderDao
     abstract fun orderItemDao(): OrderItemDao
     abstract fun preferenceDao(): PreferenceDao
-    abstract fun warehouseDao(): WarehouseDao
     abstract fun locationDao(): LocationDao
     abstract fun productLocationDao(): ProductLocationDao
-
-    // ✅ Restaurado correctamente
-    abstract fun stockAtWarehouseDao(): StockAtWarehouseDao
 
     companion object {
         @Volatile

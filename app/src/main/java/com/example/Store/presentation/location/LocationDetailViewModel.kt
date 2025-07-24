@@ -3,7 +3,7 @@ package com.example.Store.presentation.location
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.Store.data.local.entity.LocationEntity
+import com.example.Store.domain.model.Location
 import com.example.Store.domain.usecase.location.CreateLocationUseCase
 import com.example.Store.domain.usecase.location.GetLocationByIdUseCase
 import com.example.Store.domain.usecase.location.UpdateLocationUseCase
@@ -11,22 +11,21 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
 
 data class LocationDetailUiState(
+    val location: Location? = null,
     val locationName: String = "",
     val address: String = "",
     val capacity: String = "",
     val notes: String = "",
     val isLoading: Boolean = false,
-    val isNewLocation: Boolean = true,
+    val isSaveSuccess: Boolean = false,
     val error: String? = null,
-    val isSaveSuccess: Boolean = false
+    val isNewLocation: Boolean = false
 )
 
 @HiltViewModel
@@ -37,66 +36,74 @@ class LocationDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val locationId: String? = savedStateHandle["locationId"]
+    private val locationId: String? = savedStateHandle.get<String>("locationId")
 
     private val _uiState = MutableStateFlow(LocationDetailUiState())
     val uiState: StateFlow<LocationDetailUiState> = _uiState.asStateFlow()
 
     init {
         if (locationId != null) {
-            _uiState.update { it.copy(isNewLocation = false, isLoading = true) }
-            viewModelScope.launch {
-                getLocationByIdUseCase(locationId).filterNotNull().first().let { location ->
-                    _uiState.update {
-                        it.copy(
-                            locationName = location.name,
-                            address = location.address ?: "",
-                            capacity = location.capacity?.toString() ?: "",
-                            notes = location.notes ?: "",
-                            isLoading = false
-                        )
-                    }
-                }
+            _uiState.value = _uiState.value.copy(isNewLocation = false)
+            loadLocation()
+        } else {
+            _uiState.value = _uiState.value.copy(isNewLocation = true)
+        }
+    }
+
+    private fun loadLocation() {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true)
+            val location = getLocationByIdUseCase(locationId!!).first()
+            if (location != null) {
+                _uiState.value = _uiState.value.copy(
+                    location = location,
+                    locationName = location.name,
+                    address = location.address ?: "",
+                    capacity = location.capacity?.toString() ?: "",
+                    notes = location.notes ?: "",
+                    isLoading = false
+                )
+            } else {
+                _uiState.value = _uiState.value.copy(error = "Location not found", isLoading = false)
             }
         }
     }
 
     fun onNameChange(name: String) {
-        _uiState.update { it.copy(locationName = name) }
+        _uiState.value = _uiState.value.copy(locationName = name)
     }
 
     fun onAddressChange(address: String) {
-        _uiState.update { it.copy(address = address) }
+        _uiState.value = _uiState.value.copy(address = address)
     }
 
     fun onCapacityChange(capacity: String) {
-        _uiState.update { it.copy(capacity = capacity) }
+        _uiState.value = _uiState.value.copy(capacity = capacity)
     }
 
     fun onNotesChange(notes: String) {
-        _uiState.update { it.copy(notes = notes) }
+        _uiState.value = _uiState.value.copy(notes = notes)
     }
 
     fun saveLocation() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
+            _uiState.value = _uiState.value.copy(isLoading = true)
             try {
-                val location = LocationEntity(
+                val location = Location(
                     locationId = locationId ?: UUID.randomUUID().toString(),
-                    name = uiState.value.locationName,
-                    address = uiState.value.address.takeIf { it.isNotBlank() },
-                    capacity = uiState.value.capacity.toDoubleOrNull(),
-                    notes = uiState.value.notes.takeIf { it.isNotBlank() }
+                    name = _uiState.value.locationName,
+                    address = _uiState.value.address,
+                    capacity = _uiState.value.capacity.toDoubleOrNull(),
+                    notes = _uiState.value.notes
                 )
-
-                if (uiState.value.isNewLocation) {
+                if (_uiState.value.isNewLocation) {
                     createLocationUseCase(location)
                 } else {
                     updateLocationUseCase(location)
                 }
-                _uiState.update { it.copy(isLoading = false, isSaveSuccess = true) }
+                _uiState.value = _uiState.value.copy(isSaveSuccess = true, isLoading = false)
             } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false, error = e.message) }
+                _uiState.value = _uiState.value.copy(error = e.message, isLoading = false)
             }
         }
     }

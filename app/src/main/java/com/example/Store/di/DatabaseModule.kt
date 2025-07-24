@@ -7,9 +7,9 @@ import com.example.Store.data.local.dao.OrderDao
 import com.example.Store.data.local.dao.OrderItemDao
 import com.example.Store.data.local.dao.PreferenceDao
 import com.example.Store.data.local.dao.ProductDao
-import com.example.Store.data.local.dao.StockAtWarehouseDao
+import com.example.Store.data.local.dao.LocationDao
+import com.example.Store.data.local.dao.ProductLocationDao
 import com.example.Store.data.local.dao.SupplierDao
-import com.example.Store.data.local.dao.WarehouseDao
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -68,14 +68,14 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideWarehouseDao(appDatabase: AppDatabase): WarehouseDao {
-        return appDatabase.warehouseDao()
+    fun provideLocationDao(appDatabase: AppDatabase): LocationDao {
+        return appDatabase.locationDao()
     }
 
     @Provides
     @Singleton
-    fun provideStockAtWarehouseDao(appDatabase: AppDatabase): StockAtWarehouseDao {
-        return appDatabase.stockAtWarehouseDao()
+    fun provideProductLocationDao(appDatabase: AppDatabase): ProductLocationDao {
+        return appDatabase.productLocationDao()
     }
 
     @Provides

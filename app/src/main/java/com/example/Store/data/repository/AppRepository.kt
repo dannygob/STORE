@@ -9,7 +9,6 @@ import com.example.Store.data.local.entity.OrderItemEntity
 import com.example.Store.data.local.entity.ProductEntity
 import com.example.Store.data.local.entity.ProductLocationEntity
 import com.example.Store.data.local.entity.SupplierEntity
-import com.example.Store.data.local.entity.WarehouseEntity
 import kotlinx.coroutines.flow.Flow
 
 interface AppRepository {
@@ -68,14 +67,6 @@ interface AppRepository {
     suspend fun savePreference(key: String, value: String)
     suspend fun deletePreference(key: String)
     suspend fun deleteAllPreferences()
-
-    // Warehouse Methods
-    fun getAllWarehouses(): Flow<List<WarehouseEntity>>
-    fun getWarehouseById(warehouseId: String): Flow<WarehouseEntity?>
-    suspend fun insertWarehouse(warehouse: WarehouseEntity)
-    suspend fun updateWarehouse(warehouse: WarehouseEntity)
-    suspend fun deleteWarehouse(warehouse: WarehouseEntity)
-    suspend fun deleteAllWarehouses()
 
     // Location Methods
     fun getAllLocations(): Flow<List<LocationEntity>>

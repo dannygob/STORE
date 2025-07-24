@@ -8,7 +8,6 @@ import com.example.Store.data.local.dao.PreferenceDao
 import com.example.Store.data.local.dao.ProductDao
 import com.example.Store.data.local.dao.ProductLocationDao
 import com.example.Store.data.local.dao.SupplierDao
-import com.example.Store.data.local.dao.WarehouseDao
 import com.example.Store.data.repository.AppRepository
 import com.example.Store.data.repository.AppRepositoryImpl
 import com.example.Store.data.repository.FirestoreService
@@ -31,7 +30,6 @@ class RepositoryModule {
         supplierDao: SupplierDao,
         orderDao: OrderDao,
         orderItemDao: OrderItemDao,
-        warehouseDao: WarehouseDao,
         locationDao: LocationDao,
         productLocationDao: ProductLocationDao,
         preferenceDao: PreferenceDao,
@@ -44,7 +42,6 @@ class RepositoryModule {
             supplierDao,
             orderDao,
             orderItemDao,
-            warehouseDao,
             locationDao,
             productLocationDao,
             preferenceDao,

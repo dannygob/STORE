@@ -3,6 +3,7 @@ package com.example.Store.presentation.location
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.Store.domain.model.Location
 import com.example.Store.domain.usecase.location.GetLocationsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,7 +16,7 @@ class LocationListViewModel @Inject constructor(
     getLocationsUseCase: GetLocationsUseCase
 ) : ViewModel() {
 
-    val locations: StateFlow<ERROR> = getLocationsUseCase()
+    val locations: StateFlow<List<Location>> = getLocationsUseCase()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
