@@ -4,11 +4,10 @@ import android.util.Log
 import com.example.Store.domain.model.LoginResult
 import com.example.Store.domain.model.UserRole
 import com.example.Store.domain.repository.AuthRepository
-import com.example.Store.util.NetworkChecker
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.catch
@@ -16,79 +15,46 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
-    private val networkChecker: NetworkChecker,
+    private val auth: FirebaseAuth,
+    private val firestore: FirebaseFirestore
 ) : AuthRepository {
 
-    private val users = mutableMapOf(
-        "admin@store.com" to Pair("admin123", UserRole.ADMIN),
-        "user@store.com" to Pair("user123", UserRole.USER)
-    )
-
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-
     override suspend fun login(email: String, password: String): Result<LoginResult> {
-        delay(1000)
+        return try {
+            val authResult = auth.signInWithEmailAndPassword(email, password).await()
+            val user = authResult.user ?: throw Exception("User not found in Firebase")
 
-        return if (networkChecker.isConnected()) {
-            try {
-                val authResult = auth.signInWithEmailAndPassword(email, password).await()
-                authResult.user ?: throw Exception("Usuario no encontrado en Firebase")
-                val isAdmin = email.contains("admin", ignoreCase = true)
-                val role = if (isAdmin) UserRole.ADMIN else UserRole.USER
-                Result.success(LoginResult(role))
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
-        } else {
-            val stored = users[email]
-            when {
-                stored == null -> Result.failure(Exception("Usuario no encontrado (sin conexión)"))
-                stored.first != password -> Result.failure(Exception("Contraseña incorrecta"))
-                else -> Result.success(LoginResult(stored.second))
-            }
+            val document = firestore.collection("users").document(user.uid).get().await()
+            val roleString = document.getString("role") ?: UserRole.USER.name
+            val role = UserRole.valueOf(roleString)
+
+            Result.success(LoginResult(role))
+        } catch (e: Exception) {
+            Log.e("AuthRepository", "Login failed", e)
+            Result.failure(e)
         }
     }
 
     override suspend fun register(email: String, password: String, role: UserRole): Result<Unit> {
-        delay(500)
+        return try {
+            val authResult = auth.createUserWithEmailAndPassword(email, password).await()
+            val user = authResult.user ?: throw Exception("User not created in Firebase")
 
-        return if (networkChecker.isConnected()) {
-            try {
-                auth.createUserWithEmailAndPassword(email, password).await()
-                Result.success(Unit)
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
-        } else {
-            if (users.containsKey(email)) {
-                Result.failure(Exception("El usuario ya está registrado (sin conexión)"))
-            } else {
-                users[email] = Pair(password, role)
-                Result.success(Unit)
-            }
+            firestore.collection("users").document(user.uid).set(mapOf("role" to role.name)).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e("AuthRepository", "Registration failed", e)
+            Result.failure(e)
         }
     }
 
     override suspend fun recoverPassword(email: String): Result<Unit> {
-        delay(500)
-
-        return if (networkChecker.isConnected()) {
-            try {
-                auth.sendPasswordResetEmail(email).await()
-                Result.success(Unit)
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
-        } else {
-            if (users.containsKey(email)) {
-                Log.d(
-                    "AuthRepository",
-                    "🔐 Enviando recuperación a $email (modo sin conexión simulado)"
-                )
-                Result.success(Unit)
-            } else {
-                Result.failure(Exception("Correo electrónico no encontrado"))
-            }
+        return try {
+            auth.sendPasswordResetEmail(email).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e("AuthRepository", "Password recovery failed", e)
+            Result.failure(e)
         }
     }
 

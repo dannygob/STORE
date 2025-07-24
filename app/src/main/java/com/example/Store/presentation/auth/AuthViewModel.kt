@@ -21,14 +21,14 @@ class AuthViewModel @Inject constructor(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = null // Or try to get initial user synchronously if possible, though Firebase usually recommends listeners
+            initialValue = null
         )
 
     val isAuthenticated: StateFlow<Boolean> = currentUser.map { it != null }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = false // Assuming not authenticated initially
+            initialValue = false
         )
 
     suspend fun signOut() {
