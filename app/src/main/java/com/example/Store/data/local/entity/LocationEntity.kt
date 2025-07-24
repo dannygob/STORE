@@ -3,6 +3,7 @@ package com.example.Store.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.Store.domain.model.Location
 import java.util.UUID
 
 @Entity(tableName = "locations") // Renamed table
@@ -13,4 +14,12 @@ data class LocationEntity( // Renamed class
     // Capacity and notes are generic enough to remain
     val capacity: Double?,
     val notes: String? = null
-)
+) {
+    fun toDomainModel() = Location(
+        locationId = locationId,
+        name = name,
+        address = address,
+        capacity = capacity,
+        notes = notes
+    )
+}
