@@ -1,7 +1,9 @@
 package com.example.Store.domain.usecase.inventory
 
-import com.example.Store.domain.model.PickListItem
+import com.example.Store.data.local.entity.ProductLocationEntity
 import com.example.Store.data.repository.AppRepository
+import com.example.Store.domain.model.PickListItem
+import com.example.Store.domain.model.ProductLocation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -10,7 +12,7 @@ import javax.inject.Inject
 class GeneratePickListUseCase @Inject constructor(
     private val appRepository: AppRepository
 ) {
-    suspend operator fun invoke(orderId: String): Flow<List<PickListItem>> = flow {
+    operator fun invoke(orderId: String): Flow<List<PickListItem>> = flow {
         val orderWithItems = appRepository.getOrderWithOrderItems(orderId).first()
         if (orderWithItems == null) {
             emit(emptyList())
@@ -30,4 +32,16 @@ class GeneratePickListUseCase @Inject constructor(
         }
         emit(pickListItems)
     }
+}
+
+fun ProductLocationEntity.toDomainModel(): ProductLocation {
+    return ProductLocation(
+        productLocationId = this.productLocationId,
+        productId = this.productId,
+        locationId = this.locationId,
+        quantity = this.quantity ?: 0,
+        aisle = TODO(),
+        shelf = TODO(),
+        level = TODO()
+    )
 }

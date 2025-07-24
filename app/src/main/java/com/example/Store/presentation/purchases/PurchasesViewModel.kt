@@ -19,7 +19,12 @@ data class PurchasesUiState(
     val newCustomerName: String = "",
     val customers: List<String> = emptyList(),
     val selectedCustomer: String? = null,
-)
+    val onCustomerSearchChanged: (String) -> Unit = {},
+    val onNewCustomerNameChanged: (String) -> Unit = {},
+    val registerNewCostumer: List<String> = emptyList(),
+
+
+    )
 
 class PurchasesViewModel : ViewModel() {
 

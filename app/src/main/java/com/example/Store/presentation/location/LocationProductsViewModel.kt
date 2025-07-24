@@ -5,7 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.Store.data.local.entity.LocationEntity
-import com.example.Store.data.local.entity.ProductLocationEntity
+import com.example.Store.domain.model.ProductLocation
 import com.example.Store.domain.usecase.location.GetLocationByIdUseCase
 import com.example.Store.domain.usecase.productlocation.GetProductsAtLocationUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,8 +19,8 @@ import javax.inject.Inject
 
 data class LocationProductsUiState(
     val location: LocationEntity? = null,
-    val products: List<ProductLocationEntity> = emptyList(),
-    val isLoading: Boolean = false
+    val products: List<ProductLocation> = emptyList(),
+    val isLoading: Boolean = false,
 )
 
 @HiltViewModel
@@ -40,7 +40,7 @@ class LocationProductsViewModel @Inject constructor(
         val productsFlow = getProductsAtLocationUseCase(locationId)
 
         combine(locationFlow, productsFlow) { location, products ->
-            LocationProductsUiState(location = location, products = products)
+            LocationProductsUiState(location = location as LocationEntity?, products = products)
         }.onEach { newState ->
             _uiState.value = newState
         }.launchIn(viewModelScope)

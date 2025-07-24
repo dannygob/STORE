@@ -4,14 +4,14 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.Store.data.local.entity.PreferenceEntity
+import com.example.Store.data.local.entity.UserPreferenceEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PreferenceDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun save(preference: PreferenceEntity)
+    suspend fun save(preference: UserPreferenceEntity)
 
     @Query("SELECT value FROM user_preferences WHERE `key` = :key")
     fun get(key: String): Flow<String?>

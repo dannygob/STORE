@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.google.services)
     alias(libs.plugins.kotlin.compose)
+    id("kotlin-parcelize")
     id("com.google.dagger.hilt.android")
 }
 
