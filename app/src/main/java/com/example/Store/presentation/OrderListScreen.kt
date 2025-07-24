@@ -33,21 +33,14 @@ fun OrderListScreen(
         LazyColumn(modifier = Modifier.padding(paddingValues)) {
             items(orders) { order ->
                 ListItem(
-                    headlineText = { Text("Order #${order.orderId}") },
-                    supportingText = {
-                        Text("Customer: ${order.customerId} - Total: ${order.orderDate}")
+                    headlineContent = { Text("Order #${order.orderId}") },
+                    supportingContent = {
+                        Text("Customer: ${order.customerId} - Total: ${order.totalAmount}")
                     },
                     trailingContent = {
                         Text(dateFormatter.format(Date(order.orderDate)))
                     },
-                    modifier = Modifier.clickable { onOrderClick(order.orderId) },
-                    headlineContent = TODO(),
-                    overlineContent = TODO(),
-                    supportingContent = TODO(),
-                    leadingContent = TODO(),
-                    colors = TODO(),
-                    tonalElevation = TODO(),
-                    shadowElevation = TODO()
+                    modifier = Modifier.clickable { onOrderClick(order.orderId) }
                 )
             }
         }
