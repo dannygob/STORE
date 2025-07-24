@@ -4,7 +4,7 @@ package com.example.Store.presentation.location
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.Store.data.local.entity.LocationEntity
+import com.example.Store.domain.model.Location
 import com.example.Store.domain.model.ProductLocation
 import com.example.Store.domain.usecase.location.GetLocationByIdUseCase
 import com.example.Store.domain.usecase.productlocation.GetProductsAtLocationUseCase
@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 data class LocationProductsUiState(
-    val location: LocationEntity? = null,
+    val location: Location? = null,
     val products: List<ProductLocation> = emptyList(),
     val isLoading: Boolean = false,
 )
@@ -40,7 +40,7 @@ class LocationProductsViewModel @Inject constructor(
         val productsFlow = getProductsAtLocationUseCase(locationId)
 
         combine(locationFlow, productsFlow) { location, products ->
-            LocationProductsUiState(location = location as LocationEntity?, products = products)
+            LocationProductsUiState(location = location, products = products)
         }.onEach { newState ->
             _uiState.value = newState
         }.launchIn(viewModelScope)

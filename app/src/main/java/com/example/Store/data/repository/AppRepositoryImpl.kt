@@ -12,7 +12,6 @@ class AppRepositoryImpl(
     private val supplierDao: SupplierDao,
     private val orderDao: OrderDao,
     private val orderItemDao: OrderItemDao,
-    private val warehouseDao: WarehouseDao,
     private val locationDao: LocationDao,
     private val productLocationDao: ProductLocationDao,
     private val preferenceDao: PreferenceDao,
@@ -120,22 +119,6 @@ class AppRepositoryImpl(
 
     override suspend fun deletePreference(key: String) = preferenceDao.delete(key)
     override suspend fun deleteAllPreferences() = preferenceDao.clearAll()
-
-    // Warehouse
-    override fun getAllWarehouses(): Flow<List<WarehouseEntity>> = warehouseDao.getAllWarehouses()
-    override fun getWarehouseById(warehouseId: String): Flow<WarehouseEntity?> =
-        warehouseDao.getWarehouseById(warehouseId)
-
-    override suspend fun insertWarehouse(warehouse: WarehouseEntity) =
-        warehouseDao.insertWarehouse(warehouse)
-
-    override suspend fun updateWarehouse(warehouse: WarehouseEntity) =
-        warehouseDao.updateWarehouse(warehouse)
-
-    override suspend fun deleteWarehouse(warehouse: WarehouseEntity) =
-        warehouseDao.deleteWarehouse(warehouse)
-
-    override suspend fun deleteAllWarehouses() = warehouseDao.deleteAllWarehouses()
 
     // Location
     override fun getAllLocations(): Flow<List<LocationEntity>> = locationDao.getAllLocations()
