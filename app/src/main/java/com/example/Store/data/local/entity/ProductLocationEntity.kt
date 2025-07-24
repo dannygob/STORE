@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.example.Store.domain.model.ProductLocation
 
 @Entity(
     tableName = "product_locations",
@@ -52,4 +53,14 @@ data class ProductLocationEntity(
             ).joinToString("_")
         }
     }
+
+    fun toDomainModel() = ProductLocation(
+        productLocationId = productLocationId,
+        productId = productId,
+        locationId = locationId,
+        quantity = quantity,
+        aisle = aisle,
+        shelf = shelf,
+        level = level
+    )
 }
