@@ -6,6 +6,11 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("kotlin-parcelize")
     id("com.google.dagger.hilt.android")
+    alias(libs.plugins.room)
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 android {
@@ -21,6 +26,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
+
     }
 
     buildTypes {
@@ -84,11 +90,14 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.runtime.android)
     ksp(libs.androidx.room.compiler) // ✅ Usar KSP, no kapt
+
+    // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler) // Use ksp instead of kapt for annotation processing
     implementation(libs.androidx.hilt.navigation.compose) // For Hilt and Navigation Compose integration
-    implementation(libs.kotlinx.coroutines.play.services) // Or the latest version
 
+    // Coroutines
+    implementation(libs.kotlinx.coroutines.play.services)
 
     // Glance (App Widgets)
     implementation(libs.androidx.glance.appwidget)
@@ -97,20 +106,16 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.firestore.ktx)
-//    implementation(libs.firebase.auth.ktx.v2230)
-    implementation(libs.kotlinx.coroutines.play.services)
 
     // Tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+
+    // Debug Tools (Compose)
     debugImplementation(libs.androidx.compose.ui.tooling)
-    androidTestImplementation(libs.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+
     implementation(libs.kotlin.stdlib)
-
-
 }

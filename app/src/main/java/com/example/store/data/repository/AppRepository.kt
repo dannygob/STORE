@@ -1,11 +1,11 @@
 package com.example.store.data.repository
 
 
-import com.example.store.data.local.dao.OrderItemEntity
-import com.example.store.data.local.dao.OrderWithOrderItems
 import com.example.store.data.local.entity.CustomerEntity
 import com.example.store.data.local.entity.LocationEntity
 import com.example.store.data.local.entity.OrderEntity
+import com.example.store.data.local.entity.OrderItemEntity
+import com.example.store.data.local.entity.OrderWithOrderItems
 import com.example.store.data.local.entity.ProductEntity
 import com.example.store.data.local.entity.ProductLocationEntity
 import com.example.store.data.local.entity.SupplierEntity

@@ -1,7 +1,22 @@
 package com.example.store.data.repository
 
-import com.example.store.data.local.dao.*
-import com.example.store.data.local.entity.*
+import com.example.store.data.local.dao.CustomerDao
+import com.example.store.data.local.dao.LocationDao
+import com.example.store.data.local.dao.OrderDao
+import com.example.store.data.local.dao.OrderItemDao
+import com.example.store.data.local.dao.PreferenceDao
+import com.example.store.data.local.dao.ProductDao
+import com.example.store.data.local.dao.ProductLocationDao
+import com.example.store.data.local.dao.SupplierDao
+import com.example.store.data.local.entity.CustomerEntity
+import com.example.store.data.local.entity.LocationEntity
+import com.example.store.data.local.entity.OrderEntity
+import com.example.store.data.local.entity.OrderItemEntity
+import com.example.store.data.local.entity.OrderWithOrderItems
+import com.example.store.data.local.entity.ProductEntity
+import com.example.store.data.local.entity.ProductLocationEntity
+import com.example.store.data.local.entity.SupplierEntity
+import com.example.store.data.local.entity.UserPreferenceEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -168,7 +183,7 @@ class AppRepositoryImpl(
         val existing =
             productLocationDao.findProductLocation(productId, locationId, aisle, shelf, level)
         if (existing != null) {
-            val updatedQuantity = (existing.quantity ?: 0) + amount
+            val updatedQuantity = existing.quantity + amount
             productLocationDao.updateQuantityForProductLocation(
                 existing.productLocationId,
                 updatedQuantity

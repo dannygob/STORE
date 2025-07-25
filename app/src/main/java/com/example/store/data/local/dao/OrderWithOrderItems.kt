@@ -10,6 +10,7 @@ import androidx.room.Relation
 import androidx.room.Transaction
 import androidx.room.Update
 import com.example.store.data.local.entity.OrderEntity
+import com.example.store.data.local.entity.OrderItemEntity
 import kotlinx.coroutines.flow.Flow
 
 // POKO for representing an Order with its associated OrderItems
