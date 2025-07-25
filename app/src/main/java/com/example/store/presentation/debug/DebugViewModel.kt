@@ -2,17 +2,19 @@ package com.example.store.presentation.debug
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.store.data.local.dao.OrderItemEntity
 import com.example.store.data.local.entity.CustomerEntity
+import com.example.store.data.local.entity.LocationEntity
 import com.example.store.data.local.entity.OrderEntity
+import com.example.store.data.local.entity.OrderItemEntity
 import com.example.store.data.local.entity.ProductEntity
-import com.example.store.data.local.entity.StockAtWarehouseEntity
+import com.example.store.data.local.entity.ProductLocationEntity
 import com.example.store.data.local.entity.SupplierEntity
 import com.example.store.data.repository.AppRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,8 +31,8 @@ class DebugViewModel @Inject constructor(
         testCoreDatabaseOperations()
         testOrderOperations()
         testUserPreferenceOperations()
-        testWarehouseOperations()
-        testStockAtWarehouseOperations()
+        testLocationOperations()
+        testProductLocationOperations()
     }
 
     private fun addMessage(message: String) {
@@ -111,60 +113,61 @@ class DebugViewModel @Inject constructor(
         }
     }
 
-    fun testWarehouseOperations() {
+    fun testLocationOperations() {
         viewModelScope.launch {
-            addMessage("Starting warehouse database operations...")
+            addMessage("Starting location database operations...")
 
-            appRepository.deleteAllWarehouses()
-            addMessage("Deleted all existing warehouses.")
+            appRepository.deleteAllLocations()
+            addMessage("Deleted all existing locations.")
 
-            val warehouse1 = com.example.store.data.local.entity.WarehouseEntity(
+            val location1 = LocationEntity(
                 name = "Main Warehouse",
                 address = "123 Storage Rd",
-                capacity = 1000.0,
-                notes = "Primary facility"
+                notes = "Primary facility",
+                locationId = TODO(),
+                capacity = TODO()
             )
-            appRepository.insertWarehouse(warehouse1)
-            addMessage("Inserted Warehouse: Name='${warehouse1.name}', ID='${warehouse1.warehouseId}', Notes='${warehouse1.notes}'")
+            appRepository.insertLocation(location1)
+            addMessage("Inserted Location: Name='${location1.name}', ID='${location1.locationId}', Notes='${location1.notes}'")
 
-            appRepository.getWarehouseById(warehouse1.warehouseId).collect { fetchedWarehouse ->
-                if (fetchedWarehouse != null) {
-                    addMessage("Fetched Warehouse by ID: Name='${fetchedWarehouse.name}', Address='${fetchedWarehouse.address}', Notes='${fetchedWarehouse.notes}'")
+            appRepository.getLocationById(location1.locationId).collect { fetchedLocation ->
+                if (fetchedLocation != null) {
+                    addMessage("Fetched Location by ID: Name='${fetchedLocation.name}', Address='${fetchedLocation.address}', Notes='${fetchedLocation.notes}'")
                 } else {
-                    addMessage("Warehouse with ID '${warehouse1.warehouseId}' not found after insert.")
+                    addMessage("Location with ID '${location1.locationId}' not found after insert.")
                 }
             }
 
-            val warehouse2 = com.example.store.data.local.entity.WarehouseEntity(
+            val location2 = LocationEntity(
                 name = "North Depot",
                 address = "456 Distribution Ave",
-                capacity = 500.0,
-                notes = null
+                notes = null,
+                locationId = TODO(),
+                capacity = TODO()
             )
-            appRepository.insertWarehouse(warehouse2)
-            addMessage("Inserted Warehouse: Name='${warehouse2.name}', ID='${warehouse2.warehouseId}', Notes='${warehouse2.notes}'")
+            appRepository.insertLocation(location2)
+            addMessage("Inserted Location: Name='${location2.name}', ID='${location2.locationId}', Notes='${location2.notes}'")
 
-            appRepository.getAllWarehouses().collect { warehouses ->
-                addMessage("Fetched All Warehouses (${warehouses.size}):")
-                warehouses.forEach { wh ->
-                    addMessage("  - ID='${wh.warehouseId}', Name='${wh.name}', Address='${wh.address}', Notes='${wh.notes}'")
+            appRepository.getAllLocations().collect { locations ->
+                addMessage("Fetched All Locations (${locations.size}):")
+                locations.forEach { loc ->
+                    addMessage("  - ID='${loc.locationId}', Name='${loc.name}', Address='${loc.address}', Notes='${loc.notes}'")
                 }
             }
         }
     }
 
-    fun testStockAtWarehouseOperations() {
+    fun testProductLocationOperations() {
         viewModelScope.launch {
-            addMessage("Starting StockAtWarehouse operations...")
+            addMessage("Starting ProductLocation operations...")
 
             var testProductId: String? = null
-            var testWarehouseId: String? = null
+            var testLocationId: String? = null
 
-            appRepository.getAllProducts().collect { products ->
-                if (products.isNotEmpty()) {
-                    testProductId = products.first().id
-                    addMessage("Using Product ID for stock test: $testProductId (${products.first().name})")
-                }
+            val products = appRepository.getAllProducts().first()
+            if (products.isNotEmpty()) {
+                testProductId = products.first().id
+                addMessage("Using Product ID for stock test: $testProductId (${products.first().name})")
             }
             if (testProductId == null) {
                 val newProd = ProductEntity(
@@ -181,108 +184,101 @@ class DebugViewModel @Inject constructor(
                 addMessage("Created Product ID for stock test: $testProductId")
             }
 
-            appRepository.getAllWarehouses().collect { warehouses ->
-                if (warehouses.isNotEmpty()) {
-                    testWarehouseId = warehouses.first().warehouseId
-                    addMessage("Using Warehouse ID for stock test: $testWarehouseId (${warehouses.first().name})")
-                }
+            val locations = appRepository.getAllLocations().first()
+            if (locations.isNotEmpty()) {
+                testLocationId = locations.first().locationId
+                addMessage("Using Location ID for stock test: $testLocationId (${locations.first().name})")
             }
-            if (testWarehouseId == null) {
-                 val newWh =
-                     com.example.store.data.local.entity.WarehouseEntity(
-                         name = "Stock Test Warehouse",
-                         address = "Test Address",
-                         capacity = 100.0,
-                         notes = "Test Notes"
-                     )
-                appRepository.insertWarehouse(newWh)
-                testWarehouseId = newWh.warehouseId
-                addMessage("Created Warehouse ID for stock test: $testWarehouseId")
+            if (testLocationId == null) {
+                val newLoc =
+                    LocationEntity(
+                        name = "Stock Test Location",
+                        address = "Test Address",
+                        notes = "Test Notes",
+                        locationId = TODO(),
+                        capacity = TODO()
+                    )
+                appRepository.insertLocation(newLoc)
+                testLocationId = newLoc.locationId
+                addMessage("Created Location ID for stock test: $testLocationId")
             }
 
             // 1. Insert Stock
-            val initialStock = StockAtWarehouseEntity(
+            val initialStock = ProductLocationEntity(
                 productId = testProductId,
-                warehouseId = testWarehouseId,
-                quantity = 100
+                locationId = testLocationId,
+                quantity = 100,
+                productLocationId = TODO(),
+                aisle = TODO(),
+                shelf = TODO(),
+                level = TODO()
             )
-            appRepository.insertStockAtWarehouse(initialStock)
-            addMessage("Inserted initial stock for ProdID $testProductId in WhID $testWarehouseId: Qty ${initialStock.quantity}")
+            appRepository.insertProductLocation(initialStock)
+            addMessage("Inserted initial stock for ProdID $testProductId in LocID $testLocationId: Qty ${initialStock.quantity}")
 
             // 2. Fetch specific stock record
-            appRepository.getStockForProductInWarehouse(
-                testProductId,
-                testWarehouseId
-            ).collect { stock ->
-                addMessage("Fetched stock for ProdID $testProductId in WhID $testWarehouseId: Qty ${stock?.quantity ?: "Not found"}")
+            appRepository.getLocationsForProduct(testProductId).collect { stock ->
+                addMessage("Fetched stock for ProdID $testProductId in LocID $testLocationId: Qty ${stock.firstOrNull()?.quantity ?: "Not found"}")
             }
 
             // 3. Update Stock
             val updatedStock = initialStock.copy(quantity = 150)
-            appRepository.updateStockAtWarehouse(updatedStock)
-            addMessage("Updated stock for ProdID $testProductId in WhID $testWarehouseId to Qty ${updatedStock.quantity}")
-            appRepository.getStockForProductInWarehouse(
-                testProductId,
-                testWarehouseId
-            ).collect { stock ->
-                 addMessage("Fetched updated stock: Qty ${stock?.quantity ?: "Not found"}")
+            appRepository.updateProductLocation(updatedStock)
+            addMessage("Updated stock for ProdID $testProductId in LocID $testLocationId to Qty ${updatedStock.quantity}")
+            appRepository.getLocationsForProduct(testProductId).collect { stock ->
+                addMessage("Fetched updated stock: Qty ${stock.firstOrNull()?.quantity ?: "Not found"}")
             }
 
-            // 4. Add stock for the same product in a new warehouse to test total quantity
-            val warehouse2 =
-                com.example.store.data.local.entity.WarehouseEntity(
+            // 4. Add stock for the same product in a new location to test total quantity
+            val location2 =
+                LocationEntity(
                     name = "Secondary Stock WH",
                     address = "Test Address 2",
-                    capacity = 200.0,
-                    notes = "Test Notes 2"
+                    notes = "Test Notes 2",
+                    locationId = TODO(),
+                    capacity = TODO()
                 )
-            appRepository.insertWarehouse(warehouse2)
-            addMessage("Inserted warehouse ${warehouse2.name} for multi-stock test.")
-            val stockInWh2 = StockAtWarehouseEntity(
+            appRepository.insertLocation(location2)
+            addMessage("Inserted location ${location2.name} for multi-stock test.")
+            val stockInLoc2 = ProductLocationEntity(
                 productId = testProductId,
-                warehouseId = warehouse2.warehouseId,
-                quantity = 75
+                locationId = location2.locationId,
+                quantity = 75,
+                productLocationId = TODO(),
+                aisle = TODO(),
+                shelf = TODO(),
+                level = TODO()
             )
-            appRepository.insertStockAtWarehouse(stockInWh2)
-            addMessage("Inserted stock for ProdID $testProductId in WhID ${warehouse2.warehouseId}: Qty ${stockInWh2.quantity}")
+            appRepository.insertProductLocation(stockInLoc2)
+            addMessage("Inserted stock for ProdID $testProductId in LocID ${location2.locationId}: Qty ${stockInLoc2.quantity}")
 
 
             // 5. Get all stock for the product
-            appRepository.getAllStockForProduct(testProductId).collect { stocks ->
+            appRepository.getLocationsForProduct(testProductId).collect { stocks ->
                 addMessage("All stock locations for ProdID $testProductId (${stocks.size}):")
-                stocks.forEach { s -> addMessage("  WhID ${s.warehouseId}: Qty ${s.quantity}") }
+                stocks.forEach { s -> addMessage("  LocID ${s.locationId}: Qty ${s.quantity}") }
             }
 
-            // 6. Get all stock in a warehouse
-            appRepository.getAllStockInWarehouse(testWarehouseId).collect { stocks ->
-                addMessage("All stock in WhID $testWarehouseId (${stocks.size}):")
+            // 6. Get all stock in a location
+            appRepository.getProductsAtLocation(testLocationId).collect { stocks ->
+                addMessage("All stock in LocID $testLocationId (${stocks.size}):")
                 stocks.forEach { s -> addMessage("  ProdID ${s.productId}: Qty ${s.quantity}") }
             }
 
             // 7. Get total stock quantity for the product
-            appRepository.getTotalStockQuantityForProduct(testProductId).collect { totalQty ->
-                addMessage("Total stock quantity for ProdID $testProductId across all warehouses: ${totalQty ?: 0}")
+            appRepository.getTotalStockForProduct(testProductId).collect { totalQty ->
+                addMessage("Total stock quantity for ProdID $testProductId across all locations: ${totalQty ?: 0}")
             }
 
             // 8. Delete a specific stock record
-            appRepository.deleteStockAtWarehouse(updatedStock) // Delete the stock from the first warehouse
-            addMessage("Deleted stock for ProdID $testProductId from WhID $testWarehouseId.")
-            appRepository.getStockForProductInWarehouse(
-                testProductId,
-                testWarehouseId
-            ).collect { stock ->
-                 addMessage("Stock for ProdID $testProductId in WhID $testWarehouseId after delete: ${stock?.quantity ?: "Not found (Correct)"}")
+            appRepository.deleteProductLocation(updatedStock) // Delete the stock from the first location
+            addMessage("Deleted stock for ProdID $testProductId from LocID $testLocationId.")
+            appRepository.getLocationsForProduct(testProductId).collect { stock ->
+                addMessage("Stock for ProdID $testProductId in LocID $testLocationId after delete: ${stock.firstOrNull()?.quantity ?: "Not found (Correct)"}")
             }
-            appRepository.getTotalStockQuantityForProduct(testProductId).collect { totalQty ->
+            appRepository.getTotalStockForProduct(testProductId).collect { totalQty ->
                 addMessage("Total stock for ProdID $testProductId after deleting one record: ${totalQty ?: 0}")
             }
-
-            // 9. Delete all stock (for cleanup in debug)
-            // appRepository.deleteAllStockAtWarehouse()
-            // addMessage("Deleted all stock records from stock_at_warehouse table.")
-            // appRepository.getTotalStockQuantityForProduct(testProductId!!).collect { totalQty ->
-            //     addMessage("Total stock for ProdID $testProductId after deleteAll: ${totalQty ?: "0 (Correct)"}")
-            // }
         }
     }
 
@@ -345,11 +341,10 @@ class DebugViewModel @Inject constructor(
             // In a real test, you might want more deterministic setup.
 
             var testCustomerId: String? = null
-            appRepository.getAllCustomers().collect { customers ->
-                if (customers.isNotEmpty()) {
-                    testCustomerId = customers.first().id
-                    addMessage("Using existing customer for order: ${customers.first().name}")
-                }
+            val customers = appRepository.getAllCustomers().first()
+            if (customers.isNotEmpty()) {
+                testCustomerId = customers.first().id
+                addMessage("Using existing customer for order: ${customers.first().name}")
             }
             if (testCustomerId == null) {
                 val newCustomer = CustomerEntity(
@@ -372,14 +367,13 @@ class DebugViewModel @Inject constructor(
             val testProductIds = mutableListOf<String>()
             val testProductPrices = mutableMapOf<String, Double>()
 
-            appRepository.getAllProducts().collect { products ->
-                if (products.size >= 2) {
-                    testProductIds.add(products[0].id)
-                    testProductPrices[products[0].id] = products[0].price
-                    testProductIds.add(products[1].id)
-                    testProductPrices[products[1].id] = products[1].price
-                    addMessage("Using existing products for order: ${products[0].name}, ${products[1].name}")
-                }
+            val products = appRepository.getAllProducts().first()
+            if (products.size >= 2) {
+                testProductIds.add(products[0].id)
+                testProductPrices[products[0].id] = products[0].price
+                testProductIds.add(products[1].id)
+                testProductPrices[products[1].id] = products[1].price
+                addMessage("Using existing products for order: ${products[0].name}, ${products[1].name}")
             }
 
             if (testProductIds.size < 2) {
@@ -429,13 +423,13 @@ class DebugViewModel @Inject constructor(
                 orderId = order1.orderId, // Will be set by insertOrderWithItems if not set here
                 productId = testProductIds[0],
                 quantity = 1,
-                pricePerUnit = testProductPrices[testProductIds[0]]!!
+                price = testProductPrices[testProductIds[0]]!!
             )
             val orderItem2 = OrderItemEntity(
                 orderId = order1.orderId, // Will be set by insertOrderWithItems if not set here
                 productId = testProductIds[1],
                 quantity = 2,
-                pricePerUnit = testProductPrices[testProductIds[1]]!!
+                price = testProductPrices[testProductIds[1]]!!
             )
 
             appRepository.insertOrderWithItems(order1, listOf(orderItem1, orderItem2))
@@ -445,7 +439,7 @@ class DebugViewModel @Inject constructor(
                 if (orderWithItems != null) {
                     addMessage("Fetched Order with Items: ID=${orderWithItems.order.orderId}, CustID=${orderWithItems.order.customerId}, Status=${orderWithItems.order.status}, Total=${orderWithItems.order.totalAmount}, Date=${orderWithItems.order.orderDate}")
                     orderWithItems.items.forEach { item ->
-                        addMessage("  Item: ProdID=${item.productId}, Qty=${item.quantity}, Price=${item.pricePerUnit}")
+                        addMessage("  Item: ProdID=${item.productId}, Qty=${item.quantity}, Price=${item.price}")
                     }
                 } else {
                     addMessage("Order with ID ${order1.orderId} not found after insert.")
@@ -453,14 +447,14 @@ class DebugViewModel @Inject constructor(
             }
 
             appRepository.getAllOrdersWithOrderItems().collect { allOrdersWithItems ->
-                 addMessage("--- All Orders with Items (${allOrdersWithItems.size}) ---")
-                 allOrdersWithItems.forEach { orderWithItems ->
-                     addMessage("Order: ID=${orderWithItems.order.orderId}, CustID=${orderWithItems.order.customerId}, Status=${orderWithItems.order.status}, Total=${orderWithItems.order.totalAmount}, Date=${orderWithItems.order.orderDate}")
-                     orderWithItems.items.forEach { item ->
-                         addMessage("  Item: ProdID=${item.productId}, Qty=${item.quantity}, Price=${item.pricePerUnit}")
-                     }
-                 }
-                 addMessage("--- End of All Orders ---")
+                addMessage("--- All Orders with Items (${allOrdersWithItems.size}) ---")
+                allOrdersWithItems.forEach { orderWithItems ->
+                    addMessage("Order: ID=${orderWithItems.order.orderId}, CustID=${orderWithItems.order.customerId}, Status=${orderWithItems.order.status}, Total=${orderWithItems.order.totalAmount}, Date=${orderWithItems.order.orderDate}")
+                    orderWithItems.items.forEach { item ->
+                        addMessage("  Item: ProdID=${item.productId}, Qty=${item.quantity}, Price=${item.price}")
+                    }
+                }
+                addMessage("--- End of All Orders ---")
             }
 
             // Test Order Date Range Query
@@ -484,7 +478,7 @@ class DebugViewModel @Inject constructor(
             }
 
             appRepository.getOrdersByDateRange(dayBeforeYesterday, yesterday).collect { dateRangeOrders ->
-                 addMessage("Orders in range D-2 to Yesterday (${dateRangeOrders.size}):")
+                addMessage("Orders in range D-2 to Yesterday (${dateRangeOrders.size}):")
                 dateRangeOrders.forEach { order -> addMessage("  Order ID: ${order.orderId}, Date: ${order.orderDate}, Status: ${order.status}")}
             }
 
