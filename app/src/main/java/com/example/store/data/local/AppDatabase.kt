@@ -38,7 +38,7 @@ import com.example.store.data.local.entity.UserPreferenceEntity
         StockAtWarehouseEntity::class, // ✅ Añadido para compatibilidad
         UserPreferenceEntity::class
     ],
-    version = 7,
+    version = 8,
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -109,6 +109,12 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_7_8: Migration = object : Migration(7, 8) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE products ADD COLUMN description TEXT")
+            }
+        }
+
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -116,9 +122,18 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "store_app_database"
                 )
-                    .addMigrations(MIGRATION_5_6, MIGRATION_6_7)
-                    .fallbackToDestructiveMigration(true) // ⚠️ Para desarrollo únicamente
+                    .addCallback(object : Callback() {
+                        override fun onCreate(db: SupportSQLiteDatabase) {
+                            super.onCreate(db)
+                            // TODO: Move this to a more robust pre-population mechanism
+                            db.execSQL("INSERT INTO products (id, name, price, description) VALUES ('1', 'Sample Product', 10.0, 'Sample Description')")
+                            db.execSQL("INSERT INTO customers (id, name) VALUES ('1', 'Sample Customer')")
+                            db.execSQL("INSERT INTO suppliers (id, name) VALUES ('1', 'Sample Supplier')")
+                        }
+                    })
+                    .addMigrations(MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
                     .build()
+
                 INSTANCE = instance
                 instance
             }
