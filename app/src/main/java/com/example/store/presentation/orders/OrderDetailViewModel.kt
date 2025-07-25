@@ -27,7 +27,7 @@ class OrderDetailViewModel @Inject constructor(
     private val orderId: String = savedStateHandle.get<String>("orderId")!!
 
     val uiState: StateFlow<OrderDetailUiState> = appRepository.getOrderWithOrderItems(orderId)
-        .map { OrderDetailUiState(orderWithItems = it) }
+        .map { OrderDetailUiState(orderWithItems = it as OrderWithOrderItems?) }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
