@@ -4,7 +4,6 @@ import com.example.store.data.local.dao.CustomerDao
 import com.example.store.data.local.dao.LocationDao
 import com.example.store.data.local.dao.OrderDao
 import com.example.store.data.local.dao.OrderItemDao
-import com.example.store.data.local.dao.OrderWithOrderItems
 import com.example.store.data.local.dao.PreferenceDao
 import com.example.store.data.local.dao.ProductDao
 import com.example.store.data.local.dao.ProductLocationDao
@@ -17,6 +16,7 @@ import com.example.store.data.local.entity.ProductEntity
 import com.example.store.data.local.entity.ProductLocationEntity
 import com.example.store.data.local.entity.SupplierEntity
 import com.example.store.data.local.entity.UserPreferenceEntity
+import com.example.store.domain.model.OrderWithOrderItems
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -118,10 +118,10 @@ class AppRepositoryImpl(
         orderItemDao.deleteAllOrderItemsForOrder(orderId)
 
     override fun getOrderWithOrderItems(orderId: String): Flow<OrderWithOrderItems?> =
-        orderItemDao.getOrderWithOrderItems(orderId)
+        orderDao.getOrderWithOrderItems(orderId)
 
     override fun getAllOrdersWithOrderItems(): Flow<List<OrderWithOrderItems>> =
-        orderItemDao.getAllOrdersWithOrderItems()
+        orderDao.getAllOrdersWithOrderItems()
 
     override suspend fun insertOrderWithItems(order: OrderEntity, items: List<OrderItemEntity>) {
         orderDao.insertOrderWithItems(order, items)

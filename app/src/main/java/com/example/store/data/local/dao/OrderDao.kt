@@ -9,6 +9,7 @@ import androidx.room.Transaction
 import androidx.room.Update
 import com.example.store.data.local.entity.OrderEntity
 import com.example.store.data.local.entity.OrderItemEntity
+import com.example.store.domain.model.OrderWithOrderItems
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -48,4 +49,8 @@ interface OrderDao {
     @Transaction
     @Query("SELECT * FROM orders")
     fun getAllOrdersWithOrderItems(): Flow<List<OrderWithOrderItems>>
+
+    @Transaction
+    @Query("SELECT * FROM orders WHERE orderId = :orderId")
+    fun getOrderWithOrderItems(orderId: String): Flow<OrderWithOrderItems?>
 }

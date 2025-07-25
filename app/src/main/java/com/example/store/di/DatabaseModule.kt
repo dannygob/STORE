@@ -10,9 +10,6 @@ import com.example.store.data.local.dao.PreferenceDao
 import com.example.store.data.local.dao.ProductDao
 import com.example.store.data.local.dao.ProductLocationDao
 import com.example.store.data.local.dao.SupplierDao
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -78,9 +75,4 @@ object DatabaseModule {
         return appDatabase.productLocationDao()
     }
 
-    @Provides
-    @Singleton
-    fun provideFirebaseFirestore(): FirebaseFirestore { // New provider
-        return Firebase.firestore
-    }
 }
