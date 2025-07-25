@@ -7,7 +7,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.store.presentation.dashboard.DashboardViewModel
 import com.example.store.presentation.dashboard.ui.DashboardScreen
-import com.example.store.presentation.debug.ui.DebugScreen
 import com.example.store.presentation.expenses.ui.ExpensesScreen
 import com.example.store.presentation.inventory.ui.InventoryItemUi
 import com.example.store.presentation.inventory.ui.InventoryScreen
@@ -99,9 +98,7 @@ fun MainNavHost(navController: NavHostController) {
             SalesScreen(navController = navController)
         }
 
-        composable(Route.Debug.route) {
-            DebugScreen()
-        }
+
 
         composable(Route.Purchases.route) {
             PurchasesScreen(navController = navController)

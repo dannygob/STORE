@@ -22,7 +22,7 @@ interface ProductLocationDao {
     suspend fun deleteProductLocation(productLocation: ProductLocationEntity)
 
     @Query("SELECT * FROM product_locations WHERE productId = :productId")
-    fun getLocationsForProduct(productId: String): Flow<List<ProductLocationEntity>>
+    fun getLocationsForProduct(productId: String?): Flow<List<ProductLocationEntity>>
 
     @Query("SELECT * FROM product_locations WHERE locationId = :locationId")
     fun getProductsAtLocation(locationId: String): Flow<List<ProductLocationEntity>>

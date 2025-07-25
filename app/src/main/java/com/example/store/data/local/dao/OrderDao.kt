@@ -44,4 +44,8 @@ interface OrderDao {
     @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrderWithItems(order: OrderEntity, items: List<OrderItemEntity>)
+
+    @Transaction
+    @Query("SELECT * FROM orders")
+    fun getAllOrdersWithOrderItems(): Flow<List<OrderWithOrderItems>>
 }

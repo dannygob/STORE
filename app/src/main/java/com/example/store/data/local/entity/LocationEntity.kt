@@ -15,7 +15,6 @@ data class LocationEntity(
     // Capacity and notes are generic enough to remain
     val capacity: Double?,
     val notes: String? = null,
-    val locationId: String?,
 
 
     ) {
