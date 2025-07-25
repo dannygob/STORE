@@ -184,7 +184,7 @@ class DebugViewModel @Inject constructor(
             addMessage("Inserted initial stock for ProdID $testProductId in LocID $testLocationId: Qty ${initialStock.quantity}")
 
             // 2. Fetch specific stock record
-            appRepository.getLocationsForProduct(testProductId!!).collect { stock ->
+            appRepository.getLocationsForProduct(testProductId).collect { stock ->
                 addMessage("Fetched stock for ProdID $testProductId in LocID $testLocationId: Qty ${stock.firstOrNull()?.quantity ?: "Not found"}")
             }
 
@@ -192,7 +192,7 @@ class DebugViewModel @Inject constructor(
             val updatedStock = initialStock.copy(quantity = 150)
             appRepository.updateProductLocation(updatedStock)
             addMessage("Updated stock for ProdID $testProductId in LocID $testLocationId to Qty ${updatedStock.quantity}")
-            appRepository.getLocationsForProduct(testProductId!!).collect { stock ->
+            appRepository.getLocationsForProduct(testProductId).collect { stock ->
                 addMessage("Fetched updated stock: Qty ${stock.firstOrNull()?.quantity ?: "Not found"}")
             }
 
@@ -204,7 +204,7 @@ class DebugViewModel @Inject constructor(
 
 
             // 5. Get all stock for the product
-            appRepository.getLocationsForProduct(testProductId!!).collect { stocks ->
+            appRepository.getLocationsForProduct(testProductId).collect { stocks ->
                 addMessage("All stock locations for ProdID $testProductId (${stocks.size}):")
                 stocks.forEach { s -> addMessage("  LocID ${s.locationId}: Qty ${s.quantity}") }
             }
@@ -216,17 +216,17 @@ class DebugViewModel @Inject constructor(
             }
 
             // 7. Get total stock quantity for the product
-            appRepository.getTotalStockForProduct(testProductId!!).collect { totalQty ->
+            appRepository.getTotalStockForProduct(testProductId).collect { totalQty ->
                 addMessage("Total stock quantity for ProdID $testProductId across all locations: ${totalQty ?: 0}")
             }
 
             // 8. Delete a specific stock record
             appRepository.deleteProductLocation(updatedStock) // Delete the stock from the first location
             addMessage("Deleted stock for ProdID $testProductId from LocID $testLocationId.")
-            appRepository.getLocationsForProduct(testProductId!!).collect { stock ->
+            appRepository.getLocationsForProduct(testProductId).collect { stock ->
                 addMessage("Stock for ProdID $testProductId in LocID $testLocationId after delete: ${stock.firstOrNull()?.quantity ?: "Not found (Correct)"}")
             }
-            appRepository.getTotalStockForProduct(testProductId!!).collect { totalQty ->
+            appRepository.getTotalStockForProduct(testProductId).collect { totalQty ->
                 addMessage("Total stock for ProdID $testProductId after deleting one record: ${totalQty ?: 0}")
             }
         }
@@ -363,7 +363,7 @@ class DebugViewModel @Inject constructor(
 
             // 1. Create and Insert an Order
             val order1 = OrderEntity(
-                customerId = testCustomerId!!,
+                customerId = testCustomerId,
                 status = "Pending",
                 totalAmount = (1 * testProductPrices[testProductIds[0]]!!) + (2 * testProductPrices[testProductIds[1]]!!), // Calculated based on items below
                 orderDate = System.currentTimeMillis()
@@ -417,13 +417,13 @@ class DebugViewModel @Inject constructor(
             appRepository.deleteOrder(order1)
 
             val orderYesterday = OrderEntity(
-                customerId = testCustomerId!!,
+                customerId = testCustomerId,
                 status = "Delivered",
                 totalAmount = 50.0,
                 orderDate = yesterday
             )
             val orderToday = OrderEntity(
-                customerId = testCustomerId!!,
+                customerId = testCustomerId,
                 status = "Processing",
                 totalAmount = 75.0,
                 orderDate = today
