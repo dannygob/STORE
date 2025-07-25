@@ -72,7 +72,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.store.R
-import com.example.store.presentation.purchases.PurchasesViewModel
+import com.example.store.presentation.sales.SalesViewModel
 import com.example.store.presentation.purchases.model.PurchaseItemUi
 import com.example.store.presentation.sales.CartItem
 import com.example.store.presentation.sales.Customer
@@ -83,7 +83,7 @@ import java.util.Locale
 @Composable
 fun PurchasesScreen(
     navController: NavController,
-    viewModel: PurchasesViewModel = viewModel()
+    viewModel: SalesViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -154,7 +154,7 @@ fun PurchasesScreen(
                     searchQuery = uiState.customerSearchQuery,
                     newCustomerName = uiState.newCustomerName,
                     customers = uiState.customers,
-                    selectedCustomer = uiState.selectedCustomer as Customer?,
+                    selectedCustomer = uiState.selectedCustomer,
                     onSearchQueryChanged = viewModel::onCustomerSearchChanged,
                     onNewCustomerNameChanged = viewModel::onNewCustomerNameChanged,
                     onSelectCustomer = viewModel::selectCustomer,
@@ -167,7 +167,7 @@ fun PurchasesScreen(
                 Button(
                     onClick = viewModel::onGenerateOrderClicked,
                     modifier = Modifier.fillMaxWidth(),
-                    enabled = false
+                    enabled = uiState.cart.isNotEmpty() && uiState.selectedCustomer != null
                 ) {
                     Text("Generate Order (${String.format(Locale.US, "%.2f", uiState.cartTotal)})")
                 }
@@ -193,8 +193,8 @@ fun PurchasesScreen(
             // Confirmation Dialog
             if (uiState.showConfirmDialog) {
                 ConfirmOrderDialog(
-                    onConfirm = viewModel::confirmOrderGeneration,
-                    onDismiss = viewModel::dismissConfirmDialog
+                    onConfirm = { viewModel.confirmOrderGeneration() },
+                    onDismiss = { viewModel.dismissConfirmDialog() }
                 )
             }
         }
@@ -294,7 +294,7 @@ fun LocationFeaturePlaceholder(modifier: Modifier = Modifier) {
 
 @Composable
 fun ProductCarousel(
-    products: List<PurchaseItemUi>,
+    products: List<com.example.store.presentation.sales.Product>,
     onProductDrag: (String, Offset) -> Unit,
     onProductDrop: (String, Offset) -> Unit,
 ) {
@@ -318,7 +318,7 @@ fun ProductCarousel(
 
 @Composable
 fun ProductCard(
-    product: PurchaseItemUi,
+    product: com.example.store.presentation.sales.Product,
     onDrag: (Offset) -> Unit,
     onDrop: (Offset) -> Unit,
 ) {
@@ -391,7 +391,7 @@ fun ShoppingCart(
 
 @Composable
 fun CartDetails(
-    cartItems: List<PurchaseItemUi>,
+    cartItems: List<CartItem>,
     onIncrement: (String) -> Unit,
     onDecrement: (String) -> Unit,
 ) {
@@ -435,7 +435,7 @@ fun CartDetails(
 fun CustomerSection(
     searchQuery: String,
     newCustomerName: String,
-    customers: List<String>,
+    customers: List<Customer>,
     selectedCustomer: Customer?,
     onSearchQueryChanged: (String) -> Unit,
     onNewCustomerNameChanged: (String) -> Unit,
@@ -670,7 +670,7 @@ fun PurchasesScreenPreview() {
     MaterialTheme {
         PurchasesScreen(
             navController = androidx.navigation.compose.rememberNavController(),
-            viewModel = PurchasesViewModel() // Using real ViewModel, assumes it has reasonable default/mock state
+            viewModel = com.example.store.presentation.sales.SalesViewModel() // Using real ViewModel, assumes it has reasonable default/mock state
         )
     }
 }
