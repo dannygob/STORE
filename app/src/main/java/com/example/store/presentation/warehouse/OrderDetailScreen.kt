@@ -63,10 +63,10 @@ fun OrderDetailScreen(
                     Text("Items:", style = MaterialTheme.typography.titleMedium)
 
                     LazyColumn {
-                        items(uiState.orderWithItems!!.orderItems) { item ->
+                        items(uiState.orderWithItems!!.items) { item ->
                             ListItem(
                                 headlineContent = { Text("Product ID: ${item.productId}") },
-                                supportingContent = { Text("Quantity: ${item.quantity} | Price: ${item.unitPrice}") }
+                                supportingContent = { Text("Quantity: ${item.quantity} | Price: ${item.price}") }
                             )
                         }
                     }

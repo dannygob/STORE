@@ -3,11 +3,9 @@ package com.example.store.presentation.debug
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.store.data.local.entity.CustomerEntity
-import com.example.store.data.local.entity.LocationEntity
 import com.example.store.data.local.entity.OrderEntity
 import com.example.store.data.local.entity.OrderItemEntity
 import com.example.store.data.local.entity.ProductEntity
-import com.example.store.data.local.entity.ProductLocationEntity
 import com.example.store.data.local.entity.SupplierEntity
 import com.example.store.data.repository.AppRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -120,13 +118,6 @@ class DebugViewModel @Inject constructor(
             appRepository.deleteAllLocations()
             addMessage("Deleted all existing locations.")
 
-            val location1 = LocationEntity(
-                name = "Main Warehouse",
-                address = "123 Storage Rd",
-                notes = "Primary facility",
-                locationId = TODO(),
-                capacity = TODO()
-            )
             appRepository.insertLocation(location1)
             addMessage("Inserted Location: Name='${location1.name}', ID='${location1.locationId}', Notes='${location1.notes}'")
 
@@ -138,13 +129,6 @@ class DebugViewModel @Inject constructor(
                 }
             }
 
-            val location2 = LocationEntity(
-                name = "North Depot",
-                address = "456 Distribution Ave",
-                notes = null,
-                locationId = TODO(),
-                capacity = TODO()
-            )
             appRepository.insertLocation(location2)
             addMessage("Inserted Location: Name='${location2.name}', ID='${location2.locationId}', Notes='${location2.notes}'")
 
@@ -190,29 +174,12 @@ class DebugViewModel @Inject constructor(
                 addMessage("Using Location ID for stock test: $testLocationId (${locations.first().name})")
             }
             if (testLocationId == null) {
-                val newLoc =
-                    LocationEntity(
-                        name = "Stock Test Location",
-                        address = "Test Address",
-                        notes = "Test Notes",
-                        locationId = TODO(),
-                        capacity = TODO()
-                    )
                 appRepository.insertLocation(newLoc)
                 testLocationId = newLoc.locationId
                 addMessage("Created Location ID for stock test: $testLocationId")
             }
 
             // 1. Insert Stock
-            val initialStock = ProductLocationEntity(
-                productId = testProductId!!,
-                locationId = testLocationId!!,
-                quantity = 100,
-                productLocationId = TODO(),
-                aisle = TODO(),
-                shelf = TODO(),
-                level = TODO()
-            )
             appRepository.insertProductLocation(initialStock)
             addMessage("Inserted initial stock for ProdID $testProductId in LocID $testLocationId: Qty ${initialStock.quantity}")
 
@@ -230,25 +197,8 @@ class DebugViewModel @Inject constructor(
             }
 
             // 4. Add stock for the same product in a new location to test total quantity
-            val location2 =
-                LocationEntity(
-                    name = "Secondary Stock WH",
-                    address = "Test Address 2",
-                    notes = "Test Notes 2",
-                    locationId = TODO(),
-                    capacity = TODO()
-                )
             appRepository.insertLocation(location2)
             addMessage("Inserted location ${location2.name} for multi-stock test.")
-            val stockInLoc2 = ProductLocationEntity(
-                productId = testProductId!!,
-                locationId = location2.locationId,
-                quantity = 75,
-                productLocationId = TODO(),
-                aisle = TODO(),
-                shelf = TODO(),
-                level = TODO()
-            )
             appRepository.insertProductLocation(stockInLoc2)
             addMessage("Inserted stock for ProdID $testProductId in LocID ${location2.locationId}: Qty ${stockInLoc2.quantity}")
 
