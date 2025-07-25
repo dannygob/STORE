@@ -4,6 +4,7 @@ import com.example.store.data.local.dao.CustomerDao
 import com.example.store.data.local.dao.LocationDao
 import com.example.store.data.local.dao.OrderDao
 import com.example.store.data.local.dao.OrderItemDao
+import com.example.store.data.local.dao.OrderWithOrderItems
 import com.example.store.data.local.dao.PreferenceDao
 import com.example.store.data.local.dao.ProductDao
 import com.example.store.data.local.dao.ProductLocationDao
@@ -12,7 +13,6 @@ import com.example.store.data.local.entity.CustomerEntity
 import com.example.store.data.local.entity.LocationEntity
 import com.example.store.data.local.entity.OrderEntity
 import com.example.store.data.local.entity.OrderItemEntity
-import com.example.store.data.local.entity.OrderWithOrderItems
 import com.example.store.data.local.entity.ProductEntity
 import com.example.store.data.local.entity.ProductLocationEntity
 import com.example.store.data.local.entity.SupplierEntity
@@ -36,7 +36,7 @@ class AppRepositoryImpl(
 
     // Product methods
     override fun getAllProducts(): Flow<List<ProductEntity>> = productDao.getAllProducts()
-    override fun getProductById(productId: String): Flow<ProductEntity?> =
+    override fun getProductById(productId: String?): Flow<ProductEntity?> =
         productDao.getProductById(productId)
 
     override fun searchProductsByName(query: String): Flow<List<ProductEntity>> =
@@ -152,7 +152,7 @@ class AppRepositoryImpl(
     override suspend fun deleteAllLocations() = locationDao.deleteAll()
 
     // ProductLocation (Inventory)
-    override fun getLocationsForProduct(productId: String): Flow<List<ProductLocationEntity>> =
+    override fun getLocationsForProduct(productId: String?): Flow<List<ProductLocationEntity>> =
         productLocationDao.getLocationsForProduct(productId)
 
     override fun getProductsAtLocation(locationId: String): Flow<List<ProductLocationEntity>> =

@@ -1,11 +1,11 @@
 package com.example.store.data.repository
 
 
+import com.example.store.data.local.dao.OrderWithOrderItems
 import com.example.store.data.local.entity.CustomerEntity
 import com.example.store.data.local.entity.LocationEntity
 import com.example.store.data.local.entity.OrderEntity
 import com.example.store.data.local.entity.OrderItemEntity
-import com.example.store.data.local.entity.OrderWithOrderItems
 import com.example.store.data.local.entity.ProductEntity
 import com.example.store.data.local.entity.ProductLocationEntity
 import com.example.store.data.local.entity.SupplierEntity
@@ -15,7 +15,7 @@ interface AppRepository {
 
     // Product Methods
     fun getAllProducts(): Flow<List<ProductEntity>>
-    fun getProductById(productId: String): Flow<ProductEntity?>
+    fun getProductById(productId: String?): Flow<ProductEntity?>
     suspend fun insertProduct(product: ProductEntity)
     suspend fun updateProduct(product: ProductEntity)
     suspend fun deleteProduct(product: ProductEntity)
@@ -77,7 +77,7 @@ interface AppRepository {
     suspend fun deleteAllLocations()
 
     // ProductLocation Methods (nuevo sistema unificado de inventario)
-    fun getLocationsForProduct(productId: String): Flow<List<ProductLocationEntity>>
+    fun getLocationsForProduct(productId: String?): Flow<List<ProductLocationEntity>>
     fun getProductsAtLocation(locationId: String): Flow<List<ProductLocationEntity>>
     fun getTotalStockForProduct(productId: String): Flow<Int?>
 

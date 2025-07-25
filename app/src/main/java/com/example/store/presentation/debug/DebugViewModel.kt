@@ -2,11 +2,9 @@ package com.example.store.presentation.debug
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.store.data.local.dao.OrderItemEntity
 import com.example.store.data.local.entity.CustomerEntity
 import com.example.store.data.local.entity.OrderEntity
 import com.example.store.data.local.entity.ProductEntity
-import com.example.store.data.local.entity.StockAtWarehouseEntity
 import com.example.store.data.local.entity.SupplierEntity
 import com.example.store.data.repository.AppRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
