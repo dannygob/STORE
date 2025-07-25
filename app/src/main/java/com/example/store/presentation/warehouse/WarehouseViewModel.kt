@@ -2,7 +2,6 @@ package com.example.store.presentation.warehouse
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.store.data.local.dao.OrderWithOrderItems
 import com.example.store.data.repository.AppRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,8 +12,8 @@ import javax.inject.Inject
 
 data class WarehouseUiState(
     val isLoading: Boolean = false,
-    val orders: List<OrderWithOrderItems> = emptyList(),
-    val error: String? = null
+    val orders: List<com.example.store.data.local.entity.OrderWithOrderItems> = emptyList(),
+    val error: String? = null,
 )
 
 @HiltViewModel

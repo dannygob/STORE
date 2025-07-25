@@ -14,11 +14,11 @@ room {
 }
 
 android {
-    namespace = "com.example.Store" // ⬅️ cámbialo por tu paquete real
+    namespace = "com.example.store" // ⬅️ cámbialo por tu paquete real
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.Store"
+        applicationId = "com.example.store"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
