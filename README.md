@@ -124,8 +124,9 @@ ________________________________________
 6. Create use cases/ with business logic
 7. Start the UI (presentation/screens/, navigation/, etc.)
 8. Use @HiltViewModel and hiltViewModel() to inject dependencies
+
 🌐Internationalization Module
-1. **Default language:** English
+**Default language:** English
 **Additional languages:**
 - Moroccan Arabic
 - English
@@ -252,8 +253,6 @@ ________________________________________
 •	Línea de tiempo, barras
 •	Semana vs semana, mes vs mes, año vs año
 
-
-
 📝 Notas importantes sobre Hilt
 •	AppModule.kt: Room, DAOs, Repositorios, Retrofit, Firebase
 •	FirebaseModule.kt: Proveedores de Firebase
@@ -268,54 +267,48 @@ ________________________________________
 6.	Crear usecases/ con lógica de negocio
 7.	Comenzar la UI (presentation/screens/, navigation/, etc.)
 8.	Usar @HiltViewModel y hiltViewModel() para inyectar dependencias
+
 🌐 Módulo de Internacionalización
-1.	**Idioma por defecto:** Inglés
+**Idioma por defecto:** Inglés
 **Idiomas adicionales:**
 - Árabe marroquí
 - Español
 - Chino
+
 🌙 Activación de Tema Oscuro / Dark Theme Activation
 Implementar soporte para tema oscuro utilizando Jetpack Compose / Implement dark theme support using Jetpack Compose
 Configurar colores y estilos en la carpeta theme/ / Configure colors and styles in the theme/ folder
 Permitir a los usuarios cambiar entre tema claro y oscuro desde la configuración / Allow users to switch between light and dark themes from settings
+
 🚀 Pantalla Splash de Presentación / Splash Screen Presentation
 Crear una pantalla splash para la presentación de la aplicación / Create a splash screen for the application presentation
 Mostrar el logo de la tienda y un mensaje de bienvenida / Display the store logo and a welcome message
 Configurar la navegación para ir al dashboard después de unos segundos / Configure navigation to go to the dashboard after a few seconds.
 
-
 📊 Dashboard Adaptado al Proyecto
 El objetivo del Dashboard es ofrecer una vista rápida del estado actual del negocio, con métricas clave y accesos directos a las funcionalidades más usadas.
 
 ✅ Funcionalidades sugeridas del Dashboard
-1.	Resumen de inventario
-o	Total de productos
-o	Productos con stock bajo
-o	Productos próximos a vencerse
-2.	Resumen de ventas
-o	Total vendido hoy
-o	Ventas de la semana
-o	Producto más vendido (hoy o semana)
-3.	Pedidos
-o	Pedidos pendientes
-o	Entregas agendadas para hoy
-4.	Gráficas rápidas
-o	Ventas por día (últimos 7 días)
-o	Categorías más vendidas (gráfico de pastel)
-5.	Accesos rápidos
-o	Botones o chips para: Añadir venta, Añadir compra, Escanear producto
-
+1.Resumen de inventario
+o Total de productos
+o Productos con stock bajo
+o Productos próximos a vencerse
+2.Resumen de ventas
+o Total vendido hoy
+o Ventas de la semana
+o Producto más vendido (hoy o semana)
+3.Pedidos
+o Pedidos pendientes
+o Entregas agendadas para hoy
+4.Gráficas rápidas
+o Ventas por día (últimos 7 días)
+o Categorías más vendidas (gráfico de pastel)
+5.Accesos rápidos
+o Botones o chips para: Añadir venta, Añadir compra, Escanear producto
 
 - Usuarios registrados en AuthRepositoryImpl. Por ejemplo:
 - Usuario: admin@store.com
 - Contraseña: admin123
-- o
+
 - Usuario: user@store.com
 - Contraseña: user123
-- 
-
-
-
-
-
-
