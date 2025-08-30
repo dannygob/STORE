@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.store.data.local.dao.UserDao
 import com.example.store.data.local.entity.UserEntity
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
@@ -34,7 +36,19 @@ class AuthRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
 ) : AuthRepository {
 
+    init {
+        scheduleHourlySync()
+    }
+
     override suspend fun login(email: String, password: String): Result<LoginResult> {
+        return if (networkChecker.isConnected()) {
+            loginWithFirebase(email, password)
+        } else {
+            loginWithRoom(email, password)
+        }
+    }
+
+    private suspend fun loginWithFirebase(email: String, password: String): Result<LoginResult> {
         return try {
             val authResult = auth.signInWithEmailAndPassword(email, password).await()
             val user = authResult.user ?: throw Exception("User not found in Firebase")
@@ -43,22 +57,36 @@ class AuthRepositoryImpl @Inject constructor(
             val roleString = document.getString("role") ?: UserRole.USER.name
             val role = UserRole.valueOf(roleString)
 
-            // ✅ Guardar en Room para acceso offline con contraseña hasheada
             val userEntity = UserEntity(
                 uid = user.uid,
                 email = email,
                 passwordHash = PasswordHasher.hash(password),
                 role = role.name,
-                needsSync = false // Ensure online logins are marked as synced
+                needsSync = false
             )
             userDao.insertUser(userEntity)
-
+            scheduleSync()
             Result.success(LoginResult(role))
         } catch (e: Exception) {
-            Log.e("AuthRepository", "Login failed", e)
+            Log.e("AuthRepository", "Firebase login failed", e)
             Result.failure(e)
         }
     }
+
+    private suspend fun loginWithRoom(email: String, password: String): Result<LoginResult> {
+        return try {
+            val localUser = userDao.getUserByEmail(email)
+            if (localUser != null && localUser.passwordHash == PasswordHasher.hash(password)) {
+                Result.success(LoginResult(UserRole.valueOf(localUser.role)))
+            } else {
+                Result.failure(Exception("Invalid credentials or user not found locally."))
+            }
+        } catch (e: Exception) {
+            Log.e("AuthRepository", "Room login failed", e)
+            Result.failure(e)
+        }
+    }
+
 
     override suspend fun register(
         email: String,
@@ -87,38 +115,22 @@ class AuthRepositoryImpl @Inject constructor(
                 userDao.insertUser(userEntity)
                 Log.d("AuthRepository", "User saved to Room (online registration): ${user.uid}")
 
-                // After successful online registration, perform login
                 login(email, password)
             } else {
-                // Offline registration: Save to Room with needsSync = true, but no password hash for Firebase Auth
-                val tempUid = UUID.randomUUID().toString() // Generate a unique UID for offline
+                val tempUid = UUID.randomUUID().toString()
                 val userEntity = UserEntity(
                     uid = tempUid,
                     email = email,
-                    passwordHash = "", // Do not store password hash for Firebase Auth in offline registration
+                    passwordHash = PasswordHasher.hash(password),
                     role = role.name,
                     needsSync = true
                 )
                 userDao.insertUser(userEntity)
                 Log.d(
                     "AuthRepository",
-                    "User saved to Room (offline registration) with needsSync: ${userEntity.uid}. Password not stored for Firebase Auth."
+                    "User saved to Room (offline registration) with needsSync: ${userEntity.uid}."
                 )
-
-                // Schedule SyncWorker to push this registration to Firebase later
-                val constraints = Constraints.Builder()
-                    .setRequiredNetworkType(NetworkType.CONNECTED)
-                    .build()
-
-                val syncRequest = OneTimeWorkRequestBuilder<SyncWorker>()
-                    .setConstraints(constraints)
-                    .build()
-
-                WorkManager.getInstance(context).enqueue(syncRequest)
-                Log.d("AuthRepository", "SyncWorker scheduled for offline registration.")
-
-                // For offline registration, we can't perform a Firebase Auth login.
-                // Instead, we return a LoginResult based on the locally registered user.
+                scheduleSync()
                 Result.success(LoginResult(role))
             }
         } catch (e: Exception) {
@@ -172,5 +184,29 @@ class AuthRepositoryImpl @Inject constructor(
             Log.e("AuthRepository", "Offline login failed", e)
             Result.failure(e)
         }
+    }
+
+    private fun scheduleSync() {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val syncRequest = OneTimeWorkRequestBuilder<SyncWorker>()
+            .setConstraints(constraints)
+            .build()
+
+        WorkManager.getInstance(context).enqueue(syncRequest)
+    }
+
+    private fun scheduleHourlySync() {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val syncRequest = PeriodicWorkRequestBuilder<SyncWorker>(1, TimeUnit.HOURS)
+            .setConstraints(constraints)
+            .build()
+
+        WorkManager.getInstance(context).enqueue(syncRequest)
     }
 }
