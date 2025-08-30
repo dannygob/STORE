@@ -877,6 +877,10 @@ fun DashboardPreview() {
         override fun getAuthState(): kotlinx.coroutines.flow.Flow<com.google.firebase.auth.FirebaseUser?> {
             return kotlinx.coroutines.flow.flowOf(null)
         }
+
+        override suspend fun offlineLogin(email: String): Result<com.example.store.domain.model.LoginResult> {
+            return Result.failure(Exception("Offline login not implemented for preview"))
+        }
     }
     val fakeViewModel = DashboardViewModel(fakeAuthRepository)
 
