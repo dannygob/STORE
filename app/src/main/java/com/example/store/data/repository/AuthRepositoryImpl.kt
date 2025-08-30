@@ -1,11 +1,19 @@
 package com.example.store.data.repository
 
+import android.content.Context
 import android.util.Log
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.store.data.local.dao.UserDao
 import com.example.store.data.local.entity.UserEntity
 import com.example.store.domain.model.LoginResult
 import com.example.store.domain.model.UserRole
 import com.example.store.domain.repository.AuthRepository
+import com.example.store.sync.SyncWorker
+import com.example.store.util.NetworkChecker
+import com.example.store.util.PasswordHasher
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
@@ -14,12 +22,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.tasks.await
+import java.util.UUID
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
     private val firestore: FirebaseFirestore,
-    private val userDao: UserDao, // ✅ Añadido para guardar en Room
+    private val userDao: UserDao,
+    private val networkChecker: NetworkChecker,
+    private val context: Context, // Inject Context for WorkManager
 ) : AuthRepository {
 
     override suspend fun login(email: String, password: String): Result<LoginResult> {
@@ -31,8 +42,13 @@ class AuthRepositoryImpl @Inject constructor(
             val roleString = document.getString("role") ?: UserRole.USER.name
             val role = UserRole.valueOf(roleString)
 
-            // ✅ Guardar en Room para acceso offline
-            val userEntity = UserEntity(uid = user.uid, email = email, role = role)
+            // ✅ Guardar en Room para acceso offline con contraseña hasheada
+            val userEntity = UserEntity(
+                uid = user.uid,
+                email = email,
+                passwordHash = PasswordHasher.hash(password),
+                role = role.name
+            )
             userDao.insertUser(userEntity)
 
             Result.success(LoginResult(role))
@@ -45,9 +61,11 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun register(email: String, password: String, role: UserRole): Result<Unit> {
         return try {
             Log.d("AuthRepository", "Attempting to register user: $email with role: $role")
-            val authResult = auth.createUserWithEmailAndPassword(email, password).await()
-            val user = authResult.user ?: throw Exception("User not created in Firebase")
-            Log.d("AuthRepository", "Firebase user created: ${user.uid}")
+
+            if (networkChecker.isConnected()) {
+                val authResult = auth.createUserWithEmailAndPassword(email, password).await()
+                val user = authResult.user ?: throw Exception("User not created in Firebase")
+                Log.d("AuthRepository", "Firebase user created: ${user.uid}")
 
             firestore.collection("users").document(user.uid).set(mapOf("role" to role.name)).await()
             Log.d("AuthRepository", "User role saved to Firestore for user: ${user.uid}")
@@ -67,7 +85,37 @@ class AuthRepositoryImpl @Inject constructor(
                 // For now, we'll let it proceed but log the error.
             }
 
-            Result.success(Unit)
+                Result.success(Unit)
+            } else {
+                // Offline registration: Save to Room with needsSync = true and hashed password
+                val tempUid = UUID.randomUUID().toString() // Generate a unique UID for offline
+                val userEntity = UserEntity(
+                    uid = tempUid,
+                    email = email,
+                    passwordHash = PasswordHasher.hash(password),
+                    role = role.name,
+                    needsSync = true
+                )
+                userDao.insertUser(userEntity)
+                Log.d(
+                    "AuthRepository",
+                    "User saved to Room (offline registration) with needsSync: ${userEntity.uid}"
+                )
+
+                // Schedule SyncWorker to push this registration to Firebase later
+                val constraints = Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build()
+
+                val syncRequest = OneTimeWorkRequestBuilder<SyncWorker>()
+                    .setConstraints(constraints)
+                    .build()
+
+                WorkManager.getInstance(context).enqueue(syncRequest)
+                Log.d("AuthRepository", "SyncWorker scheduled for offline registration.")
+
+                Result.success(Unit) // Indicate success for offline registration
+            }
         } catch (e: Exception) {
             Log.e("AuthRepository", "Registration failed for user $email: ${e.message}", e)
             Result.failure(e)
