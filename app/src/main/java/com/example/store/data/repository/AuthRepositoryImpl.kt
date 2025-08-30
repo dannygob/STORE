@@ -67,23 +67,19 @@ class AuthRepositoryImpl @Inject constructor(
                 val user = authResult.user ?: throw Exception("User not created in Firebase")
                 Log.d("AuthRepository", "Firebase user created: ${user.uid}")
 
-            firestore.collection("users").document(user.uid).set(mapOf("role" to role.name)).await()
-            Log.d("AuthRepository", "User role saved to Firestore for user: ${user.uid}")
+                firestore.collection("users").document(user.uid).set(mapOf("role" to role.name))
+                    .await()
+                Log.d("AuthRepository", "User role saved to Firestore for user: ${user.uid}")
 
-            // ✅ Guardar en Room para acceso offline
-            val userEntity = UserEntity(uid = user.uid, email = email, role = role)
-            try {
-                userDao.insertUser(userEntity)
-                Log.d("AuthRepository", "User saved to Room for user: ${user.uid}")
-            } catch (roomException: Exception) {
-                Log.e(
-                    "AuthRepository",
-                    "Failed to save user to Room for user ${user.uid}: ${roomException.message}",
-                    roomException
+                val userEntity = UserEntity(
+                    uid = user.uid,
+                    email = email,
+                    passwordHash = PasswordHasher.hash(password),
+                    role = role.name,
+                    needsSync = false
                 )
-                // Decide if this should be a fatal error or if registration can proceed without local save
-                // For now, we'll let it proceed but log the error.
-            }
+                userDao.insertUser(userEntity)
+                Log.d("AuthRepository", "User saved to Room (online registration): ${user.uid}")
 
                 Result.success(Unit)
             } else {
