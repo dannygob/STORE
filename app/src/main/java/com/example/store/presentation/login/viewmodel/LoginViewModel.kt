@@ -19,7 +19,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val authRepository: AuthRepository,
-    private val networkChecker: NetworkChecker, // Inject NetworkChecker
+    private val networkChecker: NetworkChecker,
     application: Application,
 ) : AndroidViewModel(application) {
 
@@ -120,8 +120,8 @@ class LoginViewModel @Inject constructor(
                 if (result.isSuccess) {
                     it.copy(
                         isLoading = false,
-                        isSuccess = true, // Set isSuccess to true for navigation
-                        role = role, // Set the role for navigation
+                        registrationSuccess = true,
+                        role = role,
                         errorMessage = "Usuario registrado correctamente."
                     )
                 } else {
@@ -165,5 +165,9 @@ class LoginViewModel @Inject constructor(
 
     fun onLoginHandled() {
         _uiState.update { it.copy(isSuccess = false, errorMessage = null) }
+    }
+
+    fun onRegistrationHandled() {
+        _uiState.update { it.copy(registrationSuccess = false, errorMessage = null) }
     }
 }
