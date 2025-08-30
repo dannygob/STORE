@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 class LoginUseCase @Inject constructor(
     private val authRepository: AuthRepository,
-    private val userRepository: UserRepository,
+    private val networkChecker: UserRepository,
 ) {
 
     suspend operator fun invoke(

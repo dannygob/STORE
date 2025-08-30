@@ -154,4 +154,18 @@ class AuthRepositoryImpl @Inject constructor(
         Log.e("AuthRepository", "Error in getAuthState Flow: ${e.message}")
         emit(null)
     }
+
+    override suspend fun offlineLogin(email: String): Result<LoginResult> {
+        return try {
+            val localUser = userDao.getUserByEmail(email)
+            if (localUser != null) {
+                Result.success(LoginResult(UserRole.valueOf(localUser.role)))
+            } else {
+                Result.failure(Exception("No se encontró el usuario localmente. Inicia sesión con conexión a internet al menos una vez."))
+            }
+        } catch (e: Exception) {
+            Log.e("AuthRepository", "Offline login failed", e)
+            Result.failure(e)
+        }
+    }
 }
