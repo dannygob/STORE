@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
     suspend fun login(email: String, password: String): Result<LoginResult>
-    suspend fun register(email: String, password: String, role: UserRole): Result<LoginResult>
+    suspend fun register(email: String, password: String, role: UserRole): Result<Unit>
     suspend fun recoverPassword(email: String): Result<Unit>
     suspend fun signOut(): Result<Unit>
     fun getAuthState(): Flow<FirebaseUser?>

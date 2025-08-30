@@ -5,18 +5,29 @@ import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.example.store.data.repository.AuthRepositoryImpl
 import com.example.store.sync.SyncWorker
 import com.google.firebase.FirebaseApp
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 @HiltAndroidApp
 class StoreApplication : Application() {
+
+    @Inject
+    lateinit var authRepository: AuthRepositoryImpl
 
     override fun onCreate() {
         super.onCreate()
         FirebaseApp.initializeApp(this)
         schedulePeriodicSync()
+        CoroutineScope(Dispatchers.IO).launch {
+            authRepository.createInitialAdminUser()
+        }
     }
 
     private fun schedulePeriodicSync() {

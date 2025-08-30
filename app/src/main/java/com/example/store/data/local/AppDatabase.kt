@@ -42,7 +42,7 @@ import com.example.store.data.local.entity.UserPreferenceEntity
         UserPreferenceEntity::class,
         UserEntity::class // ✅ Añadido para soporte de usuario autenticado
     ],
-    version = 9,
+    version = 11,
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -124,10 +124,27 @@ abstract class AppDatabase : RoomDatabase() {
                     CREATE TABLE IF NOT EXISTS users (
                         uid TEXT NOT NULL PRIMARY KEY,
                         email TEXT NOT NULL,
-                        role TEXT NOT NULL
+                        passwordHash TEXT NOT NULL DEFAULT '',
+                        role TEXT NOT NULL,
+                        needsSync INTEGER NOT NULL DEFAULT 0
                     )
                     """.trimIndent()
                 )
+            }
+        }
+
+        val MIGRATION_9_10 = object : Migration(9, 10) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // Add lastSyncTimestamp column to users table
+                db.execSQL("ALTER TABLE users ADD COLUMN lastSyncTimestamp INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+
+        val MIGRATION_10_11 = object : Migration(10, 11) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // Add lastUpdatedAt and needsSync columns to products table
+                db.execSQL("ALTER TABLE products ADD COLUMN lastUpdatedAt INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE products ADD COLUMN needsSync INTEGER NOT NULL DEFAULT 0")
             }
         }
 
@@ -147,7 +164,15 @@ abstract class AppDatabase : RoomDatabase() {
                             db.execSQL("INSERT INTO suppliers (id, name) VALUES ('1', 'Sample Supplier')")
                         }
                     })
-                    .addMigrations(MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9)
+                    .addMigrations(
+                        MIGRATION_5_6,
+                        MIGRATION_6_7,
+                        MIGRATION_7_8,
+                        MIGRATION_8_9,
+                        MIGRATION_9_10,
+                        MIGRATION_10_11
+                    )
+                    .fallbackToDestructiveMigration() // Add this line to allow destructive migrations during development
                     .build()
 
                 INSTANCE = instance

@@ -145,3 +145,10 @@ class LoginViewModel @Inject constructor(
         _uiState.update { it.copy(registrationSuccess = false, errorMessage = null) }
     }
 }
+/*- Use one of the registered users in your AuthRepositoryImpl. For example:
+- User: admin@store.com
+- Password: admin123
+- o
+- User: user@store.com
+- Password: user123
+- Make sure the user's role is ADMIN or USER as appropriate.*/

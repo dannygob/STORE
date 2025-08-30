@@ -24,18 +24,27 @@ interface ProductDao {
     @Delete
     suspend fun delete(product: ProductEntity)
 
+    // Obtener un producto por su ID
     @Query("SELECT * FROM products WHERE id = :productId")
     fun getProductById(productId: String?): Flow<ProductEntity?>
 
+    // Obtener todos los productos ordenados por nombre
     @Query("SELECT * FROM products ORDER BY name ASC")
     fun getAllProducts(): Flow<List<ProductEntity>>
 
+    // Buscar productos por nombre (filtro con LIKE)
     @Query("SELECT * FROM products WHERE name LIKE '%' || :query || '%' ORDER BY name ASC")
     fun searchProductsByName(query: String): Flow<List<ProductEntity>>
 
+    // Obtener productos que necesitan ser sincronizados con Firebase (products que tienen needsSync = 1)
     @Query("SELECT * FROM products WHERE needsSync = 1")
     suspend fun getUnsyncedProducts(): List<ProductEntity>
 
+    // Eliminar todos los productos (Ejemplo de operación masiva)
     @Query("DELETE FROM products")
-    suspend fun deleteAllProducts() // Example of a bulk operation
+    suspend fun deleteAllProducts()
+
+    // Actualizar la sincronización de productos
+    @Query("UPDATE products SET needsSync = 0 WHERE id IN (:productIds)")
+    suspend fun updateSyncStatus(productIds: List<String>)
 }

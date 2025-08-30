@@ -38,6 +38,40 @@ class AuthRepositoryImpl @Inject constructor(
 
     init {
         scheduleHourlySync()
+        // Call the function to create the initial admin user
+        // This should ideally be called only once, e.g., on first app launch
+        // For demonstration purposes, we'll call it here.
+        // In a real app, you'd have a more robust mechanism to ensure it runs once.
+        // For now, we'll make it a suspend function and call it from a coroutine scope
+        // or ensure it's handled in a way that doesn't block the main thread.
+        // For simplicity, we'll add it as a suspend function and assume it's called appropriately.
+    }
+
+    // Function to create an initial admin user for offline access
+    suspend fun createInitialAdminUser() {
+        val adminEmail = "admin@store.com"
+        val adminPassword = "admin123" // This password will be hashed
+        val adminRole = UserRole.ADMIN
+
+        // Check if the admin user already exists to prevent duplicates
+        val existingAdmin = userDao.getUserByEmail(adminEmail)
+        if (existingAdmin == null) {
+            val tempUid = UUID.randomUUID().toString() // Temporary UID for offline user
+            val adminUserEntity = UserEntity(
+                uid = tempUid,
+                email = adminEmail,
+                passwordHash = PasswordHasher.hash(adminPassword),
+                role = adminRole.name,
+                needsSync = true // Mark as needing sync to Firebase later
+            )
+            userDao.insertUser(adminUserEntity)
+            Log.d(
+                "AuthRepository",
+                "Initial admin user 'admin@store.com' registered in Room for offline use."
+            )
+        } else {
+            Log.d("AuthRepository", "Initial admin user 'admin@store.com' already exists in Room.")
+        }
     }
 
     override suspend fun login(email: String, password: String): Result<LoginResult> {
@@ -54,8 +88,8 @@ class AuthRepositoryImpl @Inject constructor(
             val user = authResult.user ?: throw Exception("User not found in Firebase")
 
             val document = firestore.collection("users").document(user.uid).get().await()
-            val roleString = document.getString("role") ?: UserRole.USER.name
-            val role = UserRole.valueOf(roleString)
+            val roleString = document.getString("role") ?: UserRole.USER.roleName
+            val role = UserRole.fromString(roleString)
 
             val userEntity = UserEntity(
                 uid = user.uid,
@@ -77,7 +111,7 @@ class AuthRepositoryImpl @Inject constructor(
         return try {
             val localUser = userDao.getUserByEmail(email)
             if (localUser != null && localUser.passwordHash == PasswordHasher.hash(password)) {
-                Result.success(LoginResult(UserRole.valueOf(localUser.role)))
+                Result.success(LoginResult(UserRole.fromString(localUser.role)))
             } else if (localUser != null) {
                 Result.failure(Exception("Invalid password."))
             } else {
@@ -94,7 +128,7 @@ class AuthRepositoryImpl @Inject constructor(
         email: String,
         password: String,
         role: UserRole,
-    ): Result<LoginResult> {
+    ): Result<Unit> {
         return try {
             Log.d("AuthRepository", "Attempting to register user: $email with role: $role")
 
@@ -103,7 +137,7 @@ class AuthRepositoryImpl @Inject constructor(
                 val user = authResult.user ?: throw Exception("User not created in Firebase")
                 Log.d("AuthRepository", "Firebase user created: ${user.uid}")
 
-                firestore.collection("users").document(user.uid).set(mapOf("role" to role.name))
+                firestore.collection("users").document(user.uid).set(mapOf("role" to role.roleName))
                     .await()
                 Log.d("AuthRepository", "User role saved to Firestore for user: ${user.uid}")
 
@@ -117,7 +151,7 @@ class AuthRepositoryImpl @Inject constructor(
                 userDao.insertUser(userEntity)
                 Log.d("AuthRepository", "User saved to Room (online registration): ${user.uid}")
 
-                login(email, password)
+                Result.success(Unit)
             } else {
                 val tempUid = UUID.randomUUID().toString()
                 val userEntity = UserEntity(
@@ -133,7 +167,7 @@ class AuthRepositoryImpl @Inject constructor(
                     "User saved to Room (offline registration) with needsSync: ${userEntity.uid}."
                 )
                 scheduleSync()
-                loginWithRoom(email, password)
+                Result.success(Unit)
             }
         } catch (e: Exception) {
             Log.e("AuthRepository", "Registration failed for user $email: ${e.message}", e)
@@ -178,7 +212,7 @@ class AuthRepositoryImpl @Inject constructor(
         return try {
             val localUser = userDao.getUserByEmail(email)
             if (localUser != null) {
-                Result.success(LoginResult(UserRole.valueOf(localUser.role)))
+                Result.success(LoginResult(UserRole.fromString(localUser.role)))
             } else {
                 Result.failure(Exception("No se encontró el usuario localmente. Inicia sesión con conexión a internet al menos una vez."))
             }
