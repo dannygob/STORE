@@ -23,6 +23,8 @@ data class ProductEntity(
     val stockQuantity: Int,
     val imageUrl: String? = null,
     val supplierId: String? = null,
-    val createdAt: Long = System.currentTimeMillis(), // útil para sincronización y orden cronológico
+    val createdAt: Long = System.currentTimeMillis(),
+    val lastUpdatedAt: Long = System.currentTimeMillis(),
+    val needsSync: Boolean = false,
     val isActive: Boolean = true, // por si decides hacer soft-deletes o filtrar productos ocultos
 ) : Parcelable

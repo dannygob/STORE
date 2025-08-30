@@ -78,8 +78,10 @@ class AuthRepositoryImpl @Inject constructor(
             val localUser = userDao.getUserByEmail(email)
             if (localUser != null && localUser.passwordHash == PasswordHasher.hash(password)) {
                 Result.success(LoginResult(UserRole.valueOf(localUser.role)))
+            } else if (localUser != null) {
+                Result.failure(Exception("Invalid password."))
             } else {
-                Result.failure(Exception("Invalid credentials or user not found locally."))
+                Result.failure(Exception("User not found locally."))
             }
         } catch (e: Exception) {
             Log.e("AuthRepository", "Room login failed", e)
@@ -131,7 +133,7 @@ class AuthRepositoryImpl @Inject constructor(
                     "User saved to Room (offline registration) with needsSync: ${userEntity.uid}."
                 )
                 scheduleSync()
-                Result.success(LoginResult(role))
+                loginWithRoom(email, password)
             }
         } catch (e: Exception) {
             Log.e("AuthRepository", "Registration failed for user $email: ${e.message}", e)

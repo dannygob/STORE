@@ -42,11 +42,24 @@ class AppRepositoryImpl(
     override fun searchProductsByName(query: String): Flow<List<ProductEntity>> =
         productDao.searchProductsByName(query)
 
-    override suspend fun insertProduct(product: ProductEntity) = productDao.insert(product)
+    override suspend fun insertProduct(product: ProductEntity) {
+        val productToInsert = product.copy(
+            lastUpdatedAt = System.currentTimeMillis(),
+            needsSync = true
+        )
+        productDao.insert(productToInsert)
+    }
+
     override suspend fun insertAllProducts(products: List<ProductEntity>) =
         productDao.insertAll(products)
 
-    override suspend fun updateProduct(product: ProductEntity) = productDao.update(product)
+    override suspend fun updateProduct(product: ProductEntity) {
+        val productToUpdate = product.copy(
+            lastUpdatedAt = System.currentTimeMillis(),
+            needsSync = true
+        )
+        productDao.update(productToUpdate)
+    }
     override suspend fun deleteProduct(product: ProductEntity) = productDao.delete(product)
     override suspend fun deleteAllProducts() = productDao.deleteAllProducts()
 
