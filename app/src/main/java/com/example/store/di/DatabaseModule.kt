@@ -10,6 +10,7 @@ import com.example.store.data.local.dao.PreferenceDao
 import com.example.store.data.local.dao.ProductDao
 import com.example.store.data.local.dao.ProductLocationDao
 import com.example.store.data.local.dao.SupplierDao
+import com.example.store.data.local.dao.UserDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -47,7 +48,7 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideOrderDao(appDatabase: AppDatabase): OrderDao { // New provider
+    fun provideOrderDao(appDatabase: AppDatabase): OrderDao {
         return appDatabase.orderDao()
     }
 
@@ -75,4 +76,10 @@ object DatabaseModule {
         return appDatabase.productLocationDao()
     }
 
+    // ✅ Nuevo proveedor para UserDao
+    @Provides
+    @Singleton
+    fun provideUserDao(appDatabase: AppDatabase): UserDao {
+        return appDatabase.userDao()
+    }
 }

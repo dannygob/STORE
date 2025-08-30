@@ -32,7 +32,12 @@ abstract class FirebaseModule {
         @Provides
         @Singleton
         fun provideFirestore(): FirebaseFirestore {
-            return FirebaseFirestore.getInstance()
+            val firestore = FirebaseFirestore.getInstance()
+            firestore.firestoreSettings =
+                com.google.firebase.firestore.FirebaseFirestoreSettings.Builder()
+                    .setPersistenceEnabled(true)
+                    .build()
+            return firestore
         }
 
         @Provides

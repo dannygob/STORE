@@ -14,6 +14,7 @@ import com.example.store.data.local.dao.PreferenceDao
 import com.example.store.data.local.dao.ProductDao
 import com.example.store.data.local.dao.ProductLocationDao
 import com.example.store.data.local.dao.SupplierDao
+import com.example.store.data.local.dao.UserDao
 import com.example.store.data.local.entity.CustomerEntity
 import com.example.store.data.local.entity.LocationEntity
 import com.example.store.data.local.entity.OrderEntity
@@ -23,6 +24,7 @@ import com.example.store.data.local.entity.ProductEntity
 import com.example.store.data.local.entity.ProductLocationEntity
 import com.example.store.data.local.entity.StockAtWarehouseEntity
 import com.example.store.data.local.entity.SupplierEntity
+import com.example.store.data.local.entity.UserEntity
 import com.example.store.data.local.entity.UserPreferenceEntity
 
 @Database(
@@ -35,10 +37,11 @@ import com.example.store.data.local.entity.UserPreferenceEntity
         PreferenceEntity::class,
         LocationEntity::class,
         ProductLocationEntity::class,
-        StockAtWarehouseEntity::class, // ✅ Añadido para compatibilidad
-        UserPreferenceEntity::class
+        StockAtWarehouseEntity::class,
+        UserPreferenceEntity::class,
+        UserEntity::class // ✅ Añadido para soporte de usuario autenticado
     ],
-    version = 8,
+    version = 9,
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -53,11 +56,14 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun locationDao(): LocationDao
     abstract fun productLocationDao(): ProductLocationDao
 
+    // ✅ Nuevo DAO para usuarios
+    abstract fun userDao(): UserDao
+
     companion object {
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
-        val MIGRATION_5_6: Migration = object : Migration(5, 6) {
+        val MIGRATION_5_6 = object : Migration(5, 6) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL(
                     """
@@ -73,48 +79,58 @@ abstract class AppDatabase : RoomDatabase() {
                         FOREIGN KEY(productId) REFERENCES products(id) ON DELETE CASCADE,
                         FOREIGN KEY(locationId) REFERENCES locations(locationId) ON DELETE CASCADE
                     )
-                """.trimIndent()
+                    """.trimIndent()
                 )
-
                 db.execSQL(
                     """
                     INSERT INTO product_locations (productLocationId, productId, locationId, quantity)
                     SELECT stockId, productId, warehouseId, quantity FROM stock_at_warehouse
-                """.trimIndent()
+                    """.trimIndent()
                 )
-
                 db.execSQL("DROP TABLE IF EXISTS stock_at_warehouse")
-
                 db.execSQL(
                     """
                     CREATE UNIQUE INDEX IF NOT EXISTS index_product_locations_productId_locationId_aisle_shelf_level
                     ON product_locations (productId, locationId, aisle, shelf, level)
-                """.trimIndent()
+                    """.trimIndent()
                 )
-
                 db.execSQL(
                     """
                     CREATE INDEX IF NOT EXISTS index_product_locations_locationId
                     ON product_locations (locationId)
-                """.trimIndent()
+                    """.trimIndent()
                 )
-
                 db.execSQL("ALTER TABLE warehouses ADD COLUMN notes TEXT")
             }
         }
 
-        val MIGRATION_6_7: Migration = object : Migration(6, 7) {
+        val MIGRATION_6_7 = object : Migration(6, 7) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE order_items RENAME COLUMN pricePerUnit TO price")
             }
         }
 
-        val MIGRATION_7_8: Migration = object : Migration(7, 8) {
+        val MIGRATION_7_8 = object : Migration(7, 8) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE products ADD COLUMN description TEXT")
             }
         }
 
+        val MIGRATION_8_9 = object : Migration(8, 9) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS users (
+                        uid TEXT NOT NULL PRIMARY KEY,
+                        email TEXT NOT NULL,
+                        role TEXT NOT NULL
+                    )
+                    """.trimIndent()
+                )
+            }
+        }
+
+        // ✅ Método accesible para SyncWorker sin Hilt
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -125,13 +141,12 @@ abstract class AppDatabase : RoomDatabase() {
                     .addCallback(object : Callback() {
                         override fun onCreate(db: SupportSQLiteDatabase) {
                             super.onCreate(db)
-                            // TODO: Move this to a more robust pre-population mechanism
-                            db.execSQL("INSERT INTO products (id, name, price, description) VALUES ('1', 'Sample Product', 10.0, 'Sample Description')")
+                            db.execSQL("INSERT INTO products (id, name, price, description, stockQuantity, createdAt) VALUES ('1', 'Sample Product', 10.0, 'Sample Description', 0, ${System.currentTimeMillis()})")
                             db.execSQL("INSERT INTO customers (id, name) VALUES ('1', 'Sample Customer')")
                             db.execSQL("INSERT INTO suppliers (id, name) VALUES ('1', 'Sample Supplier')")
                         }
                     })
-                    .addMigrations(MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
+                    .addMigrations(MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9)
                     .build()
 
                 INSTANCE = instance

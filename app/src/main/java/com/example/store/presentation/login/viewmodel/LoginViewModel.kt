@@ -1,10 +1,12 @@
 package com.example.store.presentation.login.viewmodel
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.store.domain.model.UserRole
 import com.example.store.domain.repository.AuthRepository
 import com.example.store.domain.usecase.LoginUseCase
+import com.example.store.util.NetworkChecker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +19,9 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val authRepository: AuthRepository,
-) : ViewModel() {
+    private val networkChecker: NetworkChecker, // Inject NetworkChecker
+    application: Application,
+) : AndroidViewModel(application) {
 
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
@@ -45,11 +49,9 @@ class LoginViewModel @Inject constructor(
             LoginEvent.Submit -> {
                 onLoginClicked()
             }
-
             is LoginEvent.Register -> {
                 onRegisterClicked(event.email, event.password, event.role)
             }
-
             is LoginEvent.RecoverPassword -> {
                 onRecoverPassword(event.email)
             }
@@ -76,14 +78,16 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
-            val result = loginUseCase(email, password)
+            val context = getApplication<Application>().applicationContext
+            val result = loginUseCase(context, email, password)
+
             if (result.isSuccess) {
                 val loginResult = result.getOrNull()
                 _uiState.update {
                     it.copy(
                         isLoading = false,
                         isSuccess = true,
-                        role = loginResult?.role
+                        role = loginResult?.role ?: UserRole.USER
                     )
                 }
             } else {
@@ -100,10 +104,26 @@ class LoginViewModel @Inject constructor(
     private fun onRegisterClicked(email: String, password: String, role: UserRole) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+
+            if (!networkChecker.isConnected()) {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = "No hay conexión a internet. Por favor, verifica tu conexión."
+                    )
+                }
+                return@launch
+            }
+
             val result = authRepository.register(email, password, role)
             _uiState.update {
                 if (result.isSuccess) {
-                    it.copy(isLoading = false, errorMessage = "Usuario registrado correctamente.")
+                    it.copy(
+                        isLoading = false,
+                        isSuccess = true, // Set isSuccess to true for navigation
+                        role = role, // Set the role for navigation
+                        errorMessage = "Usuario registrado correctamente."
+                    )
                 } else {
                     it.copy(
                         isLoading = false,
@@ -117,6 +137,17 @@ class LoginViewModel @Inject constructor(
     private fun onRecoverPassword(email: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+
+            if (!networkChecker.isConnected()) {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = "No hay conexión a internet. Por favor, verifica tu conexión."
+                    )
+                }
+                return@launch
+            }
+
             val result = authRepository.recoverPassword(email)
             _uiState.update {
                 if (result.isSuccess) {

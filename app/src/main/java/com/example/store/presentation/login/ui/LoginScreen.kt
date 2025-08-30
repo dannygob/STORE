@@ -39,21 +39,26 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.store.domain.model.UserRole
 import com.example.store.presentation.login.viewmodel.LoginEvent
 import com.example.store.presentation.login.viewmodel.LoginViewModel
-
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
-    onLoginSuccess: () -> Unit,
+    onAdminLogin: () -> Unit,
+    onUserLogin: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
     var passwordVisible by remember { mutableStateOf(false) }
 
-    // Navigate to dashboard on successful login
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) {
-            onLoginSuccess()
-            viewModel.onLoginHandled()
+            when (state.role) {
+                UserRole.ADMIN -> onAdminLogin()
+                UserRole.USER -> onUserLogin()
+                else -> {
+                    // Rol desconocido
+                    viewModel.onLoginHandled()
+                }
+            }
         }
     }
 
@@ -68,14 +73,8 @@ fun LoginScreen(
                     .padding(24.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text(
+                Text("Login", style = MaterialTheme.typography.headlineMedium)
 
-                    text = "Login",
-
-                    style = MaterialTheme.typography.headlineMedium
-                )
-
-                // Email
                 OutlinedTextField(
                     value = state.email,
                     onValueChange = { viewModel.onEvent(LoginEvent.EmailChanged(it)) },
@@ -87,14 +86,10 @@ fun LoginScreen(
                     isError = state.emailError != null,
                     modifier = Modifier.fillMaxWidth()
                 )
-                if (state.emailError != null) {
-                    Text(
-                        text = state.emailError!!,
-                        color = MaterialTheme.colorScheme.error
-                    )
+                state.emailError?.let {
+                    Text(text = it, color = MaterialTheme.colorScheme.error)
                 }
 
-                // Contraseña
                 OutlinedTextField(
                     value = state.password,
                     onValueChange = { viewModel.onEvent(LoginEvent.PasswordChanged(it)) },
@@ -114,14 +109,10 @@ fun LoginScreen(
                     isError = state.passwordError != null,
                     modifier = Modifier.fillMaxWidth()
                 )
-                if (state.passwordError != null) {
-                    Text(
-                        text = state.passwordError!!,
-                        color = MaterialTheme.colorScheme.error
-                    )
+                state.passwordError?.let {
+                    Text(text = it, color = MaterialTheme.colorScheme.error)
                 }
 
-                // Botón de iniciar sesión
                 Button(
                     onClick = {
                         focusManager.clearFocus()
@@ -133,7 +124,6 @@ fun LoginScreen(
                     Text("Login")
                 }
 
-                // Botón de recuperación de contraseña
                 TextButton(
                     onClick = {
                         focusManager.clearFocus()
@@ -141,12 +131,9 @@ fun LoginScreen(
                     },
                     modifier = Modifier.align(Alignment.End)
                 ) {
-
                     Text("Forgot your password?")
-
                 }
 
-                // Botón de registro rápido
                 OutlinedButton(
                     onClick = {
                         focusManager.clearFocus()
@@ -164,24 +151,21 @@ fun LoginScreen(
                     Text("Register")
                 }
 
-                // Mensaje de error global
-                if (state.errorMessage != null) {
+                state.errorMessage?.let {
                     Text(
-                        text = state.errorMessage!!,
+                        text = it,
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(top = 8.dp)
                     )
                 }
             }
 
-            // Cargando
             if (state.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
         }
     }
 }
-
 /*- Use one of the registered users in your AuthRepositoryImpl. For example:
 - User: admin@store.com
 - Password: admin123

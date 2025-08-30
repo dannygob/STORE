@@ -9,6 +9,7 @@ data class LoginUiState(
     val passwordError: String? = null,
     val errorMessage: String? = null,
     val isLoading: Boolean = false,
-    val isSuccess: Boolean = false,
+    val isSuccess: Boolean = false, // For login success
+    val registrationSuccess: Boolean = false, // For registration success
     val role: UserRole? = null,
 )

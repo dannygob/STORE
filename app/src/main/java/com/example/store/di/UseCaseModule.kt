@@ -1,7 +1,7 @@
 package com.example.store.di
 
-
 import com.example.store.data.repository.AppRepository
+import com.example.store.data.repository.UserRepository
 import com.example.store.domain.repository.AuthRepository
 import com.example.store.domain.usecase.LoginUseCase
 import com.example.store.domain.usecase.inventory.GeneratePickListUseCase
@@ -19,8 +19,9 @@ object UseCaseModule {
     @Singleton
     fun provideLoginUseCase(
         authRepository: AuthRepository,
+        userRepository: UserRepository, // ✅ Añadido
     ): LoginUseCase {
-        return LoginUseCase(authRepository)
+        return LoginUseCase(authRepository, userRepository)
     }
 
     @Provides

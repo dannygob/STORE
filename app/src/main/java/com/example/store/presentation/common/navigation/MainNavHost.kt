@@ -60,8 +60,14 @@ fun MainNavHost(navController: NavHostController) {
 
         composable(Route.Login.route) {
             LoginScreen(
-                onLoginSuccess = {
+                onAdminLogin = {
                     navController.navigate(Route.Dashboard.route) {
+                        popUpTo(Route.Login.route) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                },
+                onUserLogin = {
+                    navController.navigate(Route.Inventory.route) { // o Route.Dashboard si prefieres
                         popUpTo(Route.Login.route) { inclusive = true }
                         launchSingleTop = true
                     }

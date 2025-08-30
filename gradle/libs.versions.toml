@@ -1,5 +1,6 @@
 [versions]
 agp = "8.11.1"
+hiltWork = "1.2.0"
 kotlin = "2.0.0"
 composeBom = "2025.06.00"
 coreKtx = "1.16.0"
@@ -23,11 +24,13 @@ glance = "1.0.0"
 hilt = "2.57"
 hiltNavigationCompose = "1.2.0"
 uiTestJunit4 = "1.8.3"
+workRuntimeKtx = "2.10.3"
 
 [libraries]
 # Core
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
+androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hiltWork" }
 androidx-multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidex" }
 
 # Compose
@@ -60,6 +63,7 @@ androidx-room-compiler = { group = "androidx.room", name = "room-compiler", vers
 androidx-room-runtime-android = { group = "androidx.room", name = "room-runtime-android", version.ref = "roomRuntimeAndroid" }
 
 # Firebase
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
 firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
