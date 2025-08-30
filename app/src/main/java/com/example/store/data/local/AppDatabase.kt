@@ -172,7 +172,7 @@ abstract class AppDatabase : RoomDatabase() {
                         MIGRATION_9_10,
                         MIGRATION_10_11
                     )
-                    .fallbackToDestructiveMigration() // Add this line to allow destructive migrations during development
+                    .fallbackToDestructiveMigration(true) // Use the non-deprecated version to drop all tables
                     .build()
 
                 INSTANCE = instance
