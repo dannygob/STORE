@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.store.domain.model.UserRole
 import com.example.store.domain.repository.AuthRepository
 import com.example.store.domain.usecase.LoginUseCase
-import com.example.store.util.NetworkChecker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +18,6 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val authRepository: AuthRepository,
-    private val networkChecker: NetworkChecker,
     application: Application,
 ) : AndroidViewModel(application) {
 
@@ -78,20 +76,17 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
-            val context = getApplication<Application>().applicationContext
-            val result = loginUseCase(context, email, password)
+            val result = loginUseCase(email, password)
 
-            if (result.isSuccess) {
-                val loginResult = result.getOrNull()
-                _uiState.update {
+            _uiState.update {
+                if (result.isSuccess) {
+                    val loginResult = result.getOrNull()
                     it.copy(
                         isLoading = false,
                         isSuccess = true,
                         role = loginResult?.role ?: UserRole.USER
                     )
-                }
-            } else {
-                _uiState.update {
+                } else {
                     it.copy(
                         isLoading = false,
                         errorMessage = result.exceptionOrNull()?.message ?: "Error desconocido"
@@ -104,16 +99,6 @@ class LoginViewModel @Inject constructor(
     private fun onRegisterClicked(email: String, password: String, role: UserRole) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-
-            if (!networkChecker.isConnected()) {
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = "No hay conexión a internet. Por favor, verifica tu conexión."
-                    )
-                }
-                return@launch
-            }
 
             val result = authRepository.register(email, password, role)
             _uiState.update {
@@ -137,16 +122,6 @@ class LoginViewModel @Inject constructor(
     private fun onRecoverPassword(email: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-
-            if (!networkChecker.isConnected()) {
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = "No hay conexión a internet. Por favor, verifica tu conexión."
-                    )
-                }
-                return@launch
-            }
 
             val result = authRepository.recoverPassword(email)
             _uiState.update {
