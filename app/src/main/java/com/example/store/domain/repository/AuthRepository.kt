@@ -11,4 +11,5 @@ interface AuthRepository {
     suspend fun recoverPassword(email: String): Result<Unit>
     suspend fun signOut(): Result<Unit>
     fun getAuthState(): Flow<FirebaseUser?>
+    suspend fun offlineLogin(email: String): Result<LoginResult>
 }

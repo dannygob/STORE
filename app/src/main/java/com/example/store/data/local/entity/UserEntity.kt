@@ -9,4 +9,5 @@ data class UserEntity(
     val email: String,
     val passwordHash: String = "", // Nuevo: hash de la contraseña para login offline
     val role: String,
+    val needsSync: Boolean = false, // Indica si el usuario necesita ser sincronizado con Firebase
 )

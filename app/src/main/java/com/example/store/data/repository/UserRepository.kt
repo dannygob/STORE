@@ -1,8 +1,9 @@
 package com.example.store.data.repository
 
-import UserDao
+
 import android.content.Context
 import android.util.Log
+import com.example.store.data.local.dao.UserDao
 
 import com.example.store.data.local.entity.UserEntity
 import com.example.store.domain.model.UserRole

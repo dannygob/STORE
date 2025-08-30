@@ -1,3 +1,4 @@
+package com.example.store.data.local.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -17,4 +18,7 @@ interface UserDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertUsers(users: List<UserEntity>)
+
+    @Query("SELECT * FROM users WHERE needsSync = 1")
+    suspend fun getUnsyncedUsers(): List<UserEntity>
 }
