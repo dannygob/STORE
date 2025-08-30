@@ -142,7 +142,7 @@ abstract class AppDatabase : RoomDatabase() {
                     .addCallback(object : Callback() {
                         override fun onCreate(db: SupportSQLiteDatabase) {
                             super.onCreate(db)
-                            db.execSQL("INSERT INTO products (id, name, price, description, stockQuantity, createdAt) VALUES ('1', 'Sample Product', 10.0, 'Sample Description', 0, ${System.currentTimeMillis()})")
+                            db.execSQL("INSERT INTO products (id, name, price, description, stockQuantity, createdAt, isActive) VALUES ('1', 'Sample Product', 10.0, 'Sample Description', 0, ${System.currentTimeMillis()}, 1)") // Added isActive
                             db.execSQL("INSERT INTO customers (id, name) VALUES ('1', 'Sample Customer')")
                             db.execSQL("INSERT INTO suppliers (id, name) VALUES ('1', 'Sample Supplier')")
                         }

@@ -7,9 +7,9 @@ import androidx.work.WorkerParameters
 import com.example.store.data.local.AppDatabase
 import com.example.store.data.local.entity.UserEntity
 import com.example.store.domain.model.UserRole
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import java.util.UUID
 
 class SyncWorker(
     context: Context,
@@ -17,7 +17,6 @@ class SyncWorker(
 ) : CoroutineWorker(context, workerParams) {
 
     override suspend fun doWork(): Result {
-        val auth = FirebaseAuth.getInstance()
         val firestore = FirebaseFirestore.getInstance()
         val db = AppDatabase.Companion.getDatabase(applicationContext)
         val userDao = db.userDao()
@@ -29,38 +28,38 @@ class SyncWorker(
 
             for (userEntity in unsyncedUsers) {
                 try {
-                    // Check if user already exists in Firebase Auth (e.g., if they registered online on another device)
-                    val firebaseUser = auth.fetchSignInMethodsForEmail(userEntity.email)
-                        .await().signInMethods?.firstOrNull()?.let {
-                        auth.signInWithEmailAndPassword(userEntity.email, userEntity.passwordHash)
-                            .await().user
-                    }
+                    // For offline registered users, we only sync their role and email to Firestore.
+                    // Firebase Auth user creation with password is not possible without plain text password.
+                    // The user will need to use password recovery or register online to set their Firebase Auth password.
+
+                    // Check if a user with this email already exists in Firestore (from another device or previous sync)
+                    val firestoreUserDoc =
+                        firestore.collection("users").whereEqualTo("email", userEntity.email).get()
+                            .await().documents.firstOrNull()
 
                     val uidToUse: String
-                    if (firebaseUser != null) {
-                        uidToUse = firebaseUser.uid
+                    if (firestoreUserDoc != null) {
+                        uidToUse = firestoreUserDoc.id
                         Log.d(
                             "SyncWorker",
-                            "User ${userEntity.email} already exists in Firebase Auth. Using existing UID: $uidToUse"
+                            "User ${userEntity.email} already exists in Firestore. Using existing UID: $uidToUse"
                         )
                     } else {
-                        // Register user in Firebase Auth
-                        val authResult = auth.createUserWithEmailAndPassword(
-                            userEntity.email,
-                            userEntity.passwordHash
-                        ).await()
-                        uidToUse = authResult.user?.uid
-                            ?: throw Exception("Firebase Auth user creation failed for ${userEntity.email}")
+                        // Generate a new UID for Firestore if not already present
+                        uidToUse = UUID.randomUUID().toString()
                         Log.d(
                             "SyncWorker",
-                            "User ${userEntity.email} registered in Firebase Auth with UID: $uidToUse"
+                            "Creating new Firestore entry for ${userEntity.email} with UID: $uidToUse"
                         )
                     }
 
-                    // Save user role to Firestore
+                    // Save user email and role to Firestore
                     firestore.collection("users").document(uidToUse)
-                        .set(mapOf("role" to userEntity.role)).await()
-                    Log.d("SyncWorker", "User role for ${userEntity.email} saved to Firestore.")
+                        .set(mapOf("email" to userEntity.email, "role" to userEntity.role)).await()
+                    Log.d(
+                        "SyncWorker",
+                        "User email and role for ${userEntity.email} saved to Firestore."
+                    )
 
                     // Update local Room entry: set needsSync to false and update UID if it was temporary
                     val updatedUserEntity = userEntity.copy(uid = uidToUse, needsSync = false)

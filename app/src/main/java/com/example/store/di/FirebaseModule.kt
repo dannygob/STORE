@@ -35,7 +35,9 @@ abstract class FirebaseModule {
             val firestore = FirebaseFirestore.getInstance()
             firestore.firestoreSettings =
                 com.google.firebase.firestore.FirebaseFirestoreSettings.Builder()
-                    .setPersistenceEnabled(true)
+                    .setLocalCacheSettings(
+                        com.google.firebase.firestore.PersistentCacheSettings.newBuilder().build()
+                    )
                     .build()
             return firestore
         }

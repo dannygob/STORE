@@ -17,6 +17,7 @@ import com.example.store.util.PasswordHasher
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -30,7 +31,7 @@ class AuthRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val userDao: UserDao,
     private val networkChecker: NetworkChecker,
-    private val context: Context, // Inject Context for WorkManager
+    @ApplicationContext private val context: Context,
 ) : AuthRepository {
 
     override suspend fun login(email: String, password: String): Result<LoginResult> {
@@ -47,7 +48,8 @@ class AuthRepositoryImpl @Inject constructor(
                 uid = user.uid,
                 email = email,
                 passwordHash = PasswordHasher.hash(password),
-                role = role.name
+                role = role.name,
+                needsSync = false // Ensure online logins are marked as synced
             )
             userDao.insertUser(userEntity)
 
@@ -83,19 +85,19 @@ class AuthRepositoryImpl @Inject constructor(
 
                 Result.success(Unit)
             } else {
-                // Offline registration: Save to Room with needsSync = true and hashed password
+                // Offline registration: Save to Room with needsSync = true, but no password hash for Firebase Auth
                 val tempUid = UUID.randomUUID().toString() // Generate a unique UID for offline
                 val userEntity = UserEntity(
                     uid = tempUid,
                     email = email,
-                    passwordHash = PasswordHasher.hash(password),
+                    passwordHash = "", // Do not store password hash for Firebase Auth in offline registration
                     role = role.name,
                     needsSync = true
                 )
                 userDao.insertUser(userEntity)
                 Log.d(
                     "AuthRepository",
-                    "User saved to Room (offline registration) with needsSync: ${userEntity.uid}"
+                    "User saved to Room (offline registration) with needsSync: ${userEntity.uid}. Password not stored for Firebase Auth."
                 )
 
                 // Schedule SyncWorker to push this registration to Firebase later

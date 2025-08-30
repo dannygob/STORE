@@ -1,37 +1,25 @@
 package com.example.store.domain.usecase
 
-import com.example.store.data.repository.UserRepository
 import com.example.store.domain.model.LoginResult
 import com.example.store.domain.repository.AuthRepository
+import com.example.store.util.NetworkChecker // Correct import for NetworkChecker
 import javax.inject.Inject
 
 class LoginUseCase @Inject constructor(
     private val authRepository: AuthRepository,
-    private val networkChecker: UserRepository,
+    private val networkChecker: NetworkChecker, // Corrected type to NetworkChecker
 ) {
 
     suspend operator fun invoke(
         email: String,
         password: String,
     ): Result<LoginResult> {
-        if (networkChecker.isConnected()) {
-            val onlineResult = authRepository.login(email, password)
-            return if (onlineResult.isSuccess) {
-                onlineResult
-            } else {
-                // If online login fails, try offline login as a fallback
-                val offlineResult = authRepository.offlineLogin(email)
-                if (offlineResult.isSuccess) {
-                    offlineResult
-                } else {
-                    // If both fail, return the online error, or offline if online wasn't attempted
-                    onlineResult
-                }
-            }
+        return if (networkChecker.isConnected()) {
+            // If online, attempt login via Firebase
+            authRepository.login(email, password)
         } else {
-            // No internet connection, try offline login directly
-            return authRepository.offlineLogin(email)
+            // If offline, attempt login via Room
+            authRepository.offlineLogin(email)
         }
     }
 }
-
