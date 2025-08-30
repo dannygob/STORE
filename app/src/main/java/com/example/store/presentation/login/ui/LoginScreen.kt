@@ -1,5 +1,6 @@
 package com.example.store.presentation.login.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,7 +28,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import android.widget.Toast
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -41,6 +41,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.store.domain.model.UserRole
 import com.example.store.presentation.login.viewmodel.LoginEvent
 import com.example.store.presentation.login.viewmodel.LoginViewModel
+
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
@@ -69,6 +70,9 @@ fun LoginScreen(
         if (state.registrationSuccess) {
             Toast.makeText(context, "Usuario registrado correctamente. Por favor, inicie sesión.", Toast.LENGTH_LONG).show()
             viewModel.onRegistrationHandled()
+            // After successful registration, navigate back to login to allow the user to log in
+            // This is handled by the onAdminLogin/onUserLogin callbacks in MainNavHost
+            // which navigate to Dashboard. We don't need explicit navigation here.
         }
     }
 

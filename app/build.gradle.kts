@@ -107,11 +107,6 @@ dependencies {
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.firestore.ktx)
 
-    // Tests
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(libs.androidx.ui.test.junit4)
 
     // Debug Tools (Compose)
     debugImplementation(libs.androidx.compose.ui.tooling)
@@ -120,4 +115,8 @@ dependencies {
     implementation(libs.kotlin.stdlib)
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.hilt.work)
+
+    androidTestImplementation(libs.junit) // Or the latest version
+    androidTestImplementation(libs.androidx.junit.v115) // For AndroidX Test support
+
 }

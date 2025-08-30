@@ -67,7 +67,7 @@ fun MainNavHost(navController: NavHostController) {
                     }
                 },
                 onUserLogin = {
-                    navController.navigate(Route.Inventory.route) { // o Route.Dashboard si prefieres
+                    navController.navigate(Route.Dashboard.route) { // Navigate to Dashboard for all users
                         popUpTo(Route.Login.route) { inclusive = true }
                         launchSingleTop = true
                     }
