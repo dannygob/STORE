@@ -27,8 +27,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import android.widget.Toast
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -48,6 +50,7 @@ fun LoginScreen(
     val state by viewModel.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
     var passwordVisible by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) {
@@ -59,6 +62,13 @@ fun LoginScreen(
                     viewModel.onLoginHandled()
                 }
             }
+        }
+    }
+
+    LaunchedEffect(state.registrationSuccess) {
+        if (state.registrationSuccess) {
+            Toast.makeText(context, "Usuario registrado correctamente. Por favor, inicie sesión.", Toast.LENGTH_LONG).show()
+            viewModel.onRegistrationHandled()
         }
     }
 

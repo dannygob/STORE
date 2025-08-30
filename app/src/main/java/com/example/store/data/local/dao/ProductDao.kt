@@ -33,6 +33,9 @@ interface ProductDao {
     @Query("SELECT * FROM products WHERE name LIKE '%' || :query || '%' ORDER BY name ASC")
     fun searchProductsByName(query: String): Flow<List<ProductEntity>>
 
+    @Query("SELECT * FROM products WHERE needsSync = 1")
+    suspend fun getUnsyncedProducts(): List<ProductEntity>
+
     @Query("DELETE FROM products")
     suspend fun deleteAllProducts() // Example of a bulk operation
 }

@@ -103,11 +103,9 @@ class LoginViewModel @Inject constructor(
             val result = authRepository.register(email, password, role)
             _uiState.update {
                 if (result.isSuccess) {
-                    val loginResult = result.getOrNull()
                     it.copy(
                         isLoading = false,
-                        isSuccess = true, // Set isSuccess to true to trigger navigation
-                        role = loginResult?.role ?: UserRole.USER,
+                        registrationSuccess = true,
                         errorMessage = "Usuario registrado correctamente."
                     )
                 } else {
