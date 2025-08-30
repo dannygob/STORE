@@ -60,7 +60,11 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun register(email: String, password: String, role: UserRole): Result<Unit> {
+    override suspend fun register(
+        email: String,
+        password: String,
+        role: UserRole,
+    ): Result<LoginResult> {
         return try {
             Log.d("AuthRepository", "Attempting to register user: $email with role: $role")
 
@@ -83,7 +87,8 @@ class AuthRepositoryImpl @Inject constructor(
                 userDao.insertUser(userEntity)
                 Log.d("AuthRepository", "User saved to Room (online registration): ${user.uid}")
 
-                Result.success(Unit)
+                // After successful online registration, perform login
+                login(email, password)
             } else {
                 // Offline registration: Save to Room with needsSync = true, but no password hash for Firebase Auth
                 val tempUid = UUID.randomUUID().toString() // Generate a unique UID for offline
@@ -112,7 +117,9 @@ class AuthRepositoryImpl @Inject constructor(
                 WorkManager.getInstance(context).enqueue(syncRequest)
                 Log.d("AuthRepository", "SyncWorker scheduled for offline registration.")
 
-                Result.success(Unit) // Indicate success for offline registration
+                // For offline registration, we can't perform a Firebase Auth login.
+                // Instead, we return a LoginResult based on the locally registered user.
+                Result.success(LoginResult(role))
             }
         } catch (e: Exception) {
             Log.e("AuthRepository", "Registration failed for user $email: ${e.message}", e)
